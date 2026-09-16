@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Career Analysis – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Hero */
+    .career-hero {
+      background:var(--gradient-hero);
+      border-radius:var(--radius-xl);
+      padding:32px 36px;
+      margin-bottom:24px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .career-hero::before {
+      content:'';
+      position:absolute;
+      inset:0;
+      background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Row 1: 4 stat cards */
+    .career-stats {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+      margin-bottom:20px;
+    }
+
+    @media(max-width:1100px){
+      .career-stats{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:600px){
+      .career-stats{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .cstat-card {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:22px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+      transition:var(--transition);
+    }
+
+    .cstat-card:hover {
+      transform:translateY(-3px);
+      box-shadow:var(--shadow-md);
+    }
+
+    .cstat-icon {
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      margin-bottom:12px;
+      flex-shrink:0;
+    }
+
+    .cstat-title {
+      font-size:12px;
+      font-weight:700;
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:6px;
+    }
+
+    .cstat-main {
+      font-size:22px;
+      font-weight:800;
+      color:var(--text);
+      margin-bottom:3px;
+    }
+
+    .cstat-sub {
+      font-size:12px;
+      color:var(--text-muted);
+      font-weight:500;
+    }
+
+    /* Ring wrapper inside card */
+    .ring-in-card {
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:8px;
+    }
+
+    .ring-in-card-label {
+      position:absolute;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .ring-in-card-val {
+      font-size:20px;
+      font-weight:800;
+      color:var(--text);
+      line-height:1;
+    }
+
+    .ring-in-card-unit {
+      font-size:10px;
+      color:var(--text-muted);
+      font-weight:600;
+    }
+
+    /* Row 2: Skill Comparison */
+    .skill-compare {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+      margin-bottom:20px;
+    }
+
+    @media(max-width:900px){
+      .skill-compare{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .skill-compare-col {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:20px;
+    }
+
+    .skill-compare-title {
+      font-size:14px;
+      font-weight:800;
+      margin-bottom:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .skill-tags-wrap {
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+    }
+
+    /* Row 3: Skill Gap card */
+    .gap-card {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:24px;
+      margin-bottom:20px;
+    }
+
+    .gap-card-inner {
+      display:flex;
+      align-items:center;
+      gap:32px;
+      flex-wrap:wrap;
+    }
+
+    .gap-right {
+      flex:1;
+      min-width:200px;
+    }
+
+    .gap-progress-row {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .gap-progress-label {
+      font-size:13px;
+      font-weight:600;
+      color:var(--text);
+      width:120px;
+      flex-shrink:0;
+    }
+
+    .gap-bar-track {
+      flex:1;
+      height:8px;
+      background:var(--surface2);
+      border-radius:4px;
+      overflow:hidden;
+    }
+
+    .gap-bar-fill {
+      height:100%;
+      border-radius:4px;
+      width:0;
+      transition:width 1.4s ease;
+    }
+
+    .gap-bar-val {
+      font-size:12px;
+      font-weight:700;
+      width:40px;
+      text-align:right;
+    }
+
+    /* Row 4: Charts */
+    .charts-row {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+      margin-bottom:20px;
+    }
+
+    @media(max-width:1050px){
+      .charts-row{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    @media(max-width:700px){
+      .charts-row{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .chart-card {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:22px;
+    }
+
+    .chart-card-title {
+      font-size:14px;
+      font-weight:800;
+      color:var(--text);
+      margin-bottom:18px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    /* SVG Bar Chart */
+    .svg-bar-chart {
+      width:100%;
+    }
+
+    .svg-bar-group {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .svg-bar-row {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .svg-bar-name {
+      font-size:12px;
+      font-weight:600;
+      color:var(--text-muted);
+      width:90px;
+      flex-shrink:0;
+      text-align:right;
+    }
+
+    .svg-bar-track {
+      flex:1;
+      height:18px;
+      background:var(--surface2);
+      border-radius:5px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .svg-bar-fill {
+      height:100%;
+      border-radius:5px;
+      width:0;
+      transition:width 1.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      padding-right:6px;
+    }
+
+    .svg-bar-fill span {
+      font-size:10px;
+      font-weight:800;
+      color:#fff;
+      white-space:nowrap;
+    }
+
+    /* Donut SVG chart */
+    .donut-wrap {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:16px;
+    }
+
+    .donut-legend {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      width:100%;
+    }
+
+    .donut-legend-item {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+    }
+
+    .donut-dot {
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      flex-shrink:0;
+    }
+
+    /* Horizontal bar chart */
+    .hbar-chart {
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .hbar-row {
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .hbar-label-row {
+      display:flex;
+      justify-content:space-between;
+    }
+
+    .hbar-label {
+      font-size:12px;
+      font-weight:600;
+      color:var(--text);
+    }
+
+    .hbar-val {
+      font-size:12px;
+      font-weight:700;
+      color:var(--text-muted);
+    }
+
+    .hbar-track {
+      height:10px;
+      background:var(--surface2);
+      border-radius:5px;
+      overflow:hidden;
+    }
+
+    .hbar-fill {
+      height:100%;
+      border-radius:5px;
+      width:0;
+      transition:width 1.3s ease;
+    }
+
+    /* How to improve section */
+    .improve-section {
+      background:linear-gradient(
+        135deg,
+        rgba(37,99,235,0.04),
+        rgba(124,58,237,0.04)
+      );
+      border:1px solid rgba(37,99,235,0.12);
+      border-radius:var(--radius-xl);
+      padding:24px;
+    }
+
+    .improve-step {
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .improve-step:last-child {
+      margin-bottom:0;
+    }
+
+    .step-num {
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      background:var(--gradient);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:800;
+      flex-shrink:0;
+      box-shadow:var(--shadow-blue);
+    }
+
+    .step-content-title {
+      font-size:14px;
+      font-weight:700;
+      color:var(--text);
+      margin-bottom:3px;
+    }
+
+    .step-content-desc {
+      font-size:13px;
+      color:var(--text-muted);
+      line-height:1.5;
+    }
+
+    /* Aptitude level badge */
+    .aptitude-chip {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 16px;
+      border-radius:var(--radius-full);
+      font-size:14px;
+      font-weight:700;
+    }
+
+    /* Animation */
+    .animate-card {
+      opacity:0;
+      transform:translateY(18px);
+      animation:slideUpIn 0.5s ease forwards;
+    }
+
+    @keyframes slideUpIn {
+      to {
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+        <img
+          src="assets/logo.png"
+          alt="SkillBridge"
+          style="height:42px;width:auto;object-fit:contain"
+        />
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-section">Main</div>
+
+      <a href="dashboard2.html" class="nav-item" id="nav-dashboard">
+        <i class="fas fa-th-large"></i> Dashboard
+      </a>
+
+      <a href="upload.html" class="nav-item" id="nav-upload">
+        <i class="fas fa-upload"></i> Upload Profile
+      </a>
+
+      <a href="resume-analysis.html" class="nav-item" id="nav-resume">
+        <i class="fas fa-file-alt"></i> AI Resume Analysis
+      </a>
+
+      <a href="opportunities2.html" class="nav-item" id="nav-opportunities">
+        <i class="fas fa-briefcase"></i> Opportunities
+      </a>
+
+      <a href="career-analysis.html" class="nav-item" id="nav-career">
+        <i class="fas fa-chart-line"></i> Career Analysis
+      </a>
+
+      <a href="roadmap2.html" class="nav-item" id="nav-roadmap">
+        <i class="fas fa-road"></i> Learning Roadmap
+      </a>
+
+      <div class="nav-section">Tools</div>
+
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines">
+        <i class="fas fa-clock"></i> Deadline Reminder
+      </a>
+
+      <a href="notifications.html" class="nav-item" id="nav-notifications">
+        <i class="fas fa-bell"></i>
+        Notifications
+        <span class="nav-badge nav-badge-notif"></span>
+      </a>
+
+      <div class="nav-section">Account</div>
+
+      <a href="profile2.html" class="nav-item" id="nav-profile">
+        <i class="fas fa-user"></i> Profile
+      </a>
+
+      <a href="settings.html" class="nav-item" id="nav-settings">
+        <i class="fas fa-cog"></i> Settings
+      </a>
+
+      <a href="auth.html" class="nav-item" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+
+      <div class="user-meta">
+        <div class="user-name" data-user-name>Student</div>
+        <div class="user-sub" data-user-branch>CSE</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <div class="app-main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+
+      <button class="mobile-menu-btn" id="mobileSidebarBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          placeholder="Search opportunities, skills, companies..."
+        />
+      </div>
+
+      <div class="topbar-right">
+
+        <div style="position:relative">
+          <button class="topbar-icon-btn" id="notifBtn">
+            <i class="fas fa-bell"></i>
+            <span class="notif-badge"></span>
+          </button>
+
+          <div class="notif-dropdown" id="notifDropdown"></div>
+        </div>
+
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+
+        <button
+          class="topbar-icon-btn"
+          onclick="logout()"
+          title="Logout"
+          style="color:var(--danger)"
+        >
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- Hero -->
+      <div class="career-hero">
+
+        <div style="position:relative;z-index:1">
+
+          <div
+            style="
+              font-size:26px;
+              font-weight:800;
+              color:#fff;
+              margin-bottom:6px
+            "
+          >
+            <i
+              class="fas fa-chart-line"
+              style="margin-right:10px;opacity:0.85"
+            ></i>
+            AI Career Analysis
+          </div>
+
+          <div
+            style="
+              font-size:14px;
+              color:rgba(255,255,255,0.75);
+              max-width:580px
+            "
+          >
+            Understand your career readiness and improve your skills with
+            AI-powered insights.
+          </div>
+
+          <div
+            style="
+              display:flex;
+              gap:8px;
+              margin-top:14px;
+              flex-wrap:wrap
+            "
+          >
+
+            <span
+              style="
+                background:rgba(255,255,255,0.15);
+                border:1px solid rgba(255,255,255,0.25);
+                color:#fff;
+                padding:5px 14px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:600
+              "
+            >
+              <i class="fas fa-brain" style="margin-right:5px"></i>
+              AI-Powered
+            </span>
+
+            <span
+              style="
+                background:rgba(255,255,255,0.15);
+                border:1px solid rgba(255,255,255,0.25);
+                color:#fff;
+                padding:5px 14px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:600
+              "
+            >
+              <i class="fas fa-sync-alt" style="margin-right:5px"></i>
+              Real-time
+            </span>
+
+            <span
+              style="
+                background:rgba(255,255,255,0.15);
+                border:1px solid rgba(255,255,255,0.25);
+                color:#fff;
+                padding:5px 14px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:600
+              "
+            >
+              <i class="fas fa-shield-alt" style="margin-right:5px"></i>
+              Private
+            </span>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Row 1: 4 Stat Cards -->
+      <div
+        class="career-stats animate-card"
+        style="animation-delay:0.05s"
+      >
+
+        <!-- Career Goal -->
+        <div class="cstat-card">
+
+          <div
+            class="cstat-icon"
+            style="background:rgba(37,99,235,0.1);color:var(--primary)"
+          >
+            <i class="fas fa-bullseye"></i>
+          </div>
+
+          <div class="cstat-title">Career Goal</div>
+
+          <div
+            class="cstat-main"
+            id="cGoalText"
+            style="font-size:16px"
+          >
+            —
+          </div>
+
+          <div class="cstat-sub" id="cGoalSub">
+            Update in profile
+          </div>
+
+        </div>
+
+        <!-- Overall Match -->
+        <div class="cstat-card">
+
+          <div
+            class="cstat-title"
+            style="margin-bottom:0"
+          >
+            Overall Match
+          </div>
+
+          <div
+            class="ring-in-card"
+            style="margin:8px 0"
+          >
+            <div id="matchRingSmall"></div>
+
+            <div class="ring-in-card-label">
+              <span
+                class="ring-in-card-val"
+                id="matchRingSmallVal"
+              >
+                0
+              </span>
+
+              <span class="ring-in-card-unit">%</span>
+            </div>
+          </div>
+
+          <div
+            class="cstat-sub"
+            id="matchLevel"
+          >
+            Calculating…
+          </div>
+
+        </div>
+
+        <!-- Aptitude -->
+        <div class="cstat-card">
+
+          <div
+            class="cstat-icon"
+            style="background:rgba(245,158,11,0.1);color:var(--warning)"
+          >
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+
+          <div class="cstat-title">Aptitude Level</div>
+
+          <div
+            id="aptitudeBadge"
+            class="cstat-main"
+          ></div>
+
+          <div
+            class="cstat-sub"
+            id="aptitudeSub"
+          >
+            Based on skills &amp; CGPA
+          </div>
+
+        </div>
+
+        <!-- Expected After Improvement -->
+        <div class="cstat-card">
+
+          <div
+            class="cstat-title"
+            style="margin-bottom:0"
+          >
+            After Improvement
+          </div>
+
+          <div
+            class="ring-in-card"
+            style="margin:8px 0"
+          >
+
+            <div id="improvedRing"></div>
+
+            <div class="ring-in-card-label">
+              <span
+                class="ring-in-card-val"
+                id="improvedRingVal"
+              >
+                0
+              </span>
+
+              <span class="ring-in-card-unit">%</span>
+            </div>
+
+          </div>
+
+          <div class="cstat-sub">
+            Expected match score
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Row 2: Skill Comparison -->
+      <div
+        class="skill-compare animate-card"
+        style="animation-delay:0.15s"
+      >
+
+        <div class="skill-compare-col">
+
+          <div
+            class="skill-compare-title"
+            style="color:var(--primary)"
+          >
+            <i class="fas fa-list-check"></i>
+            Required Skills
+            <span
+              id="reqSkillsCount"
+              class="badge badge-blue"
+              style="font-size:11px"
+            ></span>
+          </div>
+
+          <div
+            class="skill-tags-wrap"
+            id="reqSkillsTags"
+          ></div>
+
+        </div>
+
+        <div class="skill-compare-col">
+
+          <div
+            class="skill-compare-title"
+            style="color:var(--success)"
+          >
+            <i class="fas fa-check-double"></i>
+            Your Skills
+            <span
+              id="yourSkillsCount"
+              class="badge badge-green"
+              style="font-size:11px"
+            ></span>
+          </div>
+
+          <div
+            class="skill-tags-wrap"
+            id="yourSkillsTags"
+          ></div>
+
+        </div>
+
+        <div class="skill-compare-col">
+
+          <div
+            class="skill-compare-title"
+            style="color:var(--danger)"
+          >
+            <i class="fas fa-exclamation-circle"></i>
+            Missing Skills
+            <span
+              id="missingSkillsCount"
+              class="badge badge-red"
+              style="font-size:11px"
+            ></span>
+          </div>
+
+          <div
+            class="skill-tags-wrap"
+            id="missingSkillsTags"
+          ></div>
+
+        </div>
+
+      </div>
+
+      <!-- Row 3: Skill Gap Analysis -->
+      <div
+        class="gap-card animate-card"
+        style="animation-delay:0.25s"
+      >
+
+        <div
+          class="card-header"
+          style="margin-bottom:20px"
+        >
+
+          <div class="card-title">
+            <i
+              class="fas fa-chart-bar"
+              style="color:var(--purple)"
+            ></i>
+            AI Skill Gap Analysis
+          </div>
+
+          <a
+            href="roadmap2.html"
+            class="btn btn-primary btn-sm"
+          >
+            <i class="fas fa-road"></i>
+            Go to Learning Roadmap
+          </a>
+
+        </div>
+
+        <div class="gap-card-inner">
+
+          <div
+            style="
+              flex-shrink:0;
+              text-align:center
+            "
+          >
+
+            <div
+              class="ring-in-card"
+              style="margin-bottom:8px"
+            >
+              <div id="gapRing"></div>
+
+              <div class="ring-in-card-label">
+
+                <span
+                  class="ring-in-card-val"
+                  id="gapRingVal"
+                >
+                  0
+                </span>
+
+                <span class="ring-in-card-unit">
+                  Gap
+                </span>
+
+              </div>
+            </div>
+
+            <div
+              style="
+                font-size:12px;
+                font-weight:600;
+                color:var(--text-muted)
+              "
+              id="gapLabel"
+            >
+              Skill Gap Score
+            </div>
+
+          </div>
+
+          <div
+            class="gap-right"
+            id="gapBarsWrap"
+          >
+            <!-- JS fills -->
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Row 4: Charts -->
+      <div
+        class="charts-row animate-card"
+        style="animation-delay:0.35s"
+      >
+
+        <!-- Skills Overview -->
+        <div class="chart-card">
+
+          <div class="chart-card-title">
+            <i
+              class="fas fa-chart-bar"
+              style="color:var(--primary)"
+            ></i>
+            Skills Overview
+          </div>
+
+          <div
+            class="svg-bar-group"
+            id="barChart1"
+          >
+            <!-- JS fills -->
+          </div>
+
+          <div
+            style="
+              display:flex;
+              gap:14px;
+              margin-top:14px;
+              flex-wrap:wrap
+            "
+          >
+
+            <span
+              style="
+                font-size:11px;
+                display:flex;
+                align-items:center;
+                gap:5px
+              "
+            >
+              <span
+                style="
+                  width:10px;
+                  height:10px;
+                  background:var(--primary);
+                  border-radius:2px;
+                  display:inline-block
+                "
+              ></span>
+              Required
+            </span>
+
+            <span
+              style="
+                font-size:11px;
+                display:flex;
+                align-items:center;
+                gap:5px
+              "
+            >
+              <span
+                style="
+                  width:10px;
+                  height:10px;
+                  background:var(--success);
+                  border-radius:2px;
+                  display:inline-block
+                "
+              ></span>
+              You Have
+            </span>
+
+          </div>
+
+        </div>
+
+        <!-- Match Distribution -->
+        <div class="chart-card">
+
+          <div class="chart-card-title">
+            <i
+              class="fas fa-circle-notch"
+              style="color:var(--purple)"
+            ></i>
+            Match Distribution
+          </div>
+
+          <div class="donut-wrap">
+
+            <div style="position:relative">
+
+              <div id="donutRing"></div>
+
+              <div
+                style="
+                  position:absolute;
+                  inset:0;
+                  display:flex;
+                  flex-direction:column;
+                  align-items:center;
+                  justify-content:center
+                "
+              >
+
+                <span
+                  id="donutCenter"
+                  style="
+                    font-size:18px;
+                    font-weight:800;
+                    color:var(--text)
+                  "
+                >
+                  0%
+                </span>
+
+                <span
+                  style="
+                    font-size:10px;
+                    color:var(--text-muted)
+                  "
+                >
+                  current
+                </span>
+
+              </div>
+
+            </div>
+
+            <div
+              class="donut-legend"
+              id="donutLegend"
+            ></div>
+
+          </div>
+
+        </div>
+
+        <!-- Skill Gap Breakdown -->
+        <div class="chart-card">
+
+          <div class="chart-card-title">
+            <i
+              class="fas fa-layer-group"
+              style="color:var(--warning)"
+            ></i>
+            Skill Gap Breakdown
+          </div>
+
+          <div
+            class="hbar-chart"
+            id="hbarChart"
+          >
+            <!-- JS fills -->
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- How to Improve -->
+      <div
+        class="improve-section animate-card"
+        style="animation-delay:0.45s"
+      >
+
+        <div
+          style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+            gap:10px
+          "
+        >
+
+          <div
+            style="
+              font-size:17px;
+              font-weight:800;
+              color:var(--text);
+              display:flex;
+              align-items:center;
+              gap:9px
+            "
+          >
+            <i
+              class="fas fa-rocket"
+              style="color:var(--primary)"
+            ></i>
+            How to Improve Your Match Score
+          </div>
+
+          <span
+            class="badge badge-blue"
+            id="currentScoreTag"
+          >
+            Current: 0%
+          </span>
+
+        </div>
+
+        <div id="improveSteps">
+          <!-- JS fills -->
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div
+  class="loader-overlay"
+  id="appLoader"
+>
+  <div class="loader"></div>
+</div>
+
+<div
+  id="appToast"
+  class="toast"
+></div>
+
+<div
+  class="sidebar-overlay"
+  id="sidebarOverlay"
+  style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    z-index:299;
+    display:none
+  "
+  onclick="
+    document.getElementById('appSidebar').classList.remove('open');
+    this.style.display='none'
+  "
+></div>
+
+<script src="js/calculationService.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+
+  if (!requireAuth()) return;
+
+  initSidebar('nav-career');
+
+  renderNotifDropdown();
+
+  const cachedUser = getUser();
+  console.log('[CareerAnalysis] Authenticated user cache:', cachedUser);
+
+  let user = cachedUser;
+  try {
+    const profileResult = await apiFetch('/users/profile');
+    if (profileResult?.success && profileResult.user) {
+      user = profileResult.user;
+      setUser(user);
+    } else if (!user) {
+      throw new Error('The authenticated profile response was empty.');
+    }
+  } catch (error) {
+    console.error('[CareerAnalysis] Profile load failed:', error);
+    if (!user) return;
+  }
+
+  console.log('[CareerAnalysis] Loaded profile:', user);
+  console.log('[CareerAnalysis] Career goal:', user?.careerGoal);
+
+  try {
+    const response = await apiFetch('/analysis/results');
+    console.log('Career API response:', response);
+    console.log('Required skills from API:', response?.analysis?.requiredSkills || response?.requiredSkills);
+    console.log('Matched career ID:', response?.analysis?.matchedCareerId || response?.matchedCareerId);
+    const apiAnalysis = response?.analysis;
+    if (!response?.success || !apiAnalysis) {
+      throw new Error('The analysis response did not contain a canonical analysis object.');
+    }
+    const analysis = {
+      ...apiAnalysis,
+      requiredSkills: apiAnalysis.requiredSkills,
+      userSkills: apiAnalysis.userSkills,
+      matchedCareerId: apiAnalysis.matchedCareerId,
+    };
+    console.log('Final career analysis:', analysis);
+    console.log('Final required skills:', analysis?.requiredSkills);
+    const updatedUser = updateUser({ aiAnalysis: analysis });
+    loadPage(updatedUser);
+  } catch (error) {
+    console.error('[CareerAnalysis] Career analysis load failed:', {
+      selectedCareerName: user?.careerGoal || '',
+      error: error.message,
+    });
+    loadPage({
+      ...user,
+      aiAnalysis: user.aiAnalysis || SBCalc.runLocalAnalysis(user),
+    });
+  }
+});
+
+
+function loadPage(user) {
+
+  if (!user) return;
+
+  let analysis = user.aiAnalysis || {};
+
+  if (!Object.keys(analysis).length) {
+    analysis = SBCalc.runLocalAnalysis(user);
+    updateUser({
+      aiAnalysis: analysis
+    });
+  }
+
+  console.log('Final career analysis:', analysis);
+  console.log('Final required skills:', analysis?.requiredSkills);
+
+  const skills = Array.isArray(analysis.userSkills) && analysis.userSkills.length
+    ? analysis.userSkills
+    : (user.skills || []);
+
+  // Use centralized calculateSkillMatch for all skill comparison
+  const required = Array.isArray(analysis.requiredSkills)
+    ? analysis.requiredSkills.filter(skill => typeof skill === 'string' && skill.trim()).map(skill => skill.trim())
+    : [];
+
+  const {
+    matchPct: smCalc,
+    matchedSkills: matched,
+    missingSkills: missing
+  } = SBCalc.calculateSkillMatch(
+    skills,
+    required
+  );
+
+  const sm = smCalc;
+  analysis.requiredSkills = required;
+  analysis.userSkills = skills;
+  analysis.matchedSkills = matched;
+  analysis.missingSkills = missing;
+  analysis.skillMatchPercentage = smCalc;
+
+
+  // Use the server's projected score when available; otherwise do not invent improvement points.
+  const expectedImproved = SBCalc.clampPercentage(
+    analysis.expectedMatchAfterImprovement ?? analysis.overallCareerMatch ?? 0
+  );
+
+  analysis.expectedMatchAfterImprovement = expectedImproved;
+
+
+  // ---- Row 1: Career Stats ----
+
+  // Career goal
+  const cGoalEl =
+    document.getElementById('cGoalText');
+
+  const cGoalSub =
+    document.getElementById('cGoalSub');
+
+  if (cGoalEl) {
+    cGoalEl.textContent =
+      user.careerGoal || 'Not set';
+  }
+
+  if (cGoalSub) {
+    cGoalSub.textContent =
+      user.careerGoal
+        ? 'Your selected career path'
+        : 'Set goal in Profile page';
+  }
+
+
+  // Match ring
+  buildRing(
+    document.getElementById('matchRingSmall'),
+    sm,
+    90,
+    8
+  );
+
+  setTimeout(() =>
+    animateCount(
+      document.getElementById('matchRingSmallVal'),
+      sm
+    ),
+    200
+  );
+
+
+  const matchLevelEl =
+    document.getElementById('matchLevel');
+
+  if (matchLevelEl) {
+
+    matchLevelEl.textContent =
+      sm >= 80
+        ? '🌟 Excellent Match'
+        : sm >= 60
+          ? '👍 Good Match'
+          : sm >= 40
+            ? '📈 Average Match'
+            : '🔧 Needs Work';
+
+    matchLevelEl.style.color =
+      sm >= 80
+        ? 'var(--success)'
+        : sm >= 60
+          ? 'var(--primary)'
+          : sm >= 40
+            ? 'var(--warning)'
+            : 'var(--danger)';
+  }
+
+
+  // Aptitude
+  const aptEl =
+    document.getElementById('aptitudeBadge');
+
+  const aptitude =
+    getAptitudeLevel(
+      skills,
+      user.cgpa
+    );
+
+  if (aptEl) {
+
+    const colors = {
+      Advanced:'var(--success)',
+      Medium:'var(--primary)',
+      Beginner:'var(--warning)'
+    };
+
+    const bgs = {
+      Advanced:'rgba(34,197,94,0.1)',
+      Medium:'rgba(37,99,235,0.1)',
+      Beginner:'rgba(245,158,11,0.1)'
+    };
+
+    aptEl.innerHTML = `
+      <span
+        class="aptitude-chip"
+        style="
+          background:${bgs[aptitude]};
+          color:${colors[aptitude]}
+        "
+      >
+        ${
+          aptitude === 'Advanced'
+            ? '🏆'
+            : aptitude === 'Medium'
+              ? '📈'
+              : '🌱'
+        }
+        ${aptitude}
+      </span>
+    `;
+  }
+
+
+  document.getElementById('aptitudeSub').textContent =
+    user.cgpa
+      ? `CGPA: ${user.cgpa} • ${skills.length} skills`
+      : `${skills.length} skills registered`;
+
+
+  // Expected after improvement
+  buildRing(
+    document.getElementById('improvedRing'),
+    expectedImproved,
+    90,
+    8
+  );
+
+  setTimeout(() =>
+    animateCount(
+      document.getElementById('improvedRingVal'),
+      expectedImproved
+    ),
+    200
+  );
+
+
+  // ---- Row 2: Skill Comparison ----
+
+  const reqEl =
+    document.getElementById('reqSkillsTags');
+
+  document.getElementById('reqSkillsCount').textContent =
+    required.length;
+
+  if (reqEl) {
+
+    reqEl.innerHTML =
+      required.length
+
+        ? required
+            .map(
+              s =>
+                `<span class="tag tag-blue">${s}</span>`
+            )
+            .join('')
+
+        : `
+          <span
+            style="
+              font-size:12px;
+              color:var(--text-muted)
+            "
+          >
+            Set career goal to see required skills
+          </span>
+        `;
+  }
+
+
+  const yourEl =
+    document.getElementById('yourSkillsTags');
+
+  document.getElementById('yourSkillsCount').textContent =
+    user.skills?.length || 0;
+
+  if (yourEl) {
+
+    yourEl.innerHTML =
+      user.skills?.length
+
+        ? user.skills
+            .map(
+              s =>
+                `<span class="tag tag-green">✓ ${s}</span>`
+            )
+            .join('')
+
+        : `
+          <span
+            style="
+              font-size:12px;
+              color:var(--text-muted)
+            "
+          >
+            No skills added yet
+          </span>
+        `;
+  }
+
+
+  const misEl =
+    document.getElementById('missingSkillsTags');
+
+  document.getElementById('missingSkillsCount').textContent =
+    missing.length;
+
+  if (misEl) {
+
+    misEl.innerHTML =
+      missing.length
+
+        ? missing
+            .map(
+              s =>
+                `<span class="tag tag-red">✕ ${s}</span>`
+            )
+            .join('')
+
+        : `
+          <span
+            style="
+              font-size:12px;
+              color:var(--success)
+            "
+          >
+            🎉 No missing skills!
+          </span>
+        `;
+  }
+
+
+  // ---- Row 3: Skill Gap Analysis ----
+
+  const {
+    gapPct
+  } = SBCalc.calculateSkillGap(
+    skills,
+    required
+  );
+
+  analysis.skillGapPct = gapPct;
+  analysis.matchDistribution = SBCalc.calculateMatchDistribution(
+    matched.length,
+    required.length
+  );
+
+  buildRing(
+    document.getElementById('gapRing'),
+    gapPct,
+    110,
+    10
+  );
+
+  setTimeout(() =>
+    animateCount(
+      document.getElementById('gapRingVal'),
+      gapPct,
+      '%'
+    ),
+    200
+  );
+
+
+  const gapLabelEl =
+    document.getElementById('gapLabel');
+
+  if (gapLabelEl) {
+
+    gapLabelEl.textContent =
+      gapPct >= 60
+        ? 'High Gap — Focus needed'
+        : gapPct >= 30
+          ? 'Medium Gap — On track'
+          : 'Low Gap — Almost there!';
+
+    gapLabelEl.style.color =
+      gapPct >= 60
+        ? 'var(--danger)'
+        : gapPct >= 30
+          ? 'var(--warning)'
+          : 'var(--success)';
+  }
+
+
+  // Gap bars
+  const profileCompletion =
+    SBCalc.clampPercentage(
+      analysis.profileCompletion ??
+      SBCalc.calculateProfileCompletion(user)
+    );
+
+  const gapBarsData = [
+
+    {
+      label:'Core Skills',
+      have:matched.length,
+      total:Math.max(required.length,1),
+      color:'#2563EB'
+    },
+
+    {
+      label:'Projects',
+      have:Math.min(
+        user.projects?.length || 0,
+        3
+      ),
+      total:3,
+      color:'#7C3AED'
+    },
+
+    {
+      label:'Certifications',
+      have:Math.min(
+        user.certifications?.length || 0,
+        3
+      ),
+      total:3,
+      color:'#22C55E'
+    },
+
+    {
+      label:'Profile Fill',
+      have:Math.round(
+        profileCompletion / 10
+      ),
+      total:10,
+      color:'#F59E0B'
+    }
+
+  ];
+
+
+  const gapEl =
+    document.getElementById('gapBarsWrap');
+
+  if (gapEl) {
+
+    gapEl.innerHTML =
+      gapBarsData
+        .map(g => {
+
+          const pct =
+            g.total > 0
+              ? SBCalc.clampPercentage((g.have / g.total) * 100)
+              : 0;
+
+          return `
+            <div class="gap-progress-row">
+
+              <span class="gap-progress-label">
+                ${g.label}
+              </span>
+
+              <div class="gap-bar-track">
+
+                <div
+                  class="gap-bar-fill"
+                  data-w="${pct}"
+                  style="background:${g.color}"
+                ></div>
+
+              </div>
+
+              <span
+                class="gap-bar-val"
+                style="color:${g.color}"
+              >
+                ${g.have}/${g.total}
+              </span>
+
+            </div>
+          `;
+        })
+        .join('');
+
+    setTimeout(() =>
+      gapEl
+        .querySelectorAll('.gap-bar-fill')
+        .forEach(
+          b =>
+            b.style.width =
+              b.dataset.w + '%'
+        ),
+      300
+    );
+  }
+
+
+  // ---- Row 4: Charts ----
+
+  const chart1Data = [
+
+    {
+      name:'Required',
+      val:required.length,
+      color:'var(--primary)'
+    },
+
+    {
+      name:'You Have',
+      val:matched.length,
+      color:'var(--success)'
+    },
+
+    {
+      name:'Missing',
+      val:missing.length,
+      color:'var(--danger)'
+    },
+
+    {
+      name:'Projects',
+      val:user.projects?.length || 0,
+      color:'var(--purple)'
+    },
+
+    {
+      name:'Certs',
+      val:user.certifications?.length || 0,
+      color:'var(--teal)'
+    }
+
+  ];
+
+
+  const maxVal =
+    Math.max(
+      ...chart1Data.map(
+        d => d.val
+      ),
+      1
+    );
+
+
+  document.getElementById('barChart1').innerHTML =
+    chart1Data
+      .map(d => {
+
+        const pct =
+          Math.round(
+            (d.val / maxVal) * 100
+          );
+
+        return `
+          <div class="svg-bar-row">
+
+            <span class="svg-bar-name">
+              ${d.name}
+            </span>
+
+            <div class="svg-bar-track">
+
+              <div
+                class="svg-bar-fill"
+                data-w="${pct}"
+                style="background:${d.color}"
+              >
+                <span>${d.val}</span>
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      })
+      .join('');
+
+
+  setTimeout(() =>
+    document
+      .querySelectorAll(
+        '#barChart1 .svg-bar-fill'
+      )
+      .forEach(
+        b =>
+          b.style.width =
+            b.dataset.w + '%'
+      ),
+    400
+  );
+
+
+  // Donut Ring
+  buildRing(
+    document.getElementById('donutRing'),
+    sm,
+    120,
+    14
+  );
+
+
+  setTimeout(() => {
+
+    document.getElementById('donutCenter').textContent =
+      sm + '%';
+
+  }, 200);
+
+
+  document.getElementById('donutLegend').innerHTML = `
+
+    <div class="donut-legend-item">
+
+      <div
+        class="donut-dot"
+        style="background:var(--primary)"
+      ></div>
+
+      <span
+        style="
+          flex:1;
+          font-size:12px;
+          color:var(--text)
+        "
+      >
+        Current Match
+      </span>
+
+      <strong style="font-size:12px">
+        ${sm}%
+      </strong>
+
+    </div>
+
+
+    <div class="donut-legend-item">
+
+      <div
+        class="donut-dot"
+        style="background:var(--success)"
+      ></div>
+
+      <span
+        style="
+          flex:1;
+          font-size:12px;
+          color:var(--text)
+        "
+      >
+        Expected After Learning
+      </span>
+
+      <strong style="font-size:12px">
+        ${expectedImproved}%
+      </strong>
+
+    </div>
+
+
+    <div class="donut-legend-item">
+
+      <div
+        class="donut-dot"
+        style="background:var(--surface3)"
+      ></div>
+
+      <span
+        style="
+          flex:1;
+          font-size:12px;
+          color:var(--text)
+        "
+      >
+        Skill Gap
+      </span>
+
+      <strong style="font-size:12px">
+        ${gapPct}%
+      </strong>
+
+    </div>
+
+  `;
+
+
+  // Category breakdown
+  const categories =
+    buildCategoryBreakdown(
+      user,
+      required,
+      skills,
+      missing
+    );
+
+
+  document.getElementById('hbarChart').innerHTML =
+    categories
+      .map(c => `
+
+        <div class="hbar-row">
+
+          <div class="hbar-label-row">
+
+            <span class="hbar-label">
+              ${c.name}
+            </span>
+
+            <span class="hbar-val">
+              ${c.val}%
+            </span>
+
+          </div>
+
+          <div class="hbar-track">
+
+            <div
+              class="hbar-fill"
+              data-w="${c.val}"
+              style="background:${c.color}"
+            ></div>
+
+          </div>
+
+        </div>
+
+      `)
+      .join('');
+
+
+  setTimeout(() =>
+    document
+      .querySelectorAll('.hbar-fill')
+      .forEach(
+        b =>
+          b.style.width =
+            b.dataset.w + '%'
+      ),
+    450
+  );
+
+
+  // ---- Improvement Steps ----
+
+  document.getElementById('currentScoreTag').textContent =
+    `Current: ${sm}%`;
+
+
+  document.getElementById('improveSteps').innerHTML =
+    buildImprovementSteps(
+      user,
+      analysis,
+      missing
+    )
+      .map(
+        (step, i) => `
+
+          <div class="improve-step">
+
+            <div class="step-num">
+              ${i + 1}
+            </div>
+
+            <div>
+
+              <div class="step-content-title">
+                ${step.title}
+              </div>
+
+              <div class="step-content-desc">
+                ${step.desc}
+              </div>
+
+            </div>
+
+          </div>
+
+        `
+      )
+      .join('');
+
+}
+
+
+function getAptitudeLevel(skills, cgpa) {
+
+  const skillScore =
+    skills.length;
+
+  const cgpaBonus =
+    cgpa
+      ? (
+          cgpa >= 8
+            ? 5
+            : cgpa >= 7
+              ? 3
+              : 1
+        )
+      : 0;
+
+  const total =
+    skillScore + cgpaBonus;
+
+  return total >= 12
+    ? 'Advanced'
+    : total >= 6
+      ? 'Medium'
+      : 'Beginner';
+}
+
+
+function buildCategoryBreakdown(
+  user,
+  required,
+  userSkills,
+  missing
+) {
+
+  const {
+    matchPct: careerMatch
+  } =
+    SBCalc.calculateSkillMatch(
+      userSkills,
+      required
+    );
+
+  return [
+
+    {
+      name:'Tech Skills',
+      val:
+        SBCalc.clampPercentage(
+          userSkills.length * 8
+        ),
+      color:'var(--primary)'
+    },
+
+    {
+      name:'Career Match',
+      val:careerMatch,
+      color:'var(--purple)'
+    },
+
+    {
+      name:'Projects',
+      val:
+        SBCalc.clampPercentage(
+          (user.projects?.length || 0) * 33
+        ),
+      color:'var(--success)'
+    },
+
+    {
+      name:'Certifications',
+      val:
+        SBCalc.clampPercentage(
+          (user.certifications?.length || 0) * 34
+        ),
+      color:'var(--teal)'
+    },
+
+    {
+      name:'Profile Fill',
+      val:
+        SBCalc.calculateProfileCompletion(
+          user
+        ),
+      color:'var(--warning)'
+    }
+
+  ];
+}
+
+
+function buildImprovementSteps(
+  user,
+  analysis,
+  missing
+) {
+
+  const steps = [];
+
+  const skills =
+    user.skills || [];
+
+
+  if (missing.length > 0) {
+
+    steps.push({
+
+      title:
+        `Learn ${missing.slice(0, 3).join(', ')}`,
+
+      desc:
+        `These are the top required skills missing from your profile for ${user.careerGoal || 'your career goal'}. Start with free resources on Coursera or freeCodeCamp.`
+
+    });
+
+  }
+
+
+  if (
+    !user.projects?.length ||
+    user.projects.length < 2
+  ) {
+
+    steps.push({
+
+      title:
+        'Build 2–3 real-world projects',
+
+      desc:
+        'Projects are the most powerful way to demonstrate skills to recruiters. Even small projects using your existing skills count. Upload them to GitHub.'
+
+    });
+
+  }
+
+
+  if (!user.certifications?.length) {
+
+    steps.push({
+
+      title:
+        'Earn 1–2 free certifications',
+
+      desc:
+        'Certifications from Google, AWS, or Coursera cost nothing to audit and signal commitment to recruiters. Your resume score increases by ~10 points per certification.'
+
+    });
+
+  }
+
+
+  if (skills.length < 8) {
+
+    steps.push({
+
+      title:
+        `Add ${8 - skills.length} more relevant skills`,
+
+      desc:
+        `You currently have ${skills.length} skills. Reaching 8–10 skills significantly improves your match score and visibility in opportunity recommendations.`
+
+    });
+
+  }
+
+
+  if (!user.linkedinUrl) {
+
+    steps.push({
+
+      title:
+        'Complete your LinkedIn profile',
+
+      desc:
+        '87% of recruiters use LinkedIn to source candidates. Add your LinkedIn URL to your profile and connect it to your projects and certifications.'
+
+    });
+
+  }
+
+
+  if (
+    user.cgpa &&
+    user.cgpa < 7.5
+  ) {
+
+    steps.push({
+
+      title:
+        'Improve academic performance',
+
+      desc:
+        `Your current CGPA is ${user.cgpa}. Many top companies require ≥ 7.5. Focus on your weaker subjects to push your score above this threshold.`
+
+    });
+
+  }
+
+
+  steps.push({
+
+    title:
+      'Practice competitive programming weekly',
+
+    desc:
+      'Regular practice on LeetCode, Codeforces or HackerRank sharpens your algorithmic thinking — a core component of technical interviews at all top companies.'
+
+  });
+
+
+  return steps.slice(0, 5);
+}
+
+</script>
+
+<script src="js/chat.js"></script>
+
+</body>
+</html>

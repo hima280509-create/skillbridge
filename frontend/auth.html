@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login & Register – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { min-height:100vh; display:flex; align-items:stretch; background:var(--bg); }
+    .auth-page { display:grid; grid-template-columns:1fr 1fr; width:100%; min-height:100vh; }
+    .auth-left { background:var(--gradient-hero); position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; padding:60px 48px; }
+    .auth-left::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px); background-size:40px 40px; }
+    .auth-orb { position:absolute; border-radius:50%; filter:blur(70px); opacity:0.45; }
+    .orb-a { width:380px;height:380px;background:radial-gradient(circle,rgba(37,99,235,0.5),transparent 70%);top:-100px;left:-100px; animation:orbF 8s ease-in-out infinite; }
+    .orb-b { width:300px;height:300px;background:radial-gradient(circle,rgba(124,58,237,0.4),transparent 70%);bottom:-80px;right:-80px; animation:orbF 10s ease-in-out infinite reverse; }
+    @keyframes orbF { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
+    .auth-left-content { position:relative;z-index:1;color:#fff;max-width:380px; }
+    .auth-brand { display:flex;align-items:center;gap:12px;margin-bottom:40px; }
+    .auth-brand-icon { width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2); }
+    .auth-brand-name { font-size:22px;font-weight:800; }
+    .auth-tagline { font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:32px; }
+    .auth-heading { font-size:clamp(26px,3vw,36px);font-weight:900;line-height:1.15;margin-bottom:16px; }
+    .auth-heading .hl { background:linear-gradient(135deg,#60A5FA,#A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+    .auth-desc { font-size:14px;color:rgba(255,255,255,0.65);line-height:1.7;margin-bottom:36px; }
+    .auth-features { display:flex;flex-direction:column;gap:12px; }
+    .auth-feat { display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,0.8); }
+    .feat-icon { width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0; }
+    /* Right */
+    .auth-right { display:flex;align-items:center;justify-content:center;padding:48px; overflow-y:auto; }
+    .auth-form-box { width:100%;max-width:440px; }
+    /* Tabs */
+    .auth-tabs { display:grid;grid-template-columns:1fr 1fr;background:var(--surface2);border-radius:14px;padding:4px;margin-bottom:28px; }
+    .auth-tab { padding:10px;text-align:center;font-size:14px;font-weight:600;color:var(--text-muted);border-radius:11px;cursor:pointer;transition:var(--transition); }
+    .auth-tab.active { background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm); }
+    .auth-panel { display:none; }
+    .auth-panel.active { display:block;animation:fadeIn 0.3s ease; }
+    .auth-title { font-size:26px;font-weight:800;margin-bottom:6px; }
+    .auth-sub { font-size:14px;color:var(--text-muted);margin-bottom:24px; }
+    .auth-sub a { color:var(--primary);font-weight:600; }
+    .inp-wrap { position:relative;margin-bottom:14px; }
+    .inp-wrap .inp-icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:14px;pointer-events:none; }
+    .inp-wrap input { width:100%;padding:12px 16px 12px 42px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;color:var(--text);transition:var(--transition); }
+    .inp-wrap input:focus { border-color:var(--primary);background:var(--surface);box-shadow:0 0 0 3px rgba(37,99,235,0.1);outline:none; }
+    .inp-wrap .pw-toggle { position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);cursor:pointer;font-size:14px;border:none;background:none; }
+    .auth-forgot { text-align:right;margin-bottom:16px; }
+    .auth-forgot a { font-size:13px;color:var(--primary);font-weight:600; }
+    .auth-submit { width:100%;padding:14px;background:var(--gradient);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px; }
+    .auth-submit:hover { transform:translateY(-2px);box-shadow:var(--shadow-blue); }
+    .auth-submit:disabled { opacity:0.7;cursor:not-allowed;transform:none; }
+    .auth-divider { display:flex;align-items:center;gap:12px;margin:16px 0; }
+    .auth-divider::before,.auth-divider::after { content:'';flex:1;height:1px;background:var(--border); }
+    .auth-divider span { font-size:12px;color:var(--text-muted); }
+    .err-box { padding:10px 14px;background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.15);border-radius:var(--radius);font-size:13px;margin-bottom:14px;display:none; }
+    .err-box.show { display:block; }
+    .reg-form-step { display:none; }
+    .reg-form-step.active { display:block;animation:fadeIn 0.3s ease; }
+    .demo-box { padding:12px 14px;background:rgba(37,99,235,0.05);border:1px dashed rgba(37,99,235,0.2);border-radius:var(--radius);font-size:12px;color:var(--text-muted); }
+    .demo-box strong { color:var(--primary); }
+    @media(max-width:768px){.auth-page{grid-template-columns:1fr}.auth-left{display:none}.auth-right{padding:28px 20px}}
+  </style>
+</head>
+<body>
+<div class="auth-page">
+  <!-- Left -->
+  <div class="auth-left">
+    <div class="auth-orb orb-a"></div>
+    <div class="auth-orb orb-b"></div>
+    <div class="auth-left-content">
+      <div class="auth-brand">
+         <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </div>
+      <div class="auth-tagline">AI Career & Opportunity Navigator</div>
+      <h1 class="auth-heading">Your <span class="hl">AI Career</span><br/>Journey Starts Here</h1>
+      <p class="auth-desc">Join thousands of engineering students getting personalized career guidance, skill gap analysis, and AI-powered opportunity matching.</p>
+      <div class="auth-features">
+        <div class="auth-feat"><div class="feat-icon"><i class="fas fa-brain"></i></div>AI Resume Scoring & Analysis</div>
+        <div class="auth-feat"><div class="feat-icon"><i class="fas fa-bullseye"></i></div>Smart Job & Internship Matching</div>
+        <div class="auth-feat"><div class="feat-icon"><i class="fas fa-road"></i></div>Personalized 6-Week Learning Roadmap</div>
+        <div class="auth-feat"><div class="feat-icon"><i class="fas fa-certificate"></i></div>Free Certification Recommendations</div>
+        <div class="auth-feat"><div class="feat-icon"><i class="fas fa-chart-bar"></i></div>Career Analysis & Skill Gap Detection</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right -->
+  <div class="auth-right">
+    <div class="auth-form-box">
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" onclick="switchAuthTab('register')">Create Account</div>
+      </div>
+
+      <!-- LOGIN PANEL -->
+      <div class="auth-panel active" id="panel-login">
+        <h2 class="auth-title">Welcome back 👋</h2>
+        <p class="auth-sub">Don't have an account? <a onclick="switchAuthTab('register')" style="cursor:pointer">Create one free</a></p>
+        <div class="err-box" id="loginErr"></div>
+        <div class="inp-wrap"><i class="fas fa-envelope inp-icon"></i><input type="email" id="loginEmail" placeholder="Email address" autocomplete="email"/></div>
+        <div class="inp-wrap">
+          <i class="fas fa-lock inp-icon"></i>
+          <input type="password" id="loginPwd" placeholder="Password" autocomplete="current-password"/>
+          <button class="pw-toggle" onclick="togglePwd('loginPwd',this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="auth-forgot"><a href="#">Forgot password?</a></div>
+        <button class="auth-submit" id="loginBtn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i><span>Sign In</span></button>
+        <div class="demo-box">
+          <strong>Demo Account:</strong> demo@skillbridge.ai &nbsp;/&nbsp; demo123
+        </div>
+      </div>
+
+      <!-- REGISTER PANEL -->
+      <div class="auth-panel" id="panel-register">
+        <h2 class="auth-title">Create your account 🚀</h2>
+        <p class="auth-sub">Already have an account? <a onclick="switchAuthTab('login')" style="cursor:pointer">Sign in</a></p>
+        <div class="err-box" id="regErr"></div>
+
+        <!-- Step 1 -->
+        <div class="reg-form-step active" id="rstep1">
+          <div style="margin-bottom:4px;font-size:13px;font-weight:700;color:var(--text)">Account Details</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">Create your SkillBridge account</div>
+          <div class="inp-wrap"><i class="fas fa-user inp-icon"></i><input type="text" id="regName" placeholder="Full Name"/></div>
+          <div class="inp-wrap"><i class="fas fa-envelope inp-icon"></i><input type="email" id="regEmail" placeholder="Email Address"/></div>
+          <div class="inp-wrap"><i class="fas fa-lock inp-icon"></i><input type="password" id="regPwd" placeholder="Password (min 6 chars)"/><button class="pw-toggle" onclick="togglePwd('regPwd',this)"><i class="fas fa-eye"></i></button></div>
+          <div class="inp-wrap"><i class="fas fa-lock inp-icon"></i><input type="password" id="regPwd2" placeholder="Confirm Password"/></div>
+          <button class="auth-submit" id="regFinalBtn" onclick="doRegister()"><i class="fas fa-rocket"></i><span>Create Account & Start</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="appToast" class="toast"></div>
+
+<script src="js/app.js"></script>
+<script src="js/firebase-init.js"></script>
+<script>
+window.onload = () => {
+  if (localStorage.getItem('sb_token')) window.location.href = 'dashboard2.html';
+};
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1)));
+  document.getElementById('panel-login').classList.toggle('active', tab==='login');
+  document.getElementById('panel-register').classList.toggle('active', tab==='register');
+}
+
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const icon = btn.querySelector('i');
+  if (inp.type==='password') { inp.type='text'; icon.className='fas fa-eye-slash'; }
+  else { inp.type='password'; icon.className='fas fa-eye'; }
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (msg) { el.textContent = msg; el.classList.add('show'); }
+  else el.classList.remove('show');
+}
+
+async function doLogin() {
+  const btn = document.getElementById('loginBtn');
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPwd').value;
+  if (!email || !pwd) { showErr('loginErr', 'Please enter email and password.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+  showErr('loginErr', '');
+
+  try {
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Sign-in timed out. Check your internet connection and try again.')), 15000));
+    const firebase = await Promise.race([window.SkillBridgeFirebaseReady, timeout]);
+    const credential = await firebase.signInWithEmailAndPassword(firebase.auth, email, pwd);
+    let idToken = await credential.user.getIdToken();
+    let res = await fetch(API + '/auth/login', { method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + idToken}, body: JSON.stringify({}) });
+    let data = await res.json();
+    if (res.status === 401) {
+      idToken = await credential.user.getIdToken(true);
+      res = await fetch(API + '/auth/login', { method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + idToken}, body: JSON.stringify({}) });
+      data = await res.json();
+    }
+    if (!res.ok || !data.success) throw new Error(data.message || 'Sign-in failed.');
+    localStorage.setItem('sb_token', idToken);
+    setUser(data.user);
+    window.location.href = 'dashboard2.html';
+  } catch (err) {
+    showErr('loginErr', err.message || 'Sign-in failed. Check Firebase configuration and try again.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Sign In</span>';
+  }
+}
+
+async function doRegister() {
+  const btn = document.getElementById('regFinalBtn');
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pwd = document.getElementById('regPwd').value;
+  const pwd2 = document.getElementById('regPwd2').value;
+
+  showErr('regErr', '');
+  if (!name || !email || !pwd || !pwd2) { showErr('regErr', 'Please fill all fields.'); return; }
+  if (pwd.length < 6) { showErr('regErr', 'Password must be at least 6 characters.'); return; }
+  if (pwd !== pwd2) { showErr('regErr', 'Passwords do not match.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Creating account...</span>';
+
+  try {
+    const firebase = await window.SkillBridgeFirebaseReady;
+    const credential = await firebase.createUserWithEmailAndPassword(firebase.auth, email, pwd);
+    await firebase.updateProfile(credential.user, { displayName: name });
+    const idToken = await credential.user.getIdToken();
+    const res = await fetch(API + '/auth/register', { method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + idToken}, body: JSON.stringify({name}) });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Registration failed.');
+    await firebase.signOut(firebase.auth);
+    localStorage.removeItem('sb_token');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i><span>Create Account &amp; Start</span>';
+    document.getElementById('loginEmail').value = email;
+    showErr('loginErr', 'Account created successfully. Please sign in.');
+    switchAuthTab('login');
+  } catch (err) {
+    showErr('regErr', err.message || 'Registration failed. Check Firebase configuration and try again.');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i><span>Create Account & Start</span>';
+  }
+}
+</script>
+</body>
+</html>

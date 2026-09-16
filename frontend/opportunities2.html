@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Opportunities – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Pill Tab Bar */
+    .pill-tabs { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:22px; scrollbar-width:none; }
+    .pill-tabs::-webkit-scrollbar { display:none; }
+    .pill-tab { padding:9px 20px; border-radius:var(--radius-full); font-size:13px; font-weight:700; border:1.5px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:var(--transition); flex-shrink:0; }
+    .pill-tab:hover { border-color:var(--primary); color:var(--primary); }
+    .pill-tab.active { background:var(--gradient); color:#fff; border-color:transparent; box-shadow:var(--shadow-blue); }
+
+    /* Search + filter row */
+    .filter-row { display:flex; gap:12px; margin-bottom:22px; flex-wrap:wrap; }
+    .opp-search { flex:1; min-width:200px; display:flex; align-items:center; gap:10px; background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:10px 16px; transition:var(--transition); }
+    .opp-search:focus-within { border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
+    .opp-search i { color:var(--text-muted); font-size:14px; }
+    .opp-search input { flex:1; border:none; background:none; font-size:14px; color:var(--text); }
+    .filter-btn { display:flex; align-items:center; gap:8px; padding:10px 18px; background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); font-size:13px; font-weight:600; color:var(--text-muted); cursor:pointer; transition:var(--transition); white-space:nowrap; }
+    .filter-btn:hover { border-color:var(--primary); color:var(--primary); }
+
+    /* Opportunity card grid */
+    .opp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:18px; }
+
+    /* Opp card */
+    .opp-card-v2 { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); overflow:hidden; transition:var(--transition); position:relative; }
+    .opp-card-v2::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--gradient); opacity:0; transition:var(--transition); }
+    .opp-card-v2:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:rgba(37,99,235,0.2); }
+    .opp-card-v2:hover::before { opacity:1; }
+    .opp-card-body { padding:20px; }
+
+    /* Card top row */
+    .opp-card-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
+    .opp-logo-v2 { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; flex-shrink:0; }
+    .opp-card-info { flex:1; min-width:0; }
+    .opp-card-title { font-size:15px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
+    .opp-card-company { font-size:12px; color:var(--text-muted); }
+    .opp-match-badge { flex-shrink:0; padding:5px 11px; border-radius:var(--radius-full); font-size:12px; font-weight:800; }
+    .match-high { background:rgba(34,197,94,0.12); color:var(--success); }
+    .match-mid  { background:rgba(245,158,11,0.12); color:var(--warning); }
+    .match-low  { background:rgba(148,163,184,0.15); color:var(--text-muted); }
+
+    /* Meta row */
+    .opp-meta { display:flex; gap:14px; margin-bottom:12px; flex-wrap:wrap; }
+    .opp-meta-item { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-muted); }
+    .opp-meta-item i { font-size:11px; }
+
+    /* Skills row */
+    .opp-skill-tags { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
+
+    /* Progress bar */
+    .match-bar-wrap { margin-bottom:14px; }
+    .match-bar-label { display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:5px; font-weight:600; }
+    .match-bar-track { height:6px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+    .match-bar-fill { height:100%; border-radius:3px; background:var(--gradient); transition:width 1.2s ease; width:0; }
+
+    /* Matched tags */
+    .matched-row { margin-bottom:14px; }
+    .matched-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+
+    /* Actions */
+    .opp-actions { display:flex; gap:8px; }
+    .opp-actions .btn { flex:1; justify-content:center; font-size:13px; padding:9px 14px; }
+
+    /* Explainable AI expand */
+    .xai-section { background:linear-gradient(135deg,rgba(37,99,235,0.04),rgba(124,58,237,0.04)); border:1px solid rgba(37,99,235,0.12); border-radius:var(--radius); padding:14px 16px; margin-top:12px; display:none; animation:fadeIn 0.3s ease; }
+    .xai-section.open { display:block; }
+    .xai-title { font-size:12px; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+    .xai-reason { display:flex; align-items:flex-start; gap:9px; margin-bottom:7px; font-size:13px; color:var(--text); }
+    .xai-reason:last-child { margin-bottom:0; }
+    .xai-check { color:var(--success); font-size:13px; flex-shrink:0; margin-top:1px; }
+
+    /* Top Matches header */
+    .section-header-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .opp-count-badge { background:var(--gradient-soft); border:1px solid rgba(37,99,235,0.15); color:var(--primary); padding:4px 12px; border-radius:var(--radius-full); font-size:12px; font-weight:700; }
+
+    /* Empty state */
+    .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
+    .empty-state i { font-size:48px; opacity:0.2; display:block; margin-bottom:14px; }
+
+    /* Hero */
+    .opp-hero { background:var(--gradient-hero); border-radius:var(--radius-xl); padding:30px 36px; margin-bottom:24px; position:relative; overflow:hidden; }
+    .opp-hero::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+         <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item" id="nav-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item" id="nav-upload"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item" id="nav-resume"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item" id="nav-opportunities"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item" id="nav-career"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item" id="nav-roadmap"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item" id="nav-profile"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta"><div class="user-name" data-user-name>Student</div><div class="user-sub" data-user-branch>CSE</div></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search opportunities, skills, companies..."/></div>
+      <div class="topbar-right">
+        <div style="position:relative"><button class="topbar-icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="notif-badge"></span></button><div class="notif-dropdown" id="notifDropdown"></div></div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Hero -->
+      <div class="opp-hero">
+        <div style="position:relative;z-index:1">
+          <div style="font-size:26px;font-weight:800;color:#fff;margin-bottom:6px"><i class="fas fa-briefcase" style="margin-right:10px;opacity:0.85"></i>Opportunities Picked For You</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.72)">Every recommendation shows exactly why it matches your profile — powered by Explainable AI.</div>
+        </div>
+      </div>
+
+      <!-- Pill Tabs -->
+      <div class="pill-tabs" id="pillTabs">
+        <button class="pill-tab active" data-tab="all"    onclick="switchOppTab('all',this)">🔍 All</button>
+        <button class="pill-tab"        data-tab="jobs"   onclick="switchOppTab('jobs',this)">💼 Jobs</button>
+        <button class="pill-tab"        data-tab="placements" onclick="switchOppTab('placements',this)">🎓 Placements</button>
+        <button class="pill-tab"        data-tab="internships" onclick="switchOppTab('internships',this)">🚀 Internships</button>
+        <button class="pill-tab"        data-tab="competitions" onclick="switchOppTab('competitions',this)">🏆 Competitions</button>
+        <button class="pill-tab"        data-tab="certifications" onclick="switchOppTab('certifications',this)">🏅 Certifications</button>
+      </div>
+
+      <!-- Search + Filter -->
+      <div class="filter-row">
+        <div class="opp-search">
+          <i class="fas fa-search"></i>
+          <input type="text" id="oppSearch" placeholder="Search by title, company, skill…" oninput="filterOpps()"/>
+        </div>
+        <button class="filter-btn" onclick="sortByMatch()"><i class="fas fa-sort-amount-down"></i> Sort by Match</button>
+        <button class="filter-btn" onclick="filterOpps()"><i class="fas fa-filter"></i> Filter</button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="section-header-row">
+        <div style="font-size:17px;font-weight:800;color:var(--text)">
+          <i class="fas fa-star" style="color:var(--warning);margin-right:7px"></i>Top Matches For You
+        </div>
+        <span class="opp-count-badge" id="oppCountBadge">Loading…</span>
+      </div>
+
+      <!-- Opportunities Grid -->
+      <div class="opp-grid" id="oppGrid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none" onclick="document.getElementById('appSidebar').classList.remove('open');this.style.display='none'"></div>
+
+<script src="js/firebase-init.js"></script>
+<script src="js/calculationService.js"></script>
+<script src="js/app.js"></script>
+<script>
+let OPP_DATA = [];
+let currentTab = 'all';
+let currentSearch = '';
+let sortedByMatch = true;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+
+  initSidebar('nav-opportunities');
+  renderNotifDropdown();
+
+ const user = getUser();
+
+try {
+  // 1. Ask the backend to resolve the student's
+  // free-text careerGoal against Firestore careers.
+  const careerSkillResponse = await apiFetch(
+    '/analysis/career-skills',
+    { method: 'GET' }
+  );
+
+  // 2. Get the exact Career_Name from Firestore careers
+  const careerName =
+    careerSkillResponse?.matchedCareer?.Career_Name ||
+    careerSkillResponse?.matchedCareer?.careerTitle ||
+    careerSkillResponse?.matchedCareer?.careerName ||
+    '';
+
+  if (!careerName) {
+    throw new Error(
+      `Student career could not be matched for "${user?.careerGoal || ''}".`
+    );
+  }
+
+  // 3. Required skills already came from Firestore
+  // through the backend careerSkillsService.
+  const careerSkills =
+    careerSkillResponse?.requiredSkills || [];
+
+  console.log('[Opportunities] Student career goal:', user?.careerGoal);
+  console.log('[Opportunities] Matched Firestore career:', careerName);
+  console.log('[Opportunities] Required career skills:', careerSkills);
+
+    // 3. Load all opportunities
+    const types = [
+      'jobs',
+      'placements',
+      'internships',
+      'competitions',
+      'freeCertificates'
+    ];
+
+    const responses = await Promise.allSettled(
+      types.map(type =>
+        apiFetch(`/opportunities/${type}`, { method: 'GET' })
+      )
+    );
+
+    const live = [];
+
+    responses.forEach((result, index) => {
+      if (result.status !== 'fulfilled') {
+        console.error(
+          `[Opportunities] Failed: ${types[index]}`,
+          result.reason
+        );
+        return;
+      }
+
+      const type = types[index];
+
+      const records =
+        result.value?.[type] ||
+        result.value?.data ||
+        [];
+
+      records.forEach(record => {
+        live.push(
+          normalizeOpportunity(
+            record,
+            type === 'freeCertificates'
+              ? 'certifications'
+              : type
+          )
+        );
+      });
+    });
+
+    // 4. Apply required personalization logic
+    OPP_DATA = filterPersonalizedOpportunities(
+      live,
+      careerName,
+      careerSkills,
+      user
+    );
+
+    if (!OPP_DATA.length) {
+      throw new Error(
+        `No opportunities found for career "${careerName}".`
+      );
+    }
+
+    // 5. Calculate student's actual skill match
+    computeMatchScores(user);
+
+    renderOpps();
+
+    console.log('[Opportunities] Career:', careerName);
+    console.log('[Opportunities] Career Skills:', careerSkills);
+    console.log('[Opportunities] Personalized:', OPP_DATA);
+
+  } catch (error) {
+    console.error('[Opportunities]', error);
+
+    document.getElementById('oppGrid').innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <i class="fas fa-exclamation-circle"></i>
+
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px">
+          Unable to load personalized opportunities.
+        </div>
+
+        <div style="font-size:13px">
+          ${error.message || 'Please try again.'}
+        </div>
+      </div>
+    `;
+  }
+});
+
+
+/*
+ * =============================================================
+ * NORMALIZE TEXT FOR COMPARISON
+ * =============================================================
+ */
+function normalizeText(value) {
+
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^\w\s]/g, ' ')
+    .replace(/\s+/g, ' ');
+}
+
+
+/*
+ * =============================================================
+ * COMPARE TWO CAREER NAMES
+ * =============================================================
+ */
+function sameCareer(a, b) {
+
+  return normalizeText(a) === normalizeText(b);
+}
+
+
+/*
+ * =============================================================
+ * GET FIRST AVAILABLE SKILL VALUE
+ * =============================================================
+ */
+function firstSkillValue(...values) {
+
+  for (const value of values) {
+
+    if (
+      value !== undefined &&
+      value !== null &&
+      String(value).trim() !== ''
+    ) {
+      return String(value).trim();
+    }
+  }
+
+  return '';
+}
+
+
+/*
+ * =============================================================
+ * GET OPPORTUNITY CAREER NAME
+ * =============================================================
+ */
+function getOpportunityCareerName(opportunity) {
+
+  return firstSkillValue(
+    opportunity.Career_Name,
+    opportunity.careerName,
+    opportunity.Career,
+    opportunity.career
+  );
+}
+
+
+/*
+ * =============================================================
+ * GET REQUIRED SKILLS FROM AN OPPORTUNITY
+ * =============================================================
+ */
+function getOpportunityRequiredSkills(opportunity) {
+
+  const value =
+    opportunity.Required_Skills ??
+    opportunity.requiredSkills ??
+    opportunity.Skills_Covered ??
+    opportunity.skillsCovered ??
+    opportunity.skills ??
+    '';
+
+  if (Array.isArray(value)) {
+
+    return value
+      .map(v => typeof v === 'object'
+        ? (v.skillName || v.name || v.skill || v.title || '')
+        : String(v).trim())
+      .map(v => String(v).trim())
+      .filter(Boolean);
+  }
+
+  return String(value)
+    .split(',')
+    .map(v => v.trim())
+    .filter(Boolean);
+}
+
+function getOpportunityEligibleBranches(opportunity) {
+  const value = opportunity.branch ||
+    opportunity.Eligible_Branch ||
+    opportunity.Eligible_Branchs ||
+    opportunity.Eligible_Branches ||
+    opportunity.eligibleBranch ||
+    opportunity.eligibleBranches ||
+    opportunity.Branch ||
+    '';
+
+  const values = Array.isArray(value) ? value : String(value).split(/[,/|]/);
+  return values.map(value => normalizeText(value)).filter(Boolean);
+}
+
+function branchMatches(userBranch, eligibleBranches) {
+  const normalizedUserBranch = normalizeText(userBranch);
+  if (!normalizedUserBranch || !eligibleBranches.length) return false;
+
+  return eligibleBranches.some(branch =>
+    branch === 'all' ||
+    branch.includes('all branch') ||
+    branch === normalizedUserBranch ||
+    branch.includes(normalizedUserBranch) ||
+    normalizedUserBranch.includes(branch)
+  );
+}
+
+/*
+ * =============================================================
+ * PERSONALIZED OPPORTUNITY FILTER
+ * =============================================================
+ *
+ * RULE:
+ *
+ * JOBS
+ *       Career_Name === student's Career_Name
+ *
+ * INTERNSHIPS
+ *       Career_Name === student's Career_Name
+ *
+ * CERTIFICATIONS
+ *       Career_Name === student's Career_Name
+ *
+ * PLACEMENTS
+ *       Career skills ↔ Placement Required_Skills
+ *
+ * COMPETITIONS
+ *       Career skills ↔ Competition Required_Skills
+ *
+ * Student's own skills are NOT used here.
+ */
+function filterPersonalizedOpportunities(
+  opportunities,
+  studentCareerName,
+  careerSkills,
+  user
+) {
+
+  const normalizedCareer =
+    normalizeText(studentCareerName);
+
+  const normalizedCareerSkills =
+    careerSkills.map(normalizeText);
+
+  return opportunities.filter(opportunity => {
+
+    /*
+     * =========================================================
+     * JOBS / INTERNSHIPS / CERTIFICATIONS
+     * =========================================================
+     *
+     * Direct Career_Name matching.
+     */
+    if (
+      opportunity.type === 'jobs' ||
+      opportunity.type === 'internships' ||
+      opportunity.type === 'certifications'
+    ) {
+
+      const opportunityCareer =
+        getOpportunityCareerName(opportunity);
+
+      const matches =
+        normalizeText(opportunityCareer) === normalizedCareer;
+
+      if (matches) {
+        opportunity.recommendationSource =
+          'career-name';
+      }
+
+      return matches;
+    }
+
+
+    /*
+     * =========================================================
+     * PLACEMENTS / COMPETITIONS
+     * =========================================================
+     *
+     * These datasets don't have Career_Name.
+     *
+     * Therefore:
+     *
+     * Student Career
+     *      ↓
+     * skills collection
+     *      ↓
+     * Career skills
+     *      ↓
+     * Required_Skills
+     */
+    if (
+      opportunity.type === 'placements' ||
+      opportunity.type === 'competitions'
+    ) {
+
+      const requiredSkills =
+        getOpportunityRequiredSkills(opportunity);
+
+      const matchingBranch = branchMatches(
+        user?.branch,
+        getOpportunityEligibleBranches(opportunity)
+      );
+
+      const matchingUserSkills =
+        (user?.skills || []).map(userSkill => typeof userSkill === 'object'
+          ? (userSkill.skillName || userSkill.name || userSkill.skill || userSkill.title || '')
+          : userSkill).filter(userSkill =>
+          requiredSkills.some(requiredSkill =>
+            skillRelated(userSkill, requiredSkill)
+          )
+        );
+
+      /*
+       * Save the career-skill overlap.
+       *
+       * This is NOT the student's own skill match.
+       * These are skills required by the career that are also
+       * required by the opportunity.
+       */
+      opportunity.careerMatchedSkills =
+        matchingUserSkills;
+
+      const matches =
+        matchingBranch && matchingUserSkills.length > 0;
+
+      if (matches) {
+        opportunity.recommendationSource = 'branch-and-skills';
+      }
+
+      return matches;
+    }
+
+
+    return false;
+  });
+}
+
+/*
+ * =============================================================
+ * SKILL RELATED CHECK
+ * =============================================================
+ *
+ * Handles small naming differences such as:
+ *
+ * "Machine Learning"
+ * "machine learning"
+ *
+ * "SQL"
+ * "SQL Database"
+ *
+ * "AutoCAD"
+ * "Auto CAD"
+ */
+function skillRelated(a, b) {
+  const skillA = normalizeText(a);
+  const skillB = normalizeText(b);
+
+  if (!skillA || !skillB) return false;
+
+  return (
+    skillA === skillB ||
+    skillA.includes(skillB) ||
+    skillB.includes(skillA)
+  );
+}
+
+function normalizeOpportunity(opportunity, type) {
+
+  // ---------- Helpers ----------
+  const toArray = (value) => {
+    if (Array.isArray(value)) {
+      return value
+        .map(v => typeof v === 'object'
+          ? (v.skillName || v.name || v.skill || v.title || '')
+          : String(v).trim())
+        .map(v => String(v).trim())
+        .filter(Boolean);
+    }
+
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map(v => v.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+  };
+
+  const firstValue = (...values) => {
+    for (const value of values) {
+      if (
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ''
+      ) {
+        return value;
+      }
+    }
+    return '';
+  };
+
+  // ---------- Skills ----------
+  const skills = toArray(
+    firstValue(
+      opportunity.Required_Skills,
+      opportunity.requiredSkills,
+      opportunity.skillsCovered,
+      opportunity.Skills_Covered,
+      opportunity.skills
+    )
+  );
+
+  // ---------- Type-specific fields ----------
+
+  let title = '';
+  let company = '';
+  let location = '';
+  let deadline = '';
+  let eligibility = '';
+  let id = '';
+
+  // Extra information used by cards/details
+  let salary = '';
+  let duration = '';
+  let mode = '';
+  let branch = '';
+  let eligibleYear = '';
+  let minimumCGPA = '';
+  let experience = '';
+  let category = '';
+  let organizer = '';
+  let provider = '';
+  let platform = '';
+  let description = '';
+  let prize = '';
+  let registrationFee = '';
+  let selectionProcess = '';
+  let backlogCriteria = '';
+  let certificateProvided = '';
+  let careerName = '';
+
+  careerName = firstValue(
+  opportunity.Career_Name,
+  opportunity.careerName,
+  opportunity.Career,
+  opportunity.career
+);
+
+  // =========================================================
+  // JOBS
+  // =========================================================
+  if (type === 'jobs') {
+
+    title = firstValue(
+      opportunity.Title,
+      opportunity.title,
+      opportunity.name,
+      opportunity.role
+    );
+
+    company = firstValue(
+      opportunity.Organization,
+      opportunity.organization,
+      opportunity.Company_Name,
+      opportunity.company
+    );
+
+    location = firstValue(
+      opportunity.Location,
+      opportunity.location
+    );
+
+    deadline = firstValue(
+      opportunity.Deadline,
+      opportunity.deadline
+    );
+
+    eligibility = firstValue(
+      opportunity.Eligibility,
+      opportunity.eligibility
+    );
+
+    id = firstValue(
+      opportunity.Job_ID,
+      opportunity.jobId,
+      opportunity.id
+    );
+
+    salary = firstValue(
+      opportunity.Salary,
+      opportunity.salary
+    );
+
+    branch = firstValue(
+      opportunity.Branch,
+      opportunity.branch
+    );
+
+    minimumCGPA = firstValue(
+      opportunity.Minimum_CGPA,
+      opportunity.minimumCGPA
+    );
+
+    experience = firstValue(
+      opportunity.Experience_Required,
+      opportunity.experienceRequired
+    );
+
+  // =========================================================
+  // PLACEMENTS
+  // =========================================================
+  } else if (type === 'placements') {
+
+    title = firstValue(
+      opportunity.Placement_Role,
+      opportunity.placementRole,
+      opportunity.Title,
+      opportunity.title
+    );
+
+    company = firstValue(
+      opportunity.Company_Name,
+      opportunity.companyName,
+      opportunity.company
+    );
+
+    location = firstValue(
+      opportunity.Location,
+      opportunity.location
+    );
+
+    deadline = firstValue(
+      opportunity.Deadline,
+      opportunity.deadline
+    );
+
+    eligibility = firstValue(
+      opportunity.Eligibility,
+      opportunity.eligibility
+    );
+
+    id = firstValue(
+      opportunity.Placement_ID,
+      opportunity.placementId,
+      opportunity.id
+    );
+
+    salary = firstValue(
+      opportunity['Package (CTC)'],
+      opportunity.Package,
+      opportunity.package,
+      opportunity.ctc
+    );
+
+    branch = firstValue(
+      opportunity.Eligible_Branchs,
+      opportunity.eligibleBranches,
+      opportunity.Branch
+    );
+
+    eligibleYear = firstValue(
+      opportunity.Eligible_Year,
+      opportunity.eligibleYear
+    );
+
+    minimumCGPA = firstValue(
+      opportunity.Minimum_CGPA,
+      opportunity.minimumCGPA
+    );
+
+    selectionProcess = firstValue(
+      opportunity['Selection Process'],
+      opportunity.Selection_Process,
+      opportunity.selectionProcess
+    );
+
+    backlogCriteria = firstValue(
+      opportunity.Backlog_Criteria,
+      opportunity.backlogCriteria
+    );
+
+  // =========================================================
+  // INTERNSHIPS
+  // =========================================================
+  } else if (type === 'internships') {
+
+    title = firstValue(
+      opportunity.Internship_Title,
+      opportunity.internshipTitle,
+      opportunity.Title,
+      opportunity.title
+    );
+
+    company = firstValue(
+      opportunity.Organization,
+      opportunity.Organization_Name,
+      opportunity.Company_Name,
+      opportunity.company,
+      'Internship'
+    );
+
+    location = firstValue(
+      opportunity.Location,
+      opportunity.location
+    );
+
+    deadline = firstValue(
+      opportunity.Deadline,
+      opportunity.deadline
+    );
+
+    eligibility = firstValue(
+      opportunity.Eligibility,
+      opportunity.eligibility
+    );
+
+    id = firstValue(
+      opportunity.Internship_ID,
+      opportunity.internshipId,
+      opportunity.id
+    );
+
+    duration = firstValue(
+      opportunity.Duration,
+      opportunity.duration
+    );
+
+    mode = firstValue(
+      opportunity.Internship_Type,
+      opportunity.internshipType,
+      opportunity.Mode,
+      opportunity.mode
+    );
+
+    branch = firstValue(
+      opportunity.Branch,
+      opportunity.branch
+    );
+
+    eligibleYear = firstValue(
+      opportunity.Eligible_Year,
+      opportunity.eligibleYear
+    );
+
+    minimumCGPA = firstValue(
+      opportunity.Minimum_CGPA,
+      opportunity.minimumCGPA
+    );
+
+    certificateProvided = firstValue(
+      opportunity.Certificate_Provided,
+      opportunity.certificateProvided
+    );
+
+  // =========================================================
+  // COMPETITIONS
+  // =========================================================
+  } else if (type === 'competitions') {
+
+    title = firstValue(
+      opportunity.Competition_Name,
+      opportunity.competitionName,
+      opportunity.Title,
+      opportunity.title
+    );
+
+    company = firstValue(
+      opportunity.Organizer,
+      opportunity.organizer
+    );
+
+    location = firstValue(
+      opportunity.Location,
+      opportunity.location
+    );
+
+    deadline = firstValue(
+      opportunity.Deadline,
+      opportunity.deadline
+    );
+
+    eligibility = firstValue(
+      opportunity.Eligible_Year,
+      opportunity.eligibleYear
+    );
+
+    id = firstValue(
+      opportunity.Competition_ID,
+      opportunity.competitionId,
+      opportunity.id
+    );
+
+    category = firstValue(
+      opportunity.Competition_Category,
+      opportunity.competitionCategory
+    );
+
+    organizer = firstValue(
+      opportunity.Organizer,
+      opportunity.organizer
+    );
+
+    mode = firstValue(
+      opportunity.Mode,
+      opportunity.mode
+    );
+
+    branch = firstValue(
+      opportunity.Eligible_Branch,
+      opportunity.Eligible_Branchs,
+      opportunity.eligibleBranch
+    );
+
+    eligibleYear = firstValue(
+      opportunity.Eligible_Year,
+      opportunity.eligibleYear
+    );
+
+    prize = firstValue(
+      opportunity.Prize,
+      opportunity.prize
+    );
+
+    registrationFee = firstValue(
+      opportunity.Registration_Fee,
+      opportunity.registrationFee
+    );
+
+  // =========================================================
+  // FREE CERTIFICATIONS
+  // =========================================================
+  } else if (type === 'certifications') {
+
+    title = firstValue(
+      opportunity.Certification_Name,
+      opportunity.certificationName,
+      opportunity.Title,
+      opportunity.title
+    );
+
+    company = firstValue(
+      opportunity.Provider,
+      opportunity.provider
+    );
+
+    location = firstValue(
+      opportunity.Mode,
+      opportunity.mode,
+      'Online'
+    );
+
+    deadline = firstValue(
+      opportunity.Deadline,
+      opportunity.deadline,
+      'No deadline'
+    );
+
+    eligibility = firstValue(
+      opportunity.Difficulty_Level,
+      opportunity.difficultyLevel,
+      opportunity.Eligibility
+    );
+
+    id = firstValue(
+      opportunity.Certification_ID,
+      opportunity.certificationId,
+      opportunity.id
+    );
+
+    duration = firstValue(
+      opportunity.Duration,
+      opportunity.duration
+    );
+
+    mode = firstValue(
+      opportunity.Mode,
+      opportunity.mode
+    );
+
+    branch = firstValue(
+      opportunity.Branch,
+      opportunity.branch
+    );
+
+    provider = firstValue(
+      opportunity.Provider,
+      opportunity.provider
+    );
+
+    platform = firstValue(
+      opportunity.Platform,
+      opportunity.platform
+    );
+
+    description = firstValue(
+      opportunity.Description,
+      opportunity.description
+    );
+
+    category = firstValue(
+      opportunity.Difficulty_Level,
+      opportunity.difficultyLevel
+    );
+
+    certificateProvided = firstValue(
+      opportunity.Certificate_Available,
+      opportunity.certificateAvailable
+    );
+  }
+
+  // ---------- Generic fallback ----------
+  title = title || firstValue(
+    opportunity.title,
+    opportunity.Title,
+    opportunity.name,
+    opportunity.Name,
+    'Opportunity'
+  );
+
+  location = location || firstValue(
+    opportunity.Location,
+    opportunity.location,
+    opportunity.Platform,
+    opportunity.platform,
+    opportunity.Mode,
+    opportunity.mode,
+    'Online'
+  );
+
+  deadline = deadline || firstValue(
+    opportunity.Deadline,
+    opportunity.deadline,
+    'Open'
+  );
+
+  eligibility = eligibility || 'Not specified';
+
+  id = id || `${type}-${title}`;
+
+  // ---------- Return normalized object ----------
+  return {
+    ...opportunity,
+
+    id: String(id),
+    type,
+
+    title: String(title),
+    company: String(company),
+    location: String(location),
+    deadline: String(deadline),
+    eligibility: String(eligibility),
+
+    skills,
+
+    salary: String(salary),
+    duration: String(duration),
+    mode: String(mode),
+    branch: String(branch),
+    eligibleYear: String(eligibleYear),
+    minimumCGPA: minimumCGPA,
+    experience: String(experience),
+    careerName: String(careerName),
+
+    category: String(category),
+    organizer: String(organizer),
+    provider: String(provider),
+    platform: String(platform),
+    description: String(description),
+    prize: String(prize),
+    registrationFee: String(registrationFee),
+    selectionProcess: String(selectionProcess),
+    backlogCriteria: String(backlogCriteria),
+    certificateProvided: String(certificateProvided),
+
+    abbr: title.slice(0, 3).toUpperCase(),
+    color: 'var(--primary)'
+  };
+}
+
+function computeMatchScores(user) {
+  OPP_DATA.forEach(o => {
+    const skillMatch = SBCalc.calculateSkillMatch(user.skills || [], o.skills || []);
+    o.matchPct = skillMatch.matchPct;
+    o.matchedSkills = skillMatch.matchedSkills;
+    o.missingSkills = skillMatch.missingSkills;
+
+    o.reasons = buildXAIReasons(
+      user,
+      o,
+      o.matchedSkills,
+      o.missingSkills
+    );
+  });
+}
+
+function buildXAIReasons(user, opp, matchedSkills, missingSkills) {
+  const reasons = [];
+
+  if (opp.careerName) {
+    reasons.push(`Matched to your career: ${opp.careerName}.`);
+  }
+
+  matchedSkills.slice(0, 3).forEach(s => {
+    reasons.push(`${s} matches the required skill.`);
+  });
+
+  missingSkills.slice(0, 2).forEach(s => {
+    reasons.push(`${s} is currently missing from your profile.`);
+  });
+
+  if (reasons.length === 0) {
+    reasons.push('Recommended based on your matched career.');
+  }
+
+  return reasons;
+}
+
+function renderOpps() {
+  const user = getUser();
+  const skills = (user.skills || []).map(s => s.toLowerCase());
+  let data = OPP_DATA.filter(o => {
+    const tabMatch = currentTab === 'all' || o.type === currentTab;
+    const q = currentSearch.toLowerCase();
+    const searchMatch = !q || o.title.toLowerCase().includes(q) || o.company.toLowerCase().includes(q) || o.skills.some(s => s.toLowerCase().includes(q));
+    return tabMatch && searchMatch;
+  });
+  if (sortedByMatch) data = [...data].sort((a, b) => b.matchPct - a.matchPct);
+
+  document.getElementById('oppCountBadge').textContent = `${data.length} Opportunities`;
+
+  if (data.length === 0) {
+    document.getElementById('oppGrid').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-search"></i><div style="font-size:16px;font-weight:700;margin-bottom:6px">No opportunities found</div><div style="font-size:13px">Try adjusting your search or filter.</div></div>`;
+    return;
+  }
+
+  document.getElementById('oppGrid').innerHTML = data.map(o => buildOppCard(o, skills)).join('');
+  // animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.match-bar-fill[data-w]').forEach(el => { el.style.width = el.dataset.w + '%'; });
+  }, 150);
+}
+
+function buildOppCard(o, userSkillsLow) {
+  const actionId = JSON.stringify(String(o.id || '')).replace(/'/g, '&#39;');
+  const pct = SBCalc.clampPercentage(o.matchPct ?? 0);
+  const matchClass = pct >= 80 ? 'match-high' : pct >= 60 ? 'match-mid' : 'match-low';
+  const matchLabel = pct >= 80 ? '🟢' : pct >= 60 ? '🟡' : '⚪';
+  const skillTags = o.skills.map(s => {
+    const have = userSkillsLow.includes(s.toLowerCase());
+    return `<span class="tag ${have ? 'tag-green' : 'tag-red'}" style="font-size:11px">${s}</span>`;
+  }).join('');
+  const matchedSkills = Array.isArray(o.matchedSkills) ? o.matchedSkills : [];
+  const missingSkills = Array.isArray(o.missingSkills) ? o.missingSkills : [];
+  const matchedTags = matchedSkills.map(s => `<span class="tag tag-blue" style="font-size:11px">✓ ${s}</span>`).join('') || '<span style="font-size:12px;color:var(--text-muted)">No matching skills</span>';
+  const missingTags = missingSkills.length
+    ? missingSkills.map(s => `<span class="tag tag-red" style="font-size:11px">✕ ${s}</span>`).join('')
+    : '<span style="font-size:12px;color:var(--success)">All required skills matched</span>';
+  const reasons = (o.reasons || []).map(r => `<div class="xai-reason"><i class="fas fa-check-circle xai-check"></i><span>${r}</span></div>`).join('');
+
+  return `
+  <div class="opp-card-v2" id="ocard-${o.id}">
+    <div class="opp-card-body">
+      <div class="opp-card-top">
+        <div class="opp-logo-v2" style="background:${o.color}">${o.abbr}</div>
+        <div class="opp-card-info">
+          <div class="opp-card-title">${o.title}</div>
+          <div class="opp-card-company">${o.company} &nbsp;·&nbsp; <span style="color:var(--text-light)">${o.location}</span></div>
+        </div>
+        <span class="opp-match-badge ${matchClass}">${matchLabel} ${pct}%</span>
+      </div>
+
+  <div class="opp-meta">
+  <div class="opp-meta-item"><i class="fas fa-chart-line"></i> Compatibility ${pct}%</div>
+  ${o.eligibilityMatch !== undefined ? `<div class="opp-meta-item"><i class="fas fa-user-check"></i> ${o.eligibilityMatch ? 'Eligible' : 'Not eligible'}</div>` : ''}
+
+  <div class="opp-meta-item">
+    <i class="fas fa-clock"></i>
+    ${o.deadline}
+  </div>
+
+  ${o.location ? `
+  <div class="opp-meta-item">
+    <i class="fas fa-location-dot"></i>
+    ${o.location}
+  </div>` : ''}
+
+  ${o.salary ? `
+  <div class="opp-meta-item">
+    <i class="fas fa-indian-rupee-sign"></i>
+    ${o.salary}
+  </div>` : ''}
+
+  ${o.duration ? `
+  <div class="opp-meta-item">
+    <i class="fas fa-hourglass-half"></i>
+    ${o.duration}
+  </div>` : ''}
+
+  ${o.mode ? `
+  <div class="opp-meta-item">
+    <i class="fas fa-laptop"></i>
+    ${o.mode}
+  </div>` : ''}
+
+  ${o.minimumCGPA !== '' && o.minimumCGPA !== undefined ? `
+  <div class="opp-meta-item">
+    <i class="fas fa-graduation-cap"></i>
+    Min CGPA ${o.minimumCGPA}
+  </div>` : ''}
+
+  ${o.eligibility && o.eligibility !== 'Not specified' ? `
+  <div class="opp-meta-item">
+    <i class="fas fa-user-check"></i>
+    ${o.eligibility}
+  </div>` : ''}
+
+</div>
+
+      <div class="opp-skill-tags">${skillTags}</div>
+
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>Skill Match</span><span style="font-weight:800;color:${pct>=80?'var(--success)':pct>=60?'var(--warning)':'var(--text-muted)'}">${pct}%</span></div>
+        <div class="match-bar-track"><div class="match-bar-fill" data-w="${pct}"></div></div>
+      </div>
+
+      <div class="matched-row">
+        <div class="matched-label">Matched Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${matchedTags}</div>
+      </div>
+      <div class="matched-row">
+        <div class="matched-label">Missing Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${missingTags}</div>
+      </div>
+
+      <div class="opp-actions">
+        <a href="#" class="btn btn-primary btn-sm" onclick="handleApply(${actionId});return false"><i class="fas fa-paper-plane"></i> Apply</a>
+        <button class="btn btn-secondary btn-sm" onclick="toggleXai(${actionId})"><i class="fas fa-question-circle"></i> Why this?</button>
+      </div>
+
+      <div class="xai-section" id="xai-${o.id}">
+        <div class="xai-title"><i class="fas fa-brain"></i> Explainable AI — Why this matches you</div>
+        ${reasons}
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleXai(id) {
+  const el = document.getElementById(`xai-${id}`);
+  if (el) el.classList.toggle('open');
+}
+
+function handleApply(id) {
+  const o = OPP_DATA.find(x => x.id === id);
+  if (!o) return;
+  showToast(`Opening application for ${o.title} at ${o.company}…`, 'info');
+}
+
+function switchOppTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.pill-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOpps();
+}
+
+function filterOpps() {
+  currentSearch = document.getElementById('oppSearch').value;
+  renderOpps();
+}
+
+function sortByMatch() {
+  sortedByMatch = !sortedByMatch;
+  renderOpps();
+  showToast(sortedByMatch ? 'Sorted by highest match' : 'Sort removed', 'info', 2000);
+}
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

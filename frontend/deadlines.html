@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Deadline Reminder – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Filter tabs */
+    .filter-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:22px; }
+    .filter-tab {
+      padding:8px 18px; border-radius:var(--radius-full);
+      font-size:13px; font-weight:600; cursor:pointer;
+      border:1.5px solid var(--border); background:var(--surface);
+      color:var(--text-muted); transition:var(--transition);
+    }
+    .filter-tab:hover { border-color:var(--primary); color:var(--primary); }
+    .filter-tab.active { background:var(--gradient); color:#fff; border-color:transparent; box-shadow:var(--shadow-blue); }
+
+    /* Calendar card */
+    .calendar-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:14px; margin-bottom:14px; }
+    .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+    .cal-title { font-size:16px; font-weight:700; }
+    .cal-nav { display:flex; gap:6px; }
+    .cal-nav-btn { width:32px; height:32px; border-radius:8px; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; color:var(--text-muted); transition:var(--transition); }
+    .cal-nav-btn:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; }
+    .cal-day-name { text-align:center; font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; padding:6px 0; }
+    .cal-day {
+      aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+      border-radius:8px; font-size:12px; font-weight:500; cursor:default;
+      transition:var(--transition); position:relative;
+    }
+    .cal-day.other-month { color:var(--text-light); }
+    .cal-day.today { background:rgba(37,99,235,0.1); color:var(--primary); font-weight:800; }
+    .cal-day.has-deadline { background:var(--danger-bg); color:var(--danger); font-weight:700; cursor:pointer; }
+    .cal-day.has-deadline:hover { background:var(--danger); color:#fff; }
+    .cal-day.deadline-medium { background:var(--warning-bg); color:var(--warning); font-weight:700; cursor:pointer; }
+    .cal-day.deadline-medium:hover { background:var(--warning); color:#fff; }
+    .cal-day.deadline-low { background:var(--success-bg); color:var(--success); font-weight:700; cursor:pointer; }
+    .cal-day.has-deadline::after,.cal-day.deadline-medium::after,.cal-day.deadline-low::after {
+      content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%);
+      width:4px; height:4px; border-radius:50%; background:currentColor;
+    }
+
+    /* Deadline card */
+    .deadline-card {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:20px 22px;
+      margin-bottom:14px;
+      transition:var(--transition);
+      position:relative;
+      overflow:hidden;
+    }
+    .deadline-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+    .deadline-card.priority-high { border-left:4px solid var(--danger); }
+    .deadline-card.priority-medium { border-left:4px solid var(--warning); }
+    .deadline-card.priority-low { border-left:4px solid var(--success); }
+
+    .dl-top { display:flex; align-items:flex-start; gap:14px; margin-bottom:14px; }
+    .dl-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .dl-info { flex:1; min-width:0; }
+    .dl-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dl-company { font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px; }
+    .dl-right { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+    .dl-days-badge { padding:5px 12px; border-radius:var(--radius-full); font-size:12px; font-weight:800; }
+    .priority-high .dl-days-badge { background:var(--danger-bg); color:var(--danger); }
+    .priority-medium .dl-days-badge { background:var(--warning-bg); color:var(--warning); }
+    .priority-low .dl-days-badge { background:var(--success-bg); color:var(--success); }
+
+    .dl-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .dl-date-chip { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-muted); }
+
+    .dl-actions { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    @media (max-width:768px) {
+      .dl-top { flex-wrap:wrap; }
+      .dl-right { flex-direction:row; align-items:center; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+      <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item active" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta"><div class="user-name" data-user-name>Student</div><div class="user-sub" data-user-branch>CSE</div></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search opportunities, skills, companies..."/></div>
+      <div class="topbar-right">
+        <div style="position:relative"><button class="topbar-icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="notif-badge"></span></button><div class="notif-dropdown" id="notifDropdown"></div></div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-title"><i class="fas fa-clock" style="color:var(--warning);margin-right:10px"></i>Upcoming Deadlines</div>
+        <div class="page-subtitle">Track important opportunities and keep your application timeline in view.</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:24px">
+        <div class="stat-card blue">
+          <div class="stat-icon blue"><i class="fas fa-calendar-alt"></i></div>
+          <div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Deadlines</div></div>
+        </div>
+        <div class="stat-card" style="background:var(--danger-bg);border-color:rgba(239,68,68,0.2)">
+          <div class="stat-icon" style="background:rgba(239,68,68,0.1);color:var(--danger)"><i class="fas fa-fire"></i></div>
+          <div><div class="stat-value" id="statHigh" style="color:var(--danger)">0</div><div class="stat-label">High Priority</div></div>
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All <span id="tabAll" style="margin-left:5px;background:rgba(0,0,0,0.15);padding:1px 7px;border-radius:20px;font-size:10px">0</span></button>
+        <button class="filter-tab" data-filter="high">High Priority</button>
+        <button class="filter-tab" data-filter="medium">Medium Priority</button>
+        <button class="filter-tab" data-filter="low">Low Priority</button>
+      </div>
+
+      <!-- Deadlines list -->
+      <div id="deadlinesList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none" onclick="closeSidebar()"></div>
+
+<script src="js/app.js"></script>
+<script>
+let DEADLINES_DATA = [];
+const today = new Date();
+let calendarDate = new Date(today.getFullYear(), today.getMonth(), 1);
+let activeFilter = 'all';
+let loadingError = false;
+
+const typeLabels = { jobs:'Job', internships:'Internship', placements:'Placement', competitions:'Competition', freeCertificates:'Free Certificate' };
+const typeIcons = { jobs:'fa-briefcase', internships:'fa-laptop-code', placements:'fa-building', competitions:'fa-trophy', freeCertificates:'fa-certificate' };
+const typeColors = { jobs:'var(--primary)', internships:'var(--purple)', placements:'var(--teal)', competitions:'var(--warning)', freeCertificates:'var(--success)' };
+const typeBackgrounds = { jobs:'rgba(37,99,235,0.1)', internships:'rgba(124,58,237,0.1)', placements:'rgba(20,184,166,0.1)', competitions:'rgba(245,158,11,0.1)', freeCertificates:'rgba(34,197,94,0.1)' };
+
+function getDaysLeft(dateStr) {
+  const [year, month, day] = String(dateStr).split('-').map(Number);
+  const deadline = Date.UTC(year, month - 1, day);
+  const current = new Date();
+  const today = Date.UTC(current.getFullYear(), current.getMonth(), current.getDate());
+  return Math.round((deadline - today) / 86400000);
+}
+
+function getPriority(days) {
+  if (days >= 1 && days <= 21) return 'high';
+  if (days >= 22 && days <= 42) return 'medium';
+  if (days >= 43 && days <= 63) return 'low';
+  return null;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+}
+
+function normalizeDeadline(raw) {
+  const dateValue = String(raw.deadline || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return null;
+  const [year, month, day] = dateValue.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+
+  const daysRemaining = getDaysLeft(dateValue);
+  const priority = getPriority(daysRemaining);
+  if (!priority) return null;
+
+  return {
+    ...raw,
+    date: dateValue,
+    daysRemaining,
+    priority,
+    category: typeLabels[raw.type] || raw.type || 'Opportunity',
+    link: 'opportunities2.html',
+  };
+}
+
+function buildDeadlineData(rawDeadlines) {
+  const seen = new Set();
+  return rawDeadlines
+    .map(normalizeDeadline)
+    .filter(Boolean)
+    .filter(deadline => {
+      const key = `${deadline.type}:${deadline.id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function showPageMessage(message, retry = false) {
+  document.getElementById('deadlinesList').innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-muted)">
+    <i class="fas fa-calendar-check" style="font-size:48px;opacity:0.2;display:block;margin-bottom:12px"></i>
+    <p style="font-size:15px;font-weight:600">${escapeHtml(message)}</p>
+    ${retry ? '<button class="btn btn-primary btn-sm" onclick="loadDeadlines()"><i class="fas fa-redo"></i> Retry</button>' : ''}</div>`;
+}
+
+async function loadDeadlines() {
+  loadingError = false;
+  showPageMessage('Loading personalized deadlines...');
+  try {
+    const response = await apiFetch('/opportunities/deadlines', { method:'GET' });
+    DEADLINES_DATA = buildDeadlineData(response.deadlines || []);
+    renderDeadlines();
+  } catch (error) {
+    console.error('[Deadlines]', error);
+    loadingError = true;
+    DEADLINES_DATA = [];
+    computeStats(DEADLINES_DATA);
+    showPageMessage('Unable to load personalized deadlines.', true);
+  }
+}
+
+function computeStats(data) {
+  const total = data.length;
+  const high = data.filter(d => d.priority === 'high').length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statHigh').textContent = high;
+  document.getElementById('tabAll').textContent = data.length;
+}
+
+function getFilteredData() {
+  const sorted = [...DEADLINES_DATA].sort((a, b) => a.date.localeCompare(b.date));
+  if (activeFilter === 'all') return sorted;
+  if (activeFilter === 'high') return sorted.filter(d => d.priority === 'high');
+  if (activeFilter === 'medium') return sorted.filter(d => d.priority === 'medium');
+  if (activeFilter === 'low') return sorted.filter(d => d.priority === 'low');
+  return sorted;
+}
+
+function renderDeadlines() {
+  const list = document.getElementById('deadlinesList');
+  const data = getFilteredData();
+
+  if (!data.length) {
+    if (!loadingError) showPageMessage(activeFilter === 'all' ? 'No personalized deadlines available.' : 'No deadlines in this view');
+    return;
+  }
+
+  list.innerHTML = data.map(dl => {
+    const days = dl.daysRemaining;
+    const priority = dl.priority;
+    const [year, month, day] = dl.date.split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day);
+    const dateStr = dateObj.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+    const catColors = { Job:'tag-blue', Internship:'tag-purple', Placement:'tag-teal', Competition:'tag-orange', 'Free Certificate':'tag-green' };
+    const icon = typeIcons[dl.type] || 'fa-calendar-check';
+    const iconBg = typeBackgrounds[dl.type] || 'var(--surface2)';
+    const iconColor = typeColors[dl.type] || 'var(--primary)';
+    const daysLabel = `<span class="dl-days-badge">${days}d left</span>`;
+
+    return `
+    <div class="deadline-card priority-${priority}" id="dlCard_${dl.id}">
+      <div class="dl-top">
+        <div class="dl-icon" style="background:${iconBg}"><i class="fas ${icon}" style="color:${iconColor}"></i></div>
+        <div class="dl-info">
+          <div class="dl-title">${escapeHtml(dl.title)}</div>
+          <div class="dl-company"><i class="fas fa-building" style="font-size:10px"></i>${escapeHtml(dl.company)}</div>
+        </div>
+        <div class="dl-right">
+          ${daysLabel}
+          <span class="tag ${catColors[dl.category] || 'tag'}">${dl.category}</span>
+        </div>
+      </div>
+      <div class="dl-meta">
+        <span class="dl-date-chip"><i class="fas fa-calendar"></i>${dateStr}</span>
+        <span class="tag tag-blue"><i class="fas fa-chart-line"></i>${Math.round(Number(dl.matchScore) || 0)}% Match</span>
+        <span class="tag ${priority === 'high' ? 'tag-red' : priority === 'medium' ? 'tag-orange' : 'tag-green'}">
+          <i class="fas fa-flag"></i>${priority.charAt(0).toUpperCase()+priority.slice(1)} Priority
+        </span>
+      </div>
+      <div class="dl-actions">
+        <a href="${dl.link}" class="btn btn-primary btn-sm" style="margin-left:auto"><i class="fas fa-external-link-alt"></i> View</a>
+      </div>
+    </div>`;
+  }).join('');
+
+  computeStats(DEADLINES_DATA);
+}
+
+// Calendar
+function renderCalendar() {
+  if (!document.getElementById('calGrid') || !document.getElementById('calMonthTitle')) return;
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  document.getElementById('calMonthTitle').textContent = calendarDate.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+
+  // Build deadline date map
+  const dlDateMap = {};
+  DEADLINES_DATA.forEach(dl => {
+    const [deadlineYear, deadlineMonth, deadlineDay] = dl.date.split('-').map(Number);
+    if (deadlineYear === year && deadlineMonth - 1 === month) {
+      const existing = dlDateMap[dl.date];
+      const rank = { low: 1, medium: 2, high: 3 };
+      if (!existing || rank[dl.priority] > rank[existing.priority]) {
+        dlDateMap[dl.date] = { priority: dl.priority };
+      }
+    }
+  });
+
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const grid = document.getElementById('calGrid');
+  let html = dayNames.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-day other-month"></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const current = new Date();
+    const isToday = d === current.getDate() && month === current.getMonth() && year === current.getFullYear();
+    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const priority = dlDateMap[dateKey]?.priority;
+    let cls = 'cal-day';
+    if (isToday) cls += ' today';
+    if (priority === 'high') cls += ' has-deadline';
+    else if (priority === 'medium') cls += ' deadline-medium';
+    else if (priority === 'low') cls += ' deadline-low';
+    const click = priority ? ` onclick="scrollToDeadlineDate('${dateKey}')"` : '';
+    html += `<div class="${cls}"${click}>${d}</div>`;
+  }
+
+  // Pad end
+  const total = firstDay + daysInMonth;
+  const remainder = total % 7;
+  if (remainder !== 0) for (let i = 0; i < 7 - remainder; i++) html += `<div class="cal-day other-month"></div>`;
+
+  grid.innerHTML = html;
+}
+
+function scrollToDeadlineDate(date) {
+  if (activeFilter !== 'all') {
+    activeFilter = 'all';
+    document.querySelectorAll('.filter-tab').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+    renderDeadlines();
+  }
+  document.querySelectorAll(`[id^="dlCard_"]`).forEach(card => {
+    const deadline = DEADLINES_DATA.find(item => `dlCard_${item.id}` === card.id);
+    if (deadline?.date === date) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
+// Filter tabs
+document.querySelectorAll('.filter-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    renderDeadlines();
+  });
+});
+
+document.getElementById('prevMonth')?.addEventListener('click', () => {
+  calendarDate.setMonth(calendarDate.getMonth() - 1);
+  renderCalendar();
+});
+document.getElementById('nextMonth')?.addEventListener('click', () => {
+  calendarDate.setMonth(calendarDate.getMonth() + 1);
+  renderCalendar();
+});
+
+function closeSidebar() {
+  document.getElementById('appSidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay').style.display = 'none';
+}
+document.getElementById('mobileSidebarBtn')?.addEventListener('click', () => {
+  document.getElementById('appSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').style.display = 'block';
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  initSidebar('nav-deadlines');
+  renderNotifDropdown();
+  await ensureFirebaseAuth();
+  await loadDeadlines();
+});
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

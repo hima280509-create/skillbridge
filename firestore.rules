@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Private student profile
+    match /students/{uid} {
+      allow read, create, update, delete:
+        if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Legacy profiles remain readable only by their owner during migration.
+    match /users/{uid} {
+      allow read, create, update, delete:
+        if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Private resume data
+    match /resumes/{uid}/{document=**} {
+      allow read, write:
+        if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Public opportunity/career datasets
+    match /careers/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /skills/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /jobs/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /placements/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /internships/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /competitions/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /freeCertificates/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .progress-row { display:flex;align-items:center;gap:10px;margin-bottom:10px; }
+    .progress-row-label { font-size:12px;color:var(--text-muted);width:90px;flex-shrink:0; }
+    .progress-row-bar { flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden; }
+    .progress-row-fill { height:100%;border-radius:3px;transition:width 1.2s ease; }
+    .progress-row-val { font-size:11px;font-weight:700;color:var(--text);width:30px;text-align:right;flex-shrink:0; }
+    .career-card-mini { padding:16px;background:var(--surface2);border-radius:var(--radius-lg);border:1px solid var(--border);transition:var(--transition); }
+    .career-card-mini:hover { border-color:rgba(37,99,235,0.3);box-shadow:var(--shadow-sm); }
+    .missing-chip { display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.15);border-radius:var(--radius-full);font-size:12px;font-weight:600;margin:3px; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+         <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item active" id="nav-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta">
+        <div class="user-name" data-user-name>Student</div>
+        <div class="user-sub" data-user-branch>CSE • 3rd Year</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search opportunities, skills, companies..." id="globalSearch" oninput="handleSearch(this.value)"/>
+      </div>
+      <div class="topbar-right">
+        <div style="position:relative">
+          <button class="topbar-icon-btn" id="notifBtn" title="Notifications"><i class="fas fa-bell"></i><span class="notif-badge"></span></button>
+          <div class="notif-dropdown" id="notifDropdown"></div>
+        </div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Welcome -->
+      <div class="welcome-section">
+        <div class="welcome-title">Good morning, <span id="welcomeName">Student</span>! 👋</div>
+        <div class="welcome-subtitle">Your AI-powered career progress overview.</div>
+      </div>
+
+      <!-- AI Banner -->
+      <div class="card" id="aiBanner" style="background:var(--gradient);color:#fff;margin-bottom:20px;display:none">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0"><i class="fas fa-brain"></i></div>
+          <div style="flex:1"><h3 style="font-size:16px;font-weight:700;margin-bottom:4px">Run AI Analysis to unlock your dashboard</h3><p style="font-size:13px;opacity:0.85">Get resume score, skill gap analysis, and personalized career roadmap.</p></div>
+          <a href="resume-analysis.html" class="btn" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3)"><i class="fas fa-rocket"></i> Analyze Now</a>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon blue"><i class="fas fa-file-alt"></i></div>
+          <div>
+            <div class="stat-value" id="statResume">0</div>
+            <div class="stat-label">Resume Score</div>
+            <div class="stat-sub text-primary"><i class="fas fa-info-circle"></i> /100 ATS Score</div>
+          </div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon purple"><i class="fas fa-bullseye"></i></div>
+          <div>
+            <div class="stat-value" id="statMatch">0%</div>
+            <div class="stat-label">Skill Match</div>
+            <div class="stat-sub" id="statMatchCareer" style="color:var(--purple)"><i class="fas fa-star"></i> Career fit</div>
+          </div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon green"><i class="fas fa-code"></i></div>
+          <div>
+            <div class="stat-value" id="statSkills">0</div>
+            <div class="stat-label">Skills Added</div>
+            <div class="stat-sub text-success"><i class="fas fa-plus"></i> Total skills</div>
+          </div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon orange"><i class="fas fa-flag"></i></div>
+          <div>
+            <div class="stat-value" id="statProfile">0%</div>
+            <div class="stat-label">Profile Complete</div>
+            <div class="stat-sub text-warning"><i class="fas fa-user-check"></i> Completion</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 1 -->
+      <div class="db-grid-2">
+        <!-- Resume Score Ring -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-file-alt" style="color:var(--primary)"></i>Resume Score Analysis</div>
+            <a href="upload.html" class="card-link">Improve →</a>
+          </div>
+          <div style="display:flex;align-items:center;gap:24px">
+            <div style="position:relative;flex-shrink:0">
+              <div id="resumeRing"></div>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <span id="resumeRingVal" style="font-size:22px;font-weight:800;color:var(--text)">0</span>
+                <span style="font-size:9px;color:var(--text-muted)">/ 100</span>
+              </div>
+            </div>
+            <div style="flex:1">
+              <div class="progress-row"><span class="progress-row-label">Skills</span><div class="progress-row-bar"><div class="progress-row-fill" id="barSkills" style="width:0%;background:linear-gradient(90deg,#2563EB,#7C3AED)"></div></div><span class="progress-row-val" id="valSkills">0%</span></div>
+              <div class="progress-row"><span class="progress-row-label">Projects</span><div class="progress-row-bar"><div class="progress-row-fill" id="barProj" style="width:0%;background:linear-gradient(90deg,#7C3AED,#EC4899)"></div></div><span class="progress-row-val" id="valProj">0%</span></div>
+              <div class="progress-row"><span class="progress-row-label">Certifications</span><div class="progress-row-bar"><div class="progress-row-fill" id="barCert" style="width:0%;background:linear-gradient(90deg,#22C55E,#16A34A)"></div></div><span class="progress-row-val" id="valCert">0%</span></div>
+              <div class="progress-row"><span class="progress-row-label">Experience</span><div class="progress-row-bar"><div class="progress-row-fill" id="barExp" style="width:0%;background:linear-gradient(90deg,#F59E0B,#EA580C)"></div></div><span class="progress-row-val" id="valExp">0%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skill Match Ring -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-bullseye" style="color:var(--purple)"></i>Skill Match Analysis</div>
+            <a href="career-analysis.html" class="card-link">Full Analysis →</a>
+          </div>
+          <div style="display:flex;align-items:center;gap:24px">
+            <div style="position:relative;flex-shrink:0">
+              <div id="matchRing"></div>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <span id="matchRingVal" style="font-size:22px;font-weight:800;color:var(--text)">0</span>
+                <span style="font-size:9px;color:var(--text-muted)">% Match</span>
+              </div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Career Goal</div>
+              <div id="careerGoalDisplay" style="font-size:15px;font-weight:700;color:var(--primary);margin-bottom:14px">—</div>
+              <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Top Matches</div>
+              <div id="topMatchList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="db-grid-2">
+        <!-- Missing Skills -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-chart-bar" style="color:var(--danger)"></i>Skills To Improve</div>
+            <a href="career-analysis.html" class="card-link">Skill Gap →</a>
+          </div>
+          <div id="missingSkillsWrap">
+            <p style="font-size:13px;color:var(--text-muted)">Run AI analysis to detect missing skills</p>
+          </div>
+        </div>
+
+        <!-- Career Progress -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-road" style="color:var(--warning)"></i>Career Progress</div>
+            <a href="roadmap2.html" class="card-link">Roadmap →</a>
+          </div>
+          <div style="text-align:center;margin-bottom:16px">
+            <div id="careerProgressRing"></div>
+            <div id="careerProgressVal" style="margin-top:-60px;font-size:20px;font-weight:800;color:var(--text)">0%</div>
+          </div>
+          <div id="careerProgressBars"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none"></div>
+
+<script src="js/calculationService.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  initSidebar('nav-dashboard');
+  renderNotifDropdown();
+
+  const user = getUser();
+  if (!user) { logout(); return; }
+
+  let analysis = user.aiAnalysis || {};
+  if (!analysis.resumeScore && user.skills?.length > 0) {
+    analysis = SBCalc.runLocalAnalysis(user);
+    updateUser({ aiAnalysis: analysis });
+  }
+
+  try {
+    const response = await apiFetch('/analysis/results');
+    if (response?.success && response.analysis) {
+      analysis = { ...analysis, ...response.analysis };
+      updateUser({ aiAnalysis: analysis });
+    }
+  } catch (error) {
+    console.warn('[Dashboard] Career skill analysis unavailable:', error.message);
+  }
+
+  renderDashboard(user, analysis);
+});
+
+function renderDashboard(user, analysis) {
+  const skills = user.skills || [];
+
+  // All scores from centralized calculation service
+  const rs = SBCalc.clampPercentage(analysis.resumeScore || 0);
+  const sm = SBCalc.clampPercentage(analysis.skillMatchPercentage || analysis.skillMatch || 0);
+  const pp = SBCalc.clampPercentage(analysis.profileCompletion || analysis.profilePct ||
+             SBCalc.calculateProfileCompletion(user));
+  const cp = SBCalc.clampPercentage(analysis.careerProgress ??
+             SBCalc.calculateCareerProgress(SBCalc.buildCareerProgressComponents(user)));
+
+  // ATS components for score bars (from AI analysis or estimated)
+  const atsComp = analysis.atsComponents || SBCalc.estimateATSComponentsFromProfile(user);
+  const skillBarVal = SBCalc.clampPercentage(atsComp.skillsRelevanceScore);
+  const projBarVal  = SBCalc.clampPercentage(atsComp.projectScore);
+  const certBarVal  = SBCalc.clampPercentage(atsComp.certificationScore);
+  const expBarVal   = SBCalc.clampPercentage(atsComp.experienceScore);
+
+  // Show/hide banner
+  document.getElementById('aiBanner').style.display = skills.length ? 'none' : 'block';
+
+  // Stat cards
+  animateCount(document.getElementById('statResume'), rs);
+  setTimeout(() => { const el = document.getElementById('statMatch'); if (el) el.textContent = sm + '%'; }, 800);
+  animateCount(document.getElementById('statSkills'), skills.length);
+  setTimeout(() => { const el = document.getElementById('statProfile'); if (el) el.textContent = pp + '%'; }, 600);
+
+  const mc = document.getElementById('statMatchCareer');
+  if (mc && analysis.recommendedCareers?.[0]) mc.innerHTML = `<i class="fas fa-star"></i> ${analysis.recommendedCareers[0]}`;
+
+  // Resume ring
+  buildRing(document.getElementById('resumeRing'), rs, 100, 8);
+  setTimeout(() => animateCount(document.getElementById('resumeRingVal'), rs), 200);
+
+  // Score breakdown bars (from ATS components via calculation service)
+  setTimeout(() => {
+    setProgressBar('barSkills', 'valSkills', skillBarVal);
+    setProgressBar('barProj',   'valProj',   projBarVal);
+    setProgressBar('barCert',   'valCert',   certBarVal);
+    setProgressBar('barExp',    'valExp',    expBarVal);
+  }, 300);
+
+  // Skill match ring
+  buildRing(document.getElementById('matchRing'), sm, 100, 8);
+  setTimeout(() => animateCount(document.getElementById('matchRingVal'), sm), 200);
+
+  // Career goal
+  const cgEl = document.getElementById('careerGoalDisplay');
+  if (cgEl) cgEl.textContent = user.careerGoal || 'Not set — update in profile';
+
+  // Top career matches (scores from calculation service)
+  const tcEl = document.getElementById('topMatchList');
+  if (tcEl && analysis.topCareers?.length) {
+    tcEl.innerHTML = analysis.topCareers.slice(0, 3).map((c, i) => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--text-muted);width:16px">${['🥇','🥈','🥉'][i]}</span>
+        <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">${c.title}</span>
+        <span style="font-size:12px;font-weight:700;color:var(--primary)">${c.score}%</span>
+      </div>`).join('');
+  }
+
+  // Missing skills
+  const msEl = document.getElementById('missingSkillsWrap');
+  if (msEl) {
+    const missing = analysis.missingSkills || [];
+    msEl.innerHTML = missing.length
+      ? missing.slice(0, 8).map(s => `<span class="missing-chip"><i class="fas fa-plus-circle"></i>${s}</span>`).join('')
+      : '<p style="font-size:13px;color:var(--success)">🎉 All required skills covered!</p>';
+  }
+
+  // Career progress ring — calculated by centralized service
+  buildRing(document.getElementById('careerProgressRing'), cp, 100, 10);
+  setTimeout(() => {
+    const el = document.getElementById('careerProgressVal');
+    if (el) { el.style.marginTop = '-58px'; animateCount(el, cp, '%'); }
+  }, 200);
+
+  // Career progress component bars
+  const progressComp = analysis.progressComponents ?? SBCalc.buildCareerProgressComponents(user);
+  const cpBars = document.getElementById('careerProgressBars');
+  if (cpBars) {
+    const items = [
+      { label: 'Roadmap',        val: SBCalc.clampPercentage(progressComp.roadmapCompletionPct),    color: '#2563EB' },
+      { label: 'Skills',         val: SBCalc.clampPercentage(progressComp.skillsAcquiredPct),       color: '#7C3AED' },
+      { label: 'Projects',       val: SBCalc.clampPercentage(progressComp.projectsCompletedPct),    color: '#22C55E' },
+      { label: 'Certifications', val: SBCalc.clampPercentage(progressComp.certificationsEarnedPct), color: '#F59E0B' },
+    ];
+    cpBars.innerHTML = items.map(it => `
+      <div class="progress-row">
+        <span class="progress-row-label">${it.label}</span>
+        <div class="progress-row-bar"><div class="progress-row-fill" style="width:0%;background:${it.color}" data-w="${it.val}"></div></div>
+        <span class="progress-row-val">${it.val}%</span>
+      </div>`).join('');
+    setTimeout(() => cpBars.querySelectorAll('.progress-row-fill').forEach(b => b.style.width = b.dataset.w + '%'), 400);
+  }
+
+}
+
+function setProgressBar(barId, valId, pct) {
+  const p = SBCalc.clampPercentage(pct);
+  const b = document.getElementById(barId), v = document.getElementById(valId);
+  if (b) setTimeout(() => b.style.width = p + '%', 300);
+  if (v) v.textContent = p + '%';
+}
+
+function handleSearch(q) {
+  if (q.length < 2) return;
+  console.log('Searching:', q);
+}
+
+function closeSidebar() {
+  document.getElementById('appSidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay').style.display = 'none';
+}
+document.getElementById('mobileSidebarBtn')?.addEventListener('click', () => {
+  document.getElementById('appSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').style.display = 'block';
+});
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

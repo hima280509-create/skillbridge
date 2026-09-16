@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Profile – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Tab Slider */
+    .tab-bar { display:flex; gap:0; background:var(--surface2); border-radius:var(--radius-lg); padding:5px; margin-bottom:28px; width:fit-content; border:1px solid var(--border); }
+    .tab-btn { padding:10px 28px; border-radius:var(--radius); font-size:14px; font-weight:600; color:var(--text-muted); transition:var(--transition); cursor:pointer; background:none; border:none; position:relative; }
+    .tab-btn.active { background:var(--gradient); color:#fff; box-shadow:var(--shadow-blue); }
+
+    /* Drop Zone */
+    .dropzone { border:2.5px dashed var(--border); border-radius:var(--radius-xl); padding:56px 32px; text-align:center; transition:var(--transition); cursor:pointer; background:var(--surface); position:relative; }
+    .dropzone:hover, .dropzone.drag-over { border-color:var(--primary); background:rgba(37,99,235,0.04); }
+    .dropzone-icon { width:72px; height:72px; background:var(--gradient-soft); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--primary); margin:0 auto 16px; }
+    .dropzone-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px; }
+    .dropzone-sub { font-size:13px; color:var(--text-muted); margin-bottom:20px; }
+    .dropzone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+
+    /* Success Card */
+    .upload-success { background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(20,184,166,0.08)); border:1.5px solid rgba(34,197,94,0.3); border-radius:var(--radius-xl); padding:20px 24px; display:flex; align-items:center; gap:14px; margin-top:20px; }
+    .success-icon { width:48px; height:48px; background:rgba(34,197,94,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--success); flex-shrink:0; }
+    .career-goal-prompt { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-xl); padding:20px 24px; margin-top:20px; }
+
+    /* Extracted info */
+    .extracted-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:22px; margin-top:20px; }
+    .ext-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border-light); }
+    .ext-row:last-child { border-bottom:none; }
+    .ext-label { font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; width:110px; flex-shrink:0; }
+    .ext-value { font-size:14px; font-weight:600; color:var(--text); flex:1; }
+
+    /* Skills chips select */
+    .skills-pool { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .skill-chip { padding:6px 14px; border-radius:var(--radius-full); font-size:13px; font-weight:600; border:1.5px solid var(--border); background:var(--surface2); color:var(--text-muted); cursor:pointer; transition:var(--transition); user-select:none; }
+    .skill-chip.selected { background:var(--gradient); color:#fff; border-color:transparent; box-shadow:var(--shadow-blue); }
+    .skill-chip:hover:not(.selected) { border-color:var(--primary); color:var(--primary); }
+
+    /* Form Grid */
+    .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:680px){ .form-grid-2{ grid-template-columns:1fr; } }
+
+    /* Tab content */
+    .tab-panel { display:none; animation:fadeIn 0.3s ease; }
+    .tab-panel.active { display:block; }
+
+    /* Page hero */
+    .upload-hero { background:var(--gradient-hero); border-radius:var(--radius-xl); padding:32px 36px; margin-bottom:28px; position:relative; overflow:hidden; }
+    .upload-hero::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    .upload-hero-title { font-size:26px; font-weight:800; color:#fff; margin-bottom:6px; }
+    .upload-hero-sub { font-size:14px; color:rgba(255,255,255,0.7); }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+         <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item" id="nav-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item" id="nav-upload"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item" id="nav-resume"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item" id="nav-opportunities"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item" id="nav-career"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item" id="nav-roadmap"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item" id="nav-profile"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta"><div class="user-name" data-user-name>Student</div><div class="user-sub" data-user-branch>CSE</div></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search opportunities, skills, companies..."/></div>
+      <div class="topbar-right">
+        <div style="position:relative"><button class="topbar-icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="notif-badge"></span></button><div class="notif-dropdown" id="notifDropdown"></div></div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Hero -->
+      <div class="upload-hero">
+        <div style="position:relative;z-index:1">
+          <div class="upload-hero-title"><i class="fas fa-upload" style="margin-right:10px;opacity:0.8"></i>Upload Your Profile</div>
+          <div class="upload-hero-sub">Upload your resume or fill manually — our AI will extract your skills and build your personalized career roadmap.</div>
+        </div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tabBtnUpload" onclick="switchTab('upload')"><i class="fas fa-file-pdf" style="margin-right:7px"></i>Upload Resume</button>
+        <button class="tab-btn" id="tabBtnManual" onclick="switchTab('manual')"><i class="fas fa-edit" style="margin-right:7px"></i>Fill Manually</button>
+      </div>
+
+      <!-- Tab 1: Upload Resume -->
+      <div class="tab-panel active" id="panelUpload">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-file-pdf" style="color:var(--danger)"></i>Upload Resume PDF</div>
+          </div>
+
+          <div class="dropzone" id="dropZone">
+            <input type="file" id="resumeFile" accept=".pdf" onchange="handleFileSelect(event)"/>
+            <div class="dropzone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="dropzone-title">Drag & Drop your Resume PDF here</div>
+            <div class="dropzone-sub">or click anywhere in this box to browse files</div>
+            <button class="btn btn-primary" onclick="document.getElementById('resumeFile').click();event.stopPropagation()">
+              <i class="fas fa-folder-open"></i> Choose File
+            </button>
+            <div style="margin-top:12px;font-size:12px;color:var(--text-light)"><i class="fas fa-lock" style="margin-right:4px"></i>Supported: PDF only • Max 10 MB • Secure &amp; Private</div>
+          </div>
+
+          <!-- Success State (hidden initially) -->
+          <div class="upload-success hidden" id="uploadSuccess">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;color:var(--success)">Resume Uploaded Successfully ✓</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-top:2px" id="uploadedFileName">resume.pdf</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="resetUpload()"><i class="fas fa-times"></i> Remove</button>
+          </div>
+
+          <div class="career-goal-prompt hidden" id="careerGoalPrompt">
+            <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px"><i class="fas fa-bullseye" style="color:var(--primary);margin-right:8px"></i>What is your career goal?</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:14px">Tell us what career you are working toward so we can personalize your analysis.</div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <input type="text" class="form-control" id="uploadCareerGoal" placeholder="e.g. AI Engineer" required/>
+              <button class="btn btn-primary" id="saveUploadCareerGoal" onclick="saveUploadCareerGoal()"><i class="fas fa-arrow-right"></i> Continue</button>
+            </div>
+          </div>
+
+          <!-- Extracted Info (hidden initially) -->
+          <div class="extracted-card hidden" id="extractedInfo">
+            <div class="card-header" style="margin-bottom:12px">
+              <div class="card-title"><i class="fas fa-magic" style="color:var(--purple)"></i>AI-Extracted Information</div>
+              <span class="badge badge-purple">Auto-detected</span>
+            </div>
+            <div class="ext-row"><span class="ext-label">Name</span><span class="ext-value" id="extName">—</span></div>
+            <div class="ext-row"><span class="ext-label">Email</span><span class="ext-value" id="extEmail">—</span></div>
+            <div class="ext-row"><span class="ext-label">Branch</span><span class="ext-value" id="extBranch">—</span></div>
+            <div class="ext-row"><span class="ext-label">CGPA</span><span class="ext-value" id="extCgpa">—</span></div>
+            <div class="ext-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+              <span class="ext-label">Skills Detected</span>
+              <div id="extSkills" class="skills-pool"></div>
+            </div>
+            <div style="margin-top:20px">
+              <a href="resume-analysis.html" class="btn btn-primary btn-full btn-lg">
+                <i class="fas fa-brain"></i> Analyze Resume with AI
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Fill Manually -->
+      <div class="tab-panel" id="panelManual">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-edit" style="color:var(--primary)"></i>Fill Profile Manually</div>
+            <span class="badge badge-blue">All fields optional except name</span>
+          </div>
+          <form id="profileForm" onsubmit="saveProfile(event)">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" class="form-control" id="fName" placeholder="e.g. Rahul Sharma" required/>
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" class="form-control" id="fEmail" placeholder="rahul@example.com"/>
+              </div>
+              <div class="form-group">
+                <label>Branch / Department</label>
+                <select class="form-control" id="fBranch">
+                  <option value="">Select branch…</option>
+                  <option>Computer Engineering</option>
+                  <option>IT</option>
+                  <option>Mechanical</option>
+                  <option>Civil</option>
+                  <option>Electrical</option>
+                  <option>Electronics &amp; Communication</option>
+                  <option>Chemical</option>
+                  <option>Automobile</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Academic Year</label>
+                <select class="form-control" id="fYear">
+                  <option value="">Select year…</option>
+                  <option>1st Year</option>
+                  <option>2nd Year</option>
+                  <option>3rd Year</option>
+                  <option>4th Year</option>
+                  <option>Final Year</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>CGPA</label>
+                <input type="number" class="form-control" id="fCgpa" placeholder="e.g. 8.5" step="0.1" min="0" max="10"/>
+              </div>
+              <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" class="form-control" id="fMobile" placeholder="+91 98765 43210"/>
+              </div>
+              <div class="form-group">
+                <label>Language</label>
+                <input type="text" class="form-control" id="fLanguage" placeholder="e.g. English, Hindi, Marathi"/>
+              </div>
+              <div class="form-group">
+                <label>Preferred Location</label>
+                <input type="text" class="form-control" id="fLocation" placeholder="e.g. Pune, Mumbai, Remote"/>
+              </div>
+              <div class="form-group">
+                <label>Career Goal</label>
+                <input type="text" class="form-control" id="fCareer" placeholder="e.g. AI Engineer or any career goal"/>
+              </div>
+              <div class="form-group">
+                <label>Interests</label>
+                <input type="text" class="form-control" id="fInterests" placeholder="e.g. AI, Open Source, Gaming"/>
+              </div>
+            </div>
+
+            <!-- Skills multi-select -->
+            <div class="form-group" style="margin-top:4px">
+              <label>Skills <span style="font-weight:400;text-transform:none;color:var(--text-muted)">(click to select)</span></label>
+              <div class="skills-pool" id="skillsPool"></div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <input type="text" class="form-control" id="customSkillInput" placeholder="Add a custom skill…" style="flex:1"/>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addCustomSkill()"><i class="fas fa-plus"></i> Add</button>
+              </div>
+            </div>
+
+            <!-- Textareas -->
+            <div class="form-grid-2" style="margin-top:4px">
+              <div class="form-group">
+                <label>Projects</label>
+                <textarea class="form-control" id="fProjects" rows="3" placeholder="e.g. Built an e-commerce site using React & Node.js | Developed ML model for sentiment analysis"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Certifications</label>
+                <textarea class="form-control" id="fCerts" rows="3" placeholder="e.g. AWS Cloud Practitioner | Google Data Analytics | CS50 Harvard"></textarea>
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label>Experience</label>
+                <textarea class="form-control" id="fExperience" rows="3" placeholder="e.g. Intern at XYZ Tech (June–Aug 2024) — Developed REST APIs using Node.js"></textarea>
+              </div>
+            </div>
+
+            <div style="margin-top:24px">
+              <button type="submit" class="btn btn-primary btn-full btn-lg">
+                <i class="fas fa-brain"></i> Save &amp; Analyze Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none" onclick="document.getElementById('appSidebar').classList.remove('open');this.style.display='none'"></div>
+
+<script src="js/firebase-init.js"></script>
+<script src="js/calculationService.js"></script>
+<script src="js/app.js"></script>
+<script>
+const ALL_SKILLS = [
+  'Python','JavaScript','Java','C++','C','TypeScript','React','Node.js',
+  'HTML/CSS','SQL','MongoDB','Git','Machine Learning','Deep Learning',
+  'TensorFlow','Data Analysis','REST API','Docker','AWS','Linux',
+  'Flutter','Android Development','Kotlin','Figma','Bootstrap',
+  'Statistics','Algorithms','Data Structures','Blockchain','Solidity',
+  'Power BI','Tableau','Excel','R','Cybersecurity','Networking',
+  'Kubernetes','Terraform','Azure','Firebase','React Native','Dart'
+];
+
+let selectedSkills = new Set();
+let pendingParsedResume = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  initSidebar('nav-upload');
+  renderNotifDropdown();
+  const user = getUser();
+  if (!user.aiAnalysis?.resumeScore && user.skills?.length > 0) {
+    const a = runLocalAIAnalysis(user); updateUser({ aiAnalysis: a });
+  }
+  loadPage(user);
+});
+
+function loadPage(user) {
+  buildSkillsPool();
+  prefillForm(user);
+}
+
+function buildSkillsPool() {
+  const pool = document.getElementById('skillsPool');
+  if (!pool) return;
+  const user = getUser();
+  const saved = user?.skills || [];
+  saved.forEach(s => selectedSkills.add(s));
+  const allSkills = [...new Set([...ALL_SKILLS, ...saved])];
+  pool.innerHTML = allSkills.map(s => `
+    <span class="skill-chip ${selectedSkills.has(s) ? 'selected' : ''}" onclick="toggleSkill(this,'${s}')">${s}</span>
+  `).join('');
+}
+
+function toggleSkill(el, skill) {
+  if (selectedSkills.has(skill)) {
+    selectedSkills.delete(skill);
+    el.classList.remove('selected');
+  } else {
+    selectedSkills.add(skill);
+    el.classList.add('selected');
+  }
+}
+
+function addCustomSkill() {
+  const inp = document.getElementById('customSkillInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  const pool = document.getElementById('skillsPool');
+  const chip = document.createElement('span');
+  chip.className = 'skill-chip selected';
+  chip.textContent = val;
+  chip.onclick = () => toggleSkill(chip, val);
+  selectedSkills.add(val);
+  pool.appendChild(chip);
+  inp.value = '';
+  showToast(`Skill "${val}" added`, 'success');
+}
+
+function prefillForm(user) {
+  if (!user) return;
+  const fields = { fName:'name', fEmail:'email', fBranch:'branch', fYear:'academicYear',
+    fCgpa:'cgpa', fMobile:'mobile', fLanguage:'language', fLocation:'preferredLocation',
+    fCareer:'careerGoal', fInterests:'interests', fExperience:'experience' };
+  for (const [id, key] of Object.entries(fields)) {
+    const el = document.getElementById(id);
+    if (el && user[key]) el.value = user[key];
+  }
+  if (user.projects) document.getElementById('fProjects').value = Array.isArray(user.projects) ? user.projects.join(' | ') : user.projects;
+  if (user.certifications) document.getElementById('fCerts').value = Array.isArray(user.certifications) ? user.certifications.join(' | ') : user.certifications;
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const submitButton = e.submitter || document.querySelector('#profileForm button[type="submit"]');
+  if (submitButton) { submitButton.disabled = true; submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+  const projects = document.getElementById('fProjects').value.split('|').map(s => s.trim()).filter(Boolean);
+  const certs = document.getElementById('fCerts').value.split('|').map(s => s.trim()).filter(Boolean)
+    .map(name => ({ name }));
+  const data = {
+    name: document.getElementById('fName').value.trim(),
+    email: document.getElementById('fEmail').value.trim(),
+    branch: document.getElementById('fBranch').value,
+    academicYear: document.getElementById('fYear').value,
+    cgpa: parseFloat(document.getElementById('fCgpa').value) || null,
+    mobile: document.getElementById('fMobile').value.trim(),
+    language: document.getElementById('fLanguage').value.trim(),
+    preferredLocation: document.getElementById('fLocation').value.trim(),
+    careerGoal: document.getElementById('fCareer').value,
+    interests: document.getElementById('fInterests').value.trim(),
+    skills: [...selectedSkills],
+    projects,
+    certifications: certs,
+    experience: document.getElementById('fExperience').value.trim()
+  };
+  try {
+    const result = await apiFetch('/users/profile', { method: 'PUT', body: JSON.stringify(data) });
+    if (!result?.success) throw new Error(result?.message || 'Profile could not be saved.');
+    setUser(result.user);
+    showToast('Profile saved! Redirecting to analysis…', 'success');
+    setTimeout(() => window.location.href = 'resume-analysis.html', 1200);
+  } catch (err) {
+    console.error('[profile save]', err);
+    showToast(err.message || 'Could not save your profile. Please try again.', 'error');
+    if (err.message.includes('session expired')) setTimeout(() => { window.location.href = 'auth.html'; }, 1200);
+  } finally {
+    if (submitButton) { submitButton.disabled = false; submitButton.innerHTML = '<i class="fas fa-brain"></i> Save &amp; Analyze Profile'; }
+  }
+}
+
+// --- Tab switching ---
+function switchTab(tab) {
+  document.getElementById('tabBtnUpload').classList.toggle('active', tab === 'upload');
+  document.getElementById('tabBtnManual').classList.toggle('active', tab === 'manual');
+  document.getElementById('panelUpload').classList.toggle('active', tab === 'upload');
+  document.getElementById('panelManual').classList.toggle('active', tab === 'manual');
+}
+
+// --- File Upload Logic ---
+const dropZone = document.getElementById('dropZone');
+if (dropZone) {
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f) processFile(f);
+  });
+}
+
+function handleFileSelect(e) { const f = e.target.files[0]; if (f) processFile(f); }
+
+async function processFile(file) {
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  if (!isPdf) { showToast('Please upload a PDF file only.', 'error'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('File must be under 10 MB.', 'error'); return; }
+
+  showLoader();
+  try {
+    await ensureFirebaseAuth();
+    const firebaseAuth = window.SkillBridgeFirebaseAuth?.auth;
+    console.log('[PDF AUTH] Firebase user UID:', firebaseAuth?.currentUser?.uid || 'NONE');
+    if (!firebaseAuth?.currentUser) {
+      throw new Error('No authenticated Firebase user found. Please log in again.');
+    }
+    const idToken = await firebaseAuth.currentUser.getIdToken();
+    localStorage.setItem('sb_token', idToken);
+    console.log('[PDF AUTH] ID token available:', !!idToken);
+    const formData = new FormData();
+    formData.append('resume', file);
+    const response = await fetch(`${API}/resume/parse`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${idToken}` },
+      body: formData,
+    });
+    console.log('[PDF] HTTP status:', response.status);
+    console.log('[PDF] Response OK:', response.ok);
+    const responseText = await response.text();
+    console.log('[PDF] Response body:', responseText);
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch {
+      throw new Error(`Backend returned HTTP ${response.status}: ${responseText.slice(0, 300)}`);
+    }
+    if (!response.ok) {
+      throw new Error(result.message || `Resume API failed with HTTP ${response.status}`);
+    }
+    if (result.uploaded && !result.parsed) {
+      document.getElementById('uploadSuccess').classList.remove('hidden');
+      document.getElementById('uploadedFileName').textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+      document.getElementById('careerGoalPrompt').classList.remove('hidden');
+      showToast(result.message || 'Resume uploaded, but no readable text was found.', 'warning');
+      return;
+    }
+    if (!result.success || !result.parsed) {
+      throw new Error(result.message || 'Resume parsing failed.');
+    }
+
+    const parsed = result.parsed;
+    const user = getUser() || {};
+    updateUser({
+      ...user,
+      name: parsed.name || '',
+      email: parsed.email || '',
+      phone: parsed.phone || '',
+      branch: parsed.branch || '',
+      academicYear: parsed.academicYear || '',
+      cgpa: parsed.cgpa || 0,
+      skills: Array.isArray(parsed.skills) ? parsed.skills : [],
+      projects: Array.isArray(parsed.projects) ? parsed.projects : [],
+      certifications: Array.isArray(parsed.certifications) ? parsed.certifications : [],
+      experience: Array.isArray(parsed.experience) ? parsed.experience : [],
+      resumeParsed: true,
+      resumeUrl: result.resumeUrl,
+    });
+
+    hideLoader();
+    document.getElementById('uploadSuccess').classList.remove('hidden');
+    document.getElementById('uploadedFileName').textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+    pendingParsedResume = parsed;
+    const savedCareerGoal = getUser()?.careerGoal || '';
+    document.getElementById('uploadCareerGoal').value = savedCareerGoal;
+    document.getElementById('careerGoalPrompt').classList.remove('hidden');
+    document.getElementById('extName').textContent = parsed.name || 'Not detected';
+    document.getElementById('extEmail').textContent = parsed.email || 'Not detected';
+    document.getElementById('extBranch').textContent = parsed.branch || 'Not detected';
+    document.getElementById('extCgpa').textContent = parsed.cgpa ? parsed.cgpa + ' / 10' : 'Not detected';
+
+    const skills = parsed.skills || [];
+    const extSkillsEl = document.getElementById('extSkills');
+    extSkillsEl.innerHTML = skills.length ? skills.map(s => `<span class="tag tag-blue">${s}</span>`).join('') : '<span class="tag">No skills detected</span>';
+    showToast('Resume parsed successfully!', 'success');
+  } catch (err) {
+    showToast(err.message || 'Resume parsing failed. Please try again.', 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+async function saveUploadCareerGoal() {
+  const input = document.getElementById('uploadCareerGoal');
+  const goal = input.value.trim();
+  if (!goal) { input.focus(); showToast('Please enter your career goal.', 'error'); return; }
+
+  const button = document.getElementById('saveUploadCareerGoal');
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  try {
+    const user = getUser() || {};
+    const result = await apiFetch('/users/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ name: user.name || 'Student', careerGoal: goal })
+    });
+    if (!result?.success) throw new Error(result?.message || 'Career goal could not be saved.');
+    setUser(result.user);
+    document.getElementById('careerGoalPrompt').classList.add('hidden');
+    if (pendingParsedResume) document.getElementById('extractedInfo').classList.remove('hidden');
+    showToast('Career goal saved!', 'success');
+  } catch (err) {
+    showToast(err.message || 'Could not save your career goal. Please try again.', 'error');
+  } finally {
+    button.disabled = false;
+    button.innerHTML = '<i class="fas fa-arrow-right"></i> Continue';
+  }
+}
+
+function resetUpload() {
+  document.getElementById('uploadSuccess').classList.add('hidden');
+  document.getElementById('careerGoalPrompt').classList.add('hidden');
+  document.getElementById('extractedInfo').classList.add('hidden');
+  document.getElementById('resumeFile').value = '';
+  document.getElementById('uploadCareerGoal').value = '';
+  pendingParsedResume = null;
+}
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

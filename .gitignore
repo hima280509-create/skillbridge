@@ -1,0 +1,7 @@
+backend/config.env
+**/.env
+**/config.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+node_modules/
+*.log

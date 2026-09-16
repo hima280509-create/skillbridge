@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Hero card */
+    .profile-hero {
+      background: var(--gradient);
+      border-radius: var(--radius-xl);
+      padding: 36px 36px 28px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    .profile-hero::before {
+      content:''; position:absolute; top:-60px; right:-60px;
+      width:240px; height:240px; background:rgba(255,255,255,0.06); border-radius:50%;
+    }
+    .profile-hero::after {
+      content:''; position:absolute; bottom:-80px; right:80px;
+      width:180px; height:180px; background:rgba(255,255,255,0.04); border-radius:50%;
+    }
+    .hero-inner { display:flex; align-items:center; gap:28px; position:relative; z-index:1; flex-wrap:wrap; }
+    .hero-avatar {
+      width: 88px; height: 88px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(8px);
+      border: 3px solid rgba(255,255,255,0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; font-weight: 900; color: #fff;
+      flex-shrink: 0; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .hero-info { flex: 1; min-width: 0; }
+    .hero-name { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+    .hero-email { font-size: 13px; opacity: 0.8; margin-bottom: 10px; display:flex; align-items:center; gap:6px; }
+    .hero-chips { display:flex; gap:8px; flex-wrap:wrap; }
+    .hero-chip { background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.25); padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:5px; }
+    .hero-right { display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; }
+    .hero-ring-val { font-size:22px; font-weight:800; color:#fff; }
+    .hero-ring-label { font-size:10px; opacity:0.75; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+    .edit-profile-btn {
+      position: absolute; top: 22px; right: 22px; z-index: 2;
+      background: rgba(255,255,255,0.18); backdrop-filter:blur(8px);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: #fff; padding: 9px 18px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: var(--transition); display:flex; align-items:center; gap:7px;
+    }
+    .edit-profile-btn:hover { background:rgba(255,255,255,0.28); }
+
+    /* Info grid */
+    .info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+    .info-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--radius-lg); padding:16px 18px;
+      display:flex; align-items:center; gap:12px;
+      transition:var(--transition);
+    }
+    .info-card:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+    .info-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .info-label { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+    .info-val { font-size:14px; font-weight:700; color:var(--text); }
+
+    /* Profile tabs */
+    .profile-tabs { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:24px; overflow-x:auto; }
+    .profile-tab {
+      padding:13px 22px; font-size:14px; font-weight:600; color:var(--text-muted);
+      cursor:pointer; border:none; background:none;
+      border-bottom:2.5px solid transparent; margin-bottom:-2px;
+      transition:var(--transition); white-space:nowrap; display:flex; align-items:center; gap:7px;
+    }
+    .profile-tab:hover { color:var(--primary); }
+    .profile-tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+    .tab-panel { display:none; animation:fadeIn 0.3s ease; }
+    .tab-panel.active { display:block; }
+
+    /* Skill chips */
+    .skills-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .skill-chip {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:7px 14px; border-radius:var(--radius-full);
+      font-size:12px; font-weight:700; border:1.5px solid;
+      transition:var(--transition); cursor:default;
+    }
+    .skill-chip:hover { transform:scale(1.05); }
+    .skill-chip .chip-remove { cursor:pointer; opacity:0.6; font-size:10px; }
+    .skill-chip .chip-remove:hover { opacity:1; color:var(--danger); }
+    .add-skill-btn {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:7px 14px; border-radius:var(--radius-full);
+      font-size:12px; font-weight:700;
+      background:var(--surface2); border:1.5px dashed var(--border);
+      color:var(--text-muted); cursor:pointer; transition:var(--transition);
+    }
+    .add-skill-btn:hover { border-color:var(--primary); color:var(--primary); background:rgba(37,99,235,0.05); }
+
+    /* About cards */
+    .about-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--radius-xl); padding:22px 24px;
+      margin-bottom:14px;
+    }
+    .about-card h3 { font-size:14px; font-weight:800; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .about-card p, .about-card .about-val { font-size:14px; color:var(--text-muted); line-height:1.7; }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .about-row { display:flex; flex-direction:column; gap:3px; }
+    .about-row-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); }
+    .about-row-val { font-size:13px; font-weight:600; color:var(--text); }
+
+    /* Project cards */
+    .project-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--radius-xl); padding:20px 22px;
+      margin-bottom:14px; transition:var(--transition);
+    }
+    .project-card:hover { box-shadow:var(--shadow); border-color:rgba(37,99,235,0.2); }
+    .project-header { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:8px; }
+    .project-name { font-size:15px; font-weight:800; color:var(--text); }
+    .project-desc { font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.6; }
+    .project-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .project-link { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--primary); }
+    .project-link:hover { text-decoration:underline; }
+
+    /* Cert cards */
+    .cert-card-p {
+      background:linear-gradient(135deg,rgba(34,197,94,0.05),rgba(20,184,166,0.05));
+      border:1px solid rgba(34,197,94,0.2);
+      border-radius:var(--radius-xl); padding:18px 20px;
+      margin-bottom:12px; display:flex; align-items:center; gap:14px;
+      transition:var(--transition);
+    }
+    .cert-card-p:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+    .cert-badge-icon { width:46px; height:46px; border-radius:12px; background:rgba(34,197,94,0.1); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+    .cert-name { font-size:14px; font-weight:700; color:var(--text); }
+    .cert-provider { font-size:12px; color:var(--text-muted); }
+
+    /* Preferences */
+    .pref-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:22px 24px; margin-bottom:14px; }
+    .pref-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+    .pref-row:last-child { border-bottom:none; }
+    .pref-label { font-size:13px; font-weight:600; color:var(--text); }
+    .pref-val { font-size:13px; color:var(--text-muted); font-weight:500; }
+    .pref-val.editable { cursor:pointer; color:var(--primary); text-decoration:underline dotted; }
+
+    /* Edit mode */
+    .editable-field { border:1.5px dashed var(--border); border-radius:var(--radius-sm); padding:4px 8px; cursor:pointer; transition:var(--transition); }
+    .editable-field:hover { border-color:var(--primary); background:rgba(37,99,235,0.03); }
+    [contenteditable="true"] { outline:none; border:1.5px solid var(--primary)!important; background:var(--surface)!important; border-radius:var(--radius-sm); padding:4px 8px; }
+    .profile-edit-input { width:100%; border:1.5px solid var(--primary); border-radius:var(--radius-sm); padding:5px 8px; font:inherit; color:var(--text); background:var(--surface); }
+    .edit-item-btn { border:1px solid var(--border); background:var(--surface); color:var(--danger); border-radius:var(--radius-sm); padding:5px 8px; cursor:pointer; }
+
+    /* No data state */
+    .empty-tab { text-align:center; padding:60px 20px; color:var(--text-muted); }
+    .empty-tab i { font-size:48px; opacity:0.15; display:block; margin-bottom:12px; }
+
+    @media (max-width:900px) { .info-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:600px) { .info-grid { grid-template-columns:1fr 1fr; } .hero-inner { flex-direction:column; text-align:center; } .edit-profile-btn { top:10px; right:10px; } .about-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+      <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item active"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta"><div class="user-name" data-user-name>Student</div><div class="user-sub" data-user-branch>CSE</div></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search opportunities, skills, companies..."/></div>
+      <div class="topbar-right">
+        <div style="position:relative"><button class="topbar-icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="notif-badge"></span></button><div class="notif-dropdown" id="notifDropdown"></div></div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-title"><i class="fas fa-user" style="color:var(--primary);margin-right:10px"></i>My Profile</div>
+        <div class="page-subtitle">Manage your academic profile, skills, and career preferences.</div>
+      </div>
+
+      <!-- Profile Hero -->
+      <div class="profile-hero" id="profileHero">
+        <button class="edit-profile-btn" id="editProfileBtn" onclick="toggleEditMode()">
+          <i class="fas fa-pen" id="editBtnIcon"></i> <span id="editBtnText">Edit Profile</span>
+        </button>
+        <div class="hero-inner">
+          <div class="hero-avatar" id="heroAvatar">S</div>
+          <div class="hero-info">
+            <div class="hero-name" id="heroName">Student</div>
+            <div class="hero-email"><i class="fas fa-envelope" style="font-size:11px"></i> <span id="heroEmail">student@email.com</span></div>
+            <div class="hero-chips">
+              <span class="hero-chip"><i class="fas fa-code-branch" style="font-size:10px"></i><span id="heroBranch">CSE</span></span>
+              <span class="hero-chip"><i class="fas fa-calendar-alt" style="font-size:10px"></i><span id="heroYear">3rd Year</span></span>
+              <span class="hero-chip"><i class="fas fa-map-marker-alt" style="font-size:10px"></i><span id="heroLocation">India</span></span>
+            </div>
+          </div>
+          <div class="hero-right">
+            <div style="position:relative;display:inline-block" id="heroRingWrap">
+              <div id="heroRingContainer"></div>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);text-align:center">
+                <div class="hero-ring-val" id="heroRingVal">0%</div>
+              </div>
+            </div>
+            <div class="hero-ring-label">Profile Complete</div>
+          </div>
+        </div>
+        <!-- Save bar (hidden until editing) -->
+        <div id="saveBar" style="display:none;position:relative;z-index:3;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.2);align-items:center;gap:10px">
+          <span style="font-size:13px;opacity:0.8">You have unsaved changes</span>
+          <button type="button" onclick="saveProfile()" style="margin-left:auto;background:rgba(255,255,255,0.25);color:#fff;border:1.5px solid rgba(255,255,255,0.4);padding:8px 18px;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer"><i class="fas fa-save"></i> Save Changes</button>
+          <button type="button" onclick="cancelEdit()" style="background:rgba(0,0,0,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.2);padding:8px 14px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Info grid -->
+      <div class="info-grid" id="infoGrid"></div>
+
+      <!-- Tabs -->
+      <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="about"><i class="fas fa-id-card"></i> About</button>
+        <button class="profile-tab" data-tab="skills"><i class="fas fa-code"></i> Skills</button>
+        <button class="profile-tab" data-tab="projects"><i class="fas fa-folder-open"></i> Projects</button>
+        <button class="profile-tab" data-tab="certifications"><i class="fas fa-certificate"></i> Certifications</button>
+        <button class="profile-tab" data-tab="preferences"><i class="fas fa-sliders-h"></i> Preferences</button>
+      </div>
+
+      <!-- Tab panels -->
+      <div id="tab-about" class="tab-panel active"></div>
+      <div id="tab-skills" class="tab-panel"></div>
+      <div id="tab-projects" class="tab-panel"></div>
+      <div id="tab-certifications" class="tab-panel"></div>
+      <div id="tab-preferences" class="tab-panel"></div>
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none" onclick="closeSidebar()"></div>
+
+<script src="js/calculationService.js"></script>
+<script src="js/app.js"></script>
+<script>
+let editMode = false;
+let userData = null;
+
+const SKILL_COLORS = [
+  { bg:'rgba(37,99,235,0.1)', text:'var(--primary)', border:'rgba(37,99,235,0.2)' },
+  { bg:'rgba(124,58,237,0.1)', text:'var(--purple)', border:'rgba(124,58,237,0.2)' },
+  { bg:'rgba(34,197,94,0.08)', text:'var(--success)', border:'rgba(34,197,94,0.2)' },
+  { bg:'rgba(245,158,11,0.08)', text:'var(--warning)', border:'rgba(245,158,11,0.2)' },
+  { bg:'rgba(236,72,153,0.08)', text:'var(--pink)', border:'rgba(236,72,153,0.2)' },
+  { bg:'rgba(20,184,166,0.08)', text:'var(--teal)', border:'rgba(20,184,166,0.2)' },
+];
+
+function renderHero(user) {
+  const initials = getInitials(user.name || 'S');
+  document.getElementById('heroAvatar').textContent = initials;
+  document.getElementById('heroName').innerHTML = editMode ? `<input class="profile-edit-input" value="${escapeHtml(user.name || '')}" oninput="setProfileField('name', this.value)"/>` : escapeHtml(user.name || 'Student');
+  document.getElementById('heroEmail').innerHTML = editMode ? `<input class="profile-edit-input" value="${escapeHtml(user.email || '')}" oninput="setProfileField('email', this.value)"/>` : escapeHtml(user.email || 'Not set');
+  document.getElementById('heroBranch').innerHTML = editMode ? `<input class="profile-edit-input" value="${escapeHtml(user.branch || '')}" oninput="setProfileField('branch', this.value)"/>` : escapeHtml(user.branch || 'N/A');
+  document.getElementById('heroYear').innerHTML = editMode ? `<input class="profile-edit-input" value="${escapeHtml(user.academicYear || '')}" oninput="setProfileField('academicYear', this.value)"/>` : escapeHtml(user.academicYear || 'N/A');
+  document.getElementById('heroLocation').innerHTML = editMode ? `<input class="profile-edit-input" value="${escapeHtml(user.location || '')}" oninput="setProfileField('location', this.value)"/>` : escapeHtml(user.location || 'India');
+
+  // Profile completion ring — always use SBCalc formula (10 fields × 10%)
+  const pct = SBCalc.calculateProfileCompletion(user);
+  buildRing(document.getElementById('heroRingContainer'), pct, 86, 7);
+  document.getElementById('heroRingVal').textContent = pct + '%';
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
+}
+
+function setProfileField(field, value) {
+  userData[field] = value;
+}
+
+function renderInfoGrid(user) {
+  const items = [
+    { icon:'fas fa-code-branch', bg:'rgba(37,99,235,0.1)', color:'var(--primary)', label:'Branch', val: user.branch || 'N/A' },
+    { icon:'fas fa-calendar-alt', bg:'rgba(124,58,237,0.1)', color:'var(--purple)', label:'Academic Year', val: user.academicYear || 'N/A' },
+    { icon:'fas fa-map-marker-alt', bg:'rgba(245,158,11,0.1)', color:'var(--warning)', label:'Location', val: user.location || 'India' },
+    { icon:'fas fa-university', bg:'rgba(34,197,94,0.1)', color:'var(--success)', label:'College', val: user.college || 'Not specified' },
+    { icon:'fas fa-star', bg:'rgba(236,72,153,0.1)', color:'var(--pink)', label:'CGPA', val: user.cgpa ? user.cgpa + ' / 10' : 'Not set' },
+    { icon:'fas fa-bullseye', bg:'rgba(20,184,166,0.1)', color:'var(--teal)', label:'Career Goal', val: user.careerGoal || 'Not set' },
+  ];
+  document.getElementById('infoGrid').innerHTML = items.map(it => `
+    <div class="info-card">
+      <div class="info-icon" style="background:${it.bg}"><i class="${it.icon}" style="color:${it.color}"></i></div>
+      <div>
+        <div class="info-label">${it.label}</div>
+        <div class="info-val">${it.val}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderAboutTab(user) {
+  const el = document.getElementById('tab-about');
+  if (editMode) {
+    el.innerHTML = `
+      <div class="about-card">
+        <h3><i class="fas fa-user-circle" style="color:var(--primary)"></i> Personal Information</h3>
+        <div class="about-grid">
+          ${[
+            ['bio', 'Bio', 'textarea'], ['careerObjective', 'Career Objective', 'textarea'],
+            ['college', 'College', 'input'], ['cgpa', 'CGPA', 'input'], ['careerGoal', 'Career Goal', 'input']
+          ].map(([field, label, type]) => `<label class="about-row"><span class="about-row-label">${label}</span>${type === 'textarea'
+            ? `<textarea class="profile-edit-input" rows="2" oninput="setProfileField('${field}', this.value)">${escapeHtml(user[field] || '')}</textarea>`
+            : `<input class="profile-edit-input" value="${escapeHtml(user[field] || '')}" oninput="setProfileField('${field}', this.value)"/>`}</label>`).join('')}
+          <label class="about-row"><span class="about-row-label">Phone</span><input class="profile-edit-input" value="${escapeHtml(user.phone || user.mobile || '')}" oninput="setProfileField('phone', this.value);setProfileField('mobile', this.value)"/></label>
+          <label class="about-row"><span class="about-row-label">Interests</span><input class="profile-edit-input" value="${escapeHtml(Array.isArray(user.interests) ? user.interests.join(', ') : user.interests || '')}" oninput="setProfileField('interests', this.value.split(',').map(item => item.trim()).filter(Boolean))"/></label>
+        </div>
+      </div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="about-card">
+      <h3><i class="fas fa-user-circle" style="color:var(--primary)"></i> Bio</h3>
+      <p>${user.bio || 'No bio added yet. Click Edit Profile to add your bio.'}</p>
+    </div>
+    <div class="about-card">
+      <h3><i class="fas fa-bullseye" style="color:var(--purple)"></i> Career Objective</h3>
+      <p>${user.careerObjective || 'Aspiring ' + (user.careerGoal || 'Software Engineer') + ' passionate about building innovative solutions and contributing to impactful projects.'}</p>
+    </div>
+    <div class="about-card">
+      <h3><i class="fas fa-graduation-cap" style="color:var(--success)"></i> Education Details</h3>
+      <div class="about-grid">
+        <div class="about-row"><span class="about-row-label">College</span><span class="about-row-val">${user.college || 'Not specified'}</span></div>
+        <div class="about-row"><span class="about-row-label">Branch</span><span class="about-row-val">${user.branch || 'N/A'}</span></div>
+        <div class="about-row"><span class="about-row-label">Year</span><span class="about-row-val">${user.academicYear || 'N/A'}</span></div>
+        <div class="about-row"><span class="about-row-label">CGPA</span><span class="about-row-val">${user.cgpa || 'N/A'}</span></div>
+        <div class="about-row"><span class="about-row-label">Location</span><span class="about-row-val">${user.location || 'India'}</span></div>
+        <div class="about-row"><span class="about-row-label">Email</span><span class="about-row-val">${user.email || 'N/A'}</span></div>
+      </div>
+    </div>
+    <div class="about-card">
+      <h3><i class="fas fa-road" style="color:var(--warning)"></i> Career Goal</h3>
+      <p>${user.careerGoal || 'Not set. Upload your profile or set it in settings.'}</p>
+    </div>`;
+}
+
+function renderSkillsTab(user) {
+  const el = document.getElementById('tab-skills');
+  const skills = user.skills || [];
+  if (!skills.length) {
+    el.innerHTML = `<div class="empty-tab"><i class="fas fa-code"></i><p style="font-size:14px;font-weight:600">No skills added yet.</p><p style="font-size:13px;margin-top:6px">Upload your resume or add skills manually.</p><a href="upload.html" class="btn btn-primary" style="margin-top:16px"><i class="fas fa-plus"></i> Add Skills</a></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="card" style="margin-bottom:0">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-code" style="color:var(--primary)"></i> Your Skills (${skills.length})</div>
+      </div>
+      <div class="skills-grid" id="skillsGrid">
+        ${skills.map((s, i) => {
+          const c = SKILL_COLORS[i % SKILL_COLORS.length];
+          return `<span class="skill-chip" style="background:${c.bg};color:${c.text};border-color:${c.border}">
+            <i class="fas fa-check-circle" style="font-size:11px"></i>${s}
+            ${editMode ? `<i class="fas fa-times chip-remove" onclick="removeSkill('${s.replace(/'/g,"\\'")}')"></i>` : ''}
+          </span>`;
+        }).join('')}
+        ${editMode ? `<button class="add-skill-btn" onclick="addSkillPrompt()"><i class="fas fa-plus"></i> Add Skill</button>` : ''}
+      </div>
+    </div>`;
+}
+
+function renderProjectsTab(user) {
+  const el = document.getElementById('tab-projects');
+  const projects = user.projects || [];
+  if (editMode) {
+    el.innerHTML = `<div class="card" style="margin-bottom:0"><div class="card-header"><div class="card-title"><i class="fas fa-folder-open" style="color:var(--primary)"></i> Projects</div><button class="add-skill-btn" onclick="addProjectPrompt()"><i class="fas fa-plus"></i> Add Project</button></div>
+      ${projects.map((p, i) => `<div class="project-card"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><input class="profile-edit-input" placeholder="Project name" value="${escapeHtml(p.name || p.title || '')}" oninput="setProjectField(${i}, 'name', this.value)"/><textarea class="profile-edit-input" rows="2" placeholder="Description" style="margin-top:8px" oninput="setProjectField(${i}, 'description', this.value)">${escapeHtml(p.description || '')}</textarea><input class="profile-edit-input" placeholder="GitHub URL" value="${escapeHtml(p.githubUrl || '')}" style="margin-top:8px" oninput="setProjectField(${i}, 'githubUrl', this.value)"/></div><button class="edit-item-btn" onclick="removeProject(${i})" title="Delete project"><i class="fas fa-trash"></i></button></div></div>`).join('') || '<div class="empty-tab" style="padding:30px">No projects added yet.</div>'}
+    </div>`;
+    return;
+  }
+  if (!projects.length) {
+    el.innerHTML = `<div class="empty-tab"><i class="fas fa-folder-open"></i><p style="font-size:14px;font-weight:600">No projects added yet.</p><p style="font-size:13px;margin-top:6px">Add your portfolio projects to boost your profile score.</p></div>`;
+    return;
+  }
+  el.innerHTML = projects.map((p, i) => `
+    <div class="project-card fade-in">
+      <div class="project-header">
+        <div class="project-name">${p.name || p.title || 'Project ' + (i+1)}</div>
+        ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" class="project-link"><i class="fab fa-github"></i> GitHub</a>` : ''}
+      </div>
+      <div class="project-desc">${p.description || 'No description provided.'}</div>
+      <div class="project-tags">
+        ${(p.techStack || p.technologies || []).map(t => `<span class="tag tag-blue">${t}</span>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderCertificationsTab(user) {
+  const el = document.getElementById('tab-certifications');
+  const certs = (user.certifications || []).map(cert => typeof cert === 'string' ? { name: cert } : cert);
+  if (editMode) {
+    el.innerHTML = `<div class="card" style="margin-bottom:0"><div class="card-header"><div class="card-title"><i class="fas fa-certificate" style="color:var(--success)"></i> Certifications</div><button class="add-skill-btn" onclick="addCertificationPrompt()"><i class="fas fa-plus"></i> Add Certification</button></div>
+      ${certs.map((c, i) => `<div class="cert-card-p"><div style="flex:1;display:grid;gap:8px"><input class="profile-edit-input" placeholder="Certification name" value="${escapeHtml(c.name || '')}" oninput="setCertificationField(${i}, 'name', this.value)"/><input class="profile-edit-input" placeholder="Provider" value="${escapeHtml(c.provider || c.issuer || '')}" oninput="setCertificationField(${i}, 'provider', this.value)"/><input class="profile-edit-input" placeholder="URL" value="${escapeHtml(c.url || '')}" oninput="setCertificationField(${i}, 'url', this.value)"/></div><button class="edit-item-btn" onclick="removeCertification(${i})" title="Delete certification"><i class="fas fa-trash"></i></button></div>`).join('') || '<div class="empty-tab" style="padding:30px">No certifications added yet.</div>'}
+    </div>`;
+    return;
+  }
+  if (!certs.length) {
+    el.innerHTML = `<div class="empty-tab"><i class="fas fa-certificate"></i><p style="font-size:14px;font-weight:600">No certifications added yet.</p><p style="font-size:13px;margin-top:6px">Add certifications to improve your resume score.</p></div>`;
+    return;
+  }
+  el.innerHTML = certs.map(c => `
+    <div class="cert-card-p fade-in">
+      <div class="cert-badge-icon">🎓</div>
+      <div style="flex:1;min-width:0">
+        <div class="cert-name">${c.name || 'Certification'}</div>
+        <div class="cert-provider">${c.provider || c.issuer || 'Provider'} ${c.date ? '• ' + c.date : ''}</div>
+      </div>
+      ${c.url ? `<a href="${c.url}" target="_blank" class="btn btn-outline btn-sm"><i class="fas fa-external-link-alt"></i> View</a>` : ''}
+    </div>`).join('');
+}
+
+function renderPreferencesTab(user) {
+  const el = document.getElementById('tab-preferences');
+  const prefs = user.preferences || {};
+  if (editMode) {
+    const fields = [
+      ['preferredRole', 'Preferred Role', user.careerGoal || ''],
+      ['preferredLocation', 'Preferred Location', user.location || 'Anywhere'],
+      ['workMode', 'Work Mode', 'Hybrid'],
+      ['expectedPackage', 'Expected Package', '4-8 LPA'],
+      ['openTo', 'Open To', 'Full-time, Internship, Freelance']
+    ];
+    el.innerHTML = `<div class="pref-card"><h3 style="font-size:15px;font-weight:800;margin-bottom:14px"><i class="fas fa-sliders-h" style="color:var(--primary);margin-right:8px"></i>Job Preferences</h3>${fields.map(([field, label, fallback]) => `<label class="pref-row"><span class="pref-label">${label}</span><input class="profile-edit-input" value="${escapeHtml(prefs[field] || fallback)}" oninput="setPreferenceField('${field}', this.value)"/></label>`).join('')}</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="pref-card">
+      <h3 style="font-size:15px;font-weight:800;margin-bottom:4px"><i class="fas fa-sliders-h" style="color:var(--primary);margin-right:8px"></i>Job Preferences</h3>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Set your preferred role, location, and expectations.</p>
+      <div class="pref-row"><span class="pref-label"><i class="fas fa-briefcase" style="margin-right:7px;color:var(--primary)"></i>Preferred Role</span><span class="pref-val">${prefs.preferredRole || user.careerGoal || 'Not set'}</span></div>
+      <div class="pref-row"><span class="pref-label"><i class="fas fa-map-marker-alt" style="margin-right:7px;color:var(--warning)"></i>Preferred Location</span><span class="pref-val">${prefs.preferredLocation || user.location || 'Anywhere'}</span></div>
+      <div class="pref-row"><span class="pref-label"><i class="fas fa-building" style="margin-right:7px;color:var(--purple)"></i>Work Mode</span><span class="pref-val">${prefs.workMode || 'Hybrid'}</span></div>
+      <div class="pref-row"><span class="pref-label"><i class="fas fa-rupee-sign" style="margin-right:7px;color:var(--success)"></i>Expected Package</span><span class="pref-val">${prefs.expectedPackage || '4-8 LPA'}</span></div>
+      <div class="pref-row"><span class="pref-label"><i class="fas fa-search" style="margin-right:7px;color:var(--teal)"></i>Open To</span><span class="pref-val">${prefs.openTo || 'Full-time, Internship, Freelance'}</span></div>
+    </div>
+    ${editMode ? `<button class="btn btn-primary btn-sm" onclick="editPreferences()"><i class="fas fa-pen"></i> Edit Preferences</button>` : ''}`;
+}
+
+function toggleEditMode() {
+  if (editMode) {
+    cancelEdit();
+    return;
+  }
+  editMode = !editMode;
+  document.getElementById('editBtnText').textContent = editMode ? 'Editing...' : 'Edit Profile';
+  document.getElementById('editBtnIcon').className = editMode ? 'fas fa-times' : 'fas fa-pen';
+  document.getElementById('saveBar').style.display = editMode ? 'flex' : 'none';
+  renderAll(userData);
+  if (editMode) showToast('Edit mode enabled. Click checkboxes or fields to edit.', 'info');
+}
+
+async function saveProfile() {
+  const saveButton = document.querySelector('#saveBar button');
+  if (saveButton) saveButton.disabled = true;
+  try {
+    const result = await apiFetch('/users/profile', { method: 'PUT', body: JSON.stringify(userData) });
+    if (!result?.success) throw new Error('Profile could not be saved.');
+    userData = result.user;
+    setUser(userData);
+    editMode = false;
+    document.getElementById('editBtnText').textContent = 'Edit Profile';
+    document.getElementById('editBtnIcon').className = 'fas fa-pen';
+    document.getElementById('saveBar').style.display = 'none';
+    renderAll(userData);
+    showToast('Profile saved! ✅', 'success');
+  } catch (error) {
+    showToast(error.message || 'Profile could not be saved.', 'error');
+  } finally {
+    if (saveButton) saveButton.disabled = false;
+  }
+}
+
+function cancelEdit() {
+  editMode = false;
+  document.getElementById('editBtnText').textContent = 'Edit Profile';
+  document.getElementById('editBtnIcon').className = 'fas fa-pen';
+  document.getElementById('saveBar').style.display = 'none';
+  userData = getUser() || userData;
+  renderAll(userData);
+}
+
+function removeSkill(skill) {
+  userData.skills = (userData.skills || []).filter(s => s !== skill);
+  renderSkillsTab(userData);
+  renderHero(userData);
+  showToast(`Removed "${skill}"`, 'info');
+}
+
+function addSkillPrompt() {
+  const skill = prompt('Enter skill name:');
+  if (!skill || !skill.trim()) return;
+  if (!userData.skills) userData.skills = [];
+  if (userData.skills.includes(skill.trim())) { showToast('Skill already added!', 'warning'); return; }
+  userData.skills.push(skill.trim());
+  renderSkillsTab(userData);
+  renderHero(userData);
+  showToast(`Added "${skill.trim()}" ✅`, 'success');
+}
+
+function setPreferenceField(field, value) {
+  if (!userData.preferences) userData.preferences = {};
+  userData.preferences[field] = value;
+}
+
+function setProjectField(index, field, value) {
+  if (userData.projects?.[index]) userData.projects[index][field] = value;
+}
+
+function removeProject(index) {
+  userData.projects.splice(index, 1);
+  renderProjectsTab(userData);
+}
+
+function addProjectPrompt() {
+  if (!userData.projects) userData.projects = [];
+  userData.projects.push({ name: '', description: '', githubUrl: '' });
+  renderProjectsTab(userData);
+}
+
+function setCertificationField(index, field, value) {
+  if (userData.certifications?.[index]) userData.certifications[index][field] = value;
+}
+
+function removeCertification(index) {
+  userData.certifications.splice(index, 1);
+  renderCertificationsTab(userData);
+}
+
+function addCertificationPrompt() {
+  if (!userData.certifications) userData.certifications = [];
+  userData.certifications.push({ name: '', provider: '', url: '' });
+  renderCertificationsTab(userData);
+}
+
+function editPreferences() {
+  const role = prompt('Preferred Role:', userData.preferences?.preferredRole || userData.careerGoal || '');
+  if (role !== null) {
+    if (!userData.preferences) userData.preferences = {};
+    userData.preferences.preferredRole = role;
+    const loc = prompt('Preferred Location:', userData.preferences?.preferredLocation || 'Anywhere');
+    if (loc !== null) userData.preferences.preferredLocation = loc;
+    const mode = prompt('Work Mode (Remote/Hybrid/On-site):', userData.preferences?.workMode || 'Hybrid');
+    if (mode !== null) userData.preferences.workMode = mode;
+    const pkg = prompt('Expected Package (e.g. 4-8 LPA):', userData.preferences?.expectedPackage || '4-8 LPA');
+    if (pkg !== null) userData.preferences.expectedPackage = pkg;
+    updateUser({ preferences: userData.preferences });
+    renderPreferencesTab(userData);
+    showToast('Preferences updated! ✅', 'success');
+  }
+}
+
+function renderAll(user) {
+  renderHero(user);
+  renderInfoGrid(user);
+  renderAboutTab(user);
+  renderSkillsTab(user);
+  renderProjectsTab(user);
+  renderCertificationsTab(user);
+  renderPreferencesTab(user);
+}
+
+// Tab switching
+document.querySelectorAll('.profile-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+function closeSidebar() {
+  document.getElementById('appSidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay').style.display = 'none';
+}
+document.getElementById('mobileSidebarBtn')?.addEventListener('click', () => {
+  document.getElementById('appSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').style.display = 'block';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  initSidebar();
+  renderNotifDropdown();
+
+  userData = getUser() || {};
+  // Set some defaults if no data
+  if (!userData.skills) userData.skills = [];
+
+  renderAll(userData);
+});
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

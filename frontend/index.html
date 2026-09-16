@@ -1,0 +1,691 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkillBridge – AI Career & Opportunity Navigator</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/landing.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home" class="nav-link active">Home</a></li>
+      <li><a href="#features" class="nav-link">Features</a></li>
+      <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+      <li><a href="#opportunities" class="nav-link">Opportunities</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="auth.html" class="btn btn-outline">Login</a>
+      <a href="auth.html" class="btn btn-primary">Get Started</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-bg-orb orb-1"></div>
+    <div class="hero-bg-orb orb-2"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        AI-Powered Career Intelligence Platform
+      </div>
+      <h1 class="hero-title">
+        Your AI Career Companion<br/>
+        for <span class="gradient-text">Diploma Students</span>
+      </h1>
+      <p class="hero-subtitle">
+        Discover the right opportunities, bridge your skill gaps, and build your dream career with AI. Get personalized recommendations for jobs, internships, and certifications.
+      </p>
+      <div class="hero-actions">
+        <a href="auth.html" class="btn btn-primary btn-lg">
+          <i class="fas fa-rocket"></i> Get Started Free
+        </a>
+        <a href="#how-it-works" class="btn btn-ghost btn-lg">
+          <i class="fas fa-play-circle"></i> Learn More
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="stat-number">10K+</span>
+          <span class="stat-label">Students</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Opportunities</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-number">95%</span>
+          <span class="stat-label">Match Rate</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-illustration">
+        <!-- Main device mockup -->
+        <div class="device-mockup">
+          <div class="device-screen">
+            <div class="screen-header">
+              <div class="screen-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <span class="screen-title">SkillBridge Dashboard</span>
+            </div>
+            <div class="screen-content">
+              <div class="mini-stat-row">
+                <div class="mini-stat blue">
+                  <span class="mini-stat-n">85%</span>
+                  <span class="mini-stat-l">Resume Score</span>
+                </div>
+                <div class="mini-stat purple">
+                  <span class="mini-stat-n">78%</span>
+                  <span class="mini-stat-l">Skill Match</span>
+                </div>
+              </div>
+              <div class="mini-chart">
+                <div class="chart-bar" style="--h:60%;--c:#2563EB"></div>
+                <div class="chart-bar" style="--h:80%;--c:#7C3AED"></div>
+                <div class="chart-bar" style="--h:45%;--c:#22C55E"></div>
+                <div class="chart-bar" style="--h:90%;--c:#2563EB"></div>
+                <div class="chart-bar" style="--h:70%;--c:#7C3AED"></div>
+              </div>
+              <div class="mini-career-tag">
+                <i class="fas fa-briefcase"></i>
+                Top Match: AI Engineer
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating AI Cards -->
+        <div class="floating-card card-skill-match">
+          <div class="fc-icon"><i class="fas fa-brain"></i></div>
+          <div class="fc-info">
+            <span class="fc-label">Skill Match</span>
+            <div class="fc-progress">
+              <div class="progress-bar" style="width: 78%"></div>
+            </div>
+            <span class="fc-value">78%</span>
+          </div>
+        </div>
+
+        <div class="floating-card card-resume-score">
+          <div class="fc-icon green"><i class="fas fa-file-alt"></i></div>
+          <div class="fc-info">
+            <span class="fc-label">Resume Score</span>
+            <div class="fc-score-ring">85</div>
+          </div>
+        </div>
+
+        <div class="floating-card card-top-match">
+          <div class="fc-icon purple"><i class="fas fa-star"></i></div>
+          <div class="fc-info">
+            <span class="fc-label">Top Match</span>
+            <span class="fc-career">AI Engineer</span>
+          </div>
+        </div>
+
+        <div class="floating-card card-opportunities">
+          <div class="fc-icon orange"><i class="fas fa-bolt"></i></div>
+          <div class="fc-info">
+            <span class="fc-label">New Opportunities</span>
+            <span class="fc-count">+24 Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUSTED BY SECTION ===== -->
+<section class="trusted-section">
+  <div class="container">
+    <p class="trusted-label">Trusted by students heading to</p>
+    <div class="trusted-logos">
+      <span class="trust-logo">Google</span>
+      <span class="trust-logo">Microsoft</span>
+      <span class="trust-logo">Amazon</span>
+      <span class="trust-logo">Infosys</span>
+      <span class="trust-logo">Zoho</span>
+      <span class="trust-logo">Wipro</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Features</span>
+      <h2 class="section-title">Everything You Need to<br/><span class="gradient-text">Land Your Dream Career</span></h2>
+      <p class="section-subtitle">Our AI-powered platform analyzes your profile and provides personalized guidance at every step of your career journey.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card card-animate" data-delay="0">
+        <div class="feature-icon blue">
+          <i class="fas fa-file-search"></i>
+        </div>
+        <h3>AI Resume Analyzer</h3>
+        <p>Upload your PDF resume and our AI instantly extracts skills, projects, certifications and generates a detailed score with improvement tips.</p>
+        <div class="feature-tags">
+          <span class="tag">PDF Parser</span>
+          <span class="tag">Score 0-100</span>
+          <span class="tag">AI Tips</span>
+        </div>
+      </div>
+
+      <div class="feature-card card-animate featured" data-delay="100">
+        <div class="feature-icon purple">
+          <i class="fas fa-bullseye"></i>
+        </div>
+        <div class="featured-badge">Most Popular</div>
+        <h3>Smart Opportunity Recommendation</h3>
+        <p>Get AI-matched jobs, internships, placement drives, and competitions ranked by your personal skill match percentage.</p>
+        <div class="feature-tags">
+          <span class="tag">Job Match</span>
+          <span class="tag">Internships</span>
+          <span class="tag">Competitions</span>
+        </div>
+      </div>
+
+      <div class="feature-card card-animate" data-delay="200">
+        <div class="feature-icon green">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <h3>Skill Gap Analysis</h3>
+        <p>Visual skill comparison against your target career. See exactly which skills you're missing and how to bridge those gaps fast.</p>
+        <div class="feature-tags">
+          <span class="tag">Gap Detection</span>
+          <span class="tag">Visual Charts</span>
+          <span class="tag">Priority Guide</span>
+        </div>
+      </div>
+
+      <div class="feature-card card-animate" data-delay="300">
+        <div class="feature-icon orange">
+          <i class="fas fa-road"></i>
+        </div>
+        <h3>Personalized Learning Roadmap</h3>
+        <p>Step-by-step learning paths generated by AI based on your goal career, current skill level, and available free certifications.</p>
+        <div class="feature-tags">
+          <span class="tag">4-Phase Plan</span>
+          <span class="tag">Free Courses</span>
+          <span class="tag">Timelines</span>
+        </div>
+      </div>
+
+      <div class="feature-card card-animate" data-delay="400">
+        <div class="feature-icon red">
+          <i class="fas fa-bell"></i>
+        </div>
+        <h3>Deadline Reminder</h3>
+        <p>Never miss an application deadline. Smart alerts for job applications, internship registrations, and competition deadlines.</p>
+        <div class="feature-tags">
+          <span class="tag">Smart Alerts</span>
+          <span class="tag">Calendar</span>
+          <span class="tag">Countdown</span>
+        </div>
+      </div>
+
+      <div class="feature-card card-animate" data-delay="500">
+        <div class="feature-icon teal">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3>Career Preparation</h3>
+        <p>Interview tips, aptitude preparation resources, coding practice, and mock interview guidance tailored to your target company.</p>
+        <div class="feature-tags">
+          <span class="tag">Mock Tests</span>
+          <span class="tag">Interview Tips</span>
+          <span class="tag">Resources</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Process</span>
+      <h2 class="section-title">How <span class="gradient-text">SkillBridge</span> Works</h2>
+      <p class="section-subtitle">From resume upload to personalized career roadmap in under 2 minutes.</p>
+    </div>
+
+    <div class="steps-container">
+      <div class="steps-line"></div>
+      
+      <div class="step-item">
+        <div class="step-number">01</div>
+        <div class="step-icon blue">
+          <i class="fas fa-upload"></i>
+        </div>
+        <div class="step-content">
+          <h3>Upload Resume / Fill Profile</h3>
+          <p>Upload your PDF resume or manually enter your academic info, skills, projects, certifications, and career goal.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-number">02</div>
+        <div class="step-icon purple">
+          <i class="fas fa-brain"></i>
+        </div>
+        <div class="step-content">
+          <h3>AI Analysis Engine</h3>
+          <p>Our AI parser extracts all information and the analysis engine scores your resume, matches skills, and identifies career alignment.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-number">03</div>
+        <div class="step-icon green">
+          <i class="fas fa-magic"></i>
+        </div>
+        <div class="step-content">
+          <h3>Skill Matching & Gap Analysis</h3>
+          <p>AI compares your skills against industry datasets to find matches, missing skills, and the best career paths for you.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-number">04</div>
+        <div class="step-icon orange">
+          <i class="fas fa-map-marked-alt"></i>
+        </div>
+        <div class="step-content">
+          <h3>Career Roadmap & Opportunities</h3>
+          <p>Receive your personalized learning roadmap, job matches, internship picks, competitions, and free certifications to pursue.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OPPORTUNITIES SECTION ===== -->
+<section class="opportunities-section" id="opportunities">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Opportunities</span>
+      <h2 class="section-title">Discover Your <span class="gradient-text">Perfect Opportunity</span></h2>
+      <p class="section-subtitle">Browse hundreds of curated opportunities matched to your unique skill profile.</p>
+    </div>
+
+    <div class="opp-tabs">
+      <button class="opp-tab active" data-tab="jobs">
+        <i class="fas fa-briefcase"></i> Jobs
+      </button>
+      <button class="opp-tab" data-tab="internships">
+        <i class="fas fa-laptop-code"></i> Internships
+      </button>
+      <button class="opp-tab" data-tab="placements">
+        <i class="fas fa-building"></i> Placements
+      </button>
+      <button class="opp-tab" data-tab="competitions">
+        <i class="fas fa-trophy"></i> Competitions
+      </button>
+      <button class="opp-tab" data-tab="certifications">
+        <i class="fas fa-certificate"></i> Certifications
+      </button>
+    </div>
+
+    <div class="opp-content">
+      <div class="opp-panel active" id="tab-jobs">
+        <div class="opp-cards">
+          <div class="opp-card">
+            <div class="opp-company-logo blue-bg">TI</div>
+            <div class="opp-info">
+              <h4>Junior Python Developer</h4>
+              <p class="opp-company">TechCorp India • Bangalore</p>
+              <div class="opp-tags"><span class="tag">Python</span><span class="tag">SQL</span><span class="tag">REST API</span></div>
+            </div>
+            <div class="opp-meta">
+              <span class="salary">₹4–6 LPA</span>
+              <span class="match-badge high">92% Match</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo purple-bg">IN</div>
+            <div class="opp-info">
+              <h4>React Frontend Developer</h4>
+              <p class="opp-company">Infosys • Pune</p>
+              <div class="opp-tags"><span class="tag">React</span><span class="tag">JavaScript</span><span class="tag">Git</span></div>
+            </div>
+            <div class="opp-meta">
+              <span class="salary">₹5–7.5 LPA</span>
+              <span class="match-badge medium">78% Match</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo green-bg">ML</div>
+            <div class="opp-info">
+              <h4>ML Engineer Intern → FTE</h4>
+              <p class="opp-company">Zoho • Chennai</p>
+              <div class="opp-tags"><span class="tag">Python</span><span class="tag">ML</span><span class="tag">TensorFlow</span></div>
+            </div>
+            <div class="opp-meta">
+              <span class="salary">₹6–9 LPA</span>
+              <span class="match-badge high">85% Match</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="opp-panel" id="tab-internships">
+        <div class="opp-cards">
+          <div class="opp-card">
+            <div class="opp-company-logo blue-bg">G</div>
+            <div class="opp-info">
+              <h4>Web Development Intern</h4>
+              <p class="opp-company">Google • Remote</p>
+              <div class="opp-tags"><span class="tag">HTML/CSS</span><span class="tag">React</span><span class="tag">Git</span></div>
+            </div>
+            <div class="opp-meta">
+              <span class="salary">₹25K/month</span>
+              <span class="deadline">15 Aug 2026</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo purple-bg">MS</div>
+            <div class="opp-info">
+              <h4>Data Science Intern</h4>
+              <p class="opp-company">Microsoft • Hyderabad</p>
+              <div class="opp-tags"><span class="tag">Python</span><span class="tag">SQL</span><span class="tag">ML</span></div>
+            </div>
+            <div class="opp-meta">
+              <span class="salary">₹30K/month</span>
+              <span class="deadline">30 Aug 2026</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo orange-bg">IBM</div>
+            <div class="opp-info">
+              <h4>ML Research Intern</h4>
+              <p class="opp-company">IBM Research • Remote</p>
+              <div class="opp-tags"><span class="tag">Python</span><span class="tag">Deep Learning</span><span class="tag">NLP</span></div>
+            </div>
+            <div class="opp-meta">
+              <span class="salary">₹22K/month</span>
+              <span class="deadline">20 Sep 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="opp-panel" id="tab-placements">
+        <div class="opp-cards">
+          <div class="opp-card">
+            <div class="opp-company-logo blue-bg">TCS</div>
+            <div class="opp-info"><h4>System Engineer</h4><p class="opp-company">TCS • Pan India</p><div class="opp-tags"><span class="tag">Java</span><span class="tag">SQL</span></div></div>
+            <div class="opp-meta"><span class="salary">₹3.36 LPA</span><span class="deadline">Sep 2026</span></div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo green-bg">ZO</div>
+            <div class="opp-info"><h4>Software Developer</h4><p class="opp-company">Zoho • Chennai</p><div class="opp-tags"><span class="tag">C++</span><span class="tag">Python</span></div></div>
+            <div class="opp-meta"><span class="salary">₹6 LPA</span><span class="deadline">Aug 2026</span></div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo orange-bg">FK</div>
+            <div class="opp-info"><h4>SDE</h4><p class="opp-company">Flipkart • Bangalore</p><div class="opp-tags"><span class="tag">DSA</span><span class="tag">System Design</span></div></div>
+            <div class="opp-meta"><span class="salary">₹18 LPA</span><span class="deadline">Aug 2026</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="opp-panel" id="tab-competitions">
+        <div class="opp-cards">
+          <div class="opp-card">
+            <div class="opp-company-logo blue-bg">G</div>
+            <div class="opp-info"><h4>Google Code Jam</h4><p class="opp-company">Google • Online</p><div class="opp-tags"><span class="tag">C++</span><span class="tag">Algorithms</span></div></div>
+            <div class="opp-meta"><span class="salary">$15,000</span><span class="deadline">1 Sep 2026</span></div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo purple-bg">SIH</div>
+            <div class="opp-info"><h4>Smart India Hackathon</h4><p class="opp-company">AICTE • National</p><div class="opp-tags"><span class="tag">Innovation</span><span class="tag">Any Stack</span></div></div>
+            <div class="opp-meta"><span class="salary">₹1 Lakh/team</span><span class="deadline">20 Aug 2026</span></div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo green-bg">KG</div>
+            <div class="opp-info"><h4>Kaggle ML Competition</h4><p class="opp-company">Kaggle • Online</p><div class="opp-tags"><span class="tag">Python</span><span class="tag">ML</span></div></div>
+            <div class="opp-meta"><span class="salary">$100,000</span><span class="deadline">30 Sep 2026</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="opp-panel" id="tab-certifications">
+        <div class="opp-cards">
+          <div class="opp-card">
+            <div class="opp-company-logo blue-bg">CS</div>
+            <div class="opp-info"><h4>CS50 – Harvard</h4><p class="opp-company">Harvard University • edX</p><div class="opp-tags"><span class="tag">CS Fundamentals</span><span class="tag">Free</span></div></div>
+            <div class="opp-meta"><span class="salary">⭐ 5.0</span><span class="match-badge high">Free</span></div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo green-bg">ML</div>
+            <div class="opp-info"><h4>Machine Learning – Andrew Ng</h4><p class="opp-company">Stanford • Coursera</p><div class="opp-tags"><span class="tag">ML</span><span class="tag">Neural Networks</span></div></div>
+            <div class="opp-meta"><span class="salary">⭐ 4.9</span><span class="match-badge high">Free Audit</span></div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-company-logo orange-bg">AWS</div>
+            <div class="opp-info"><h4>AWS Cloud Practitioner</h4><p class="opp-company">Amazon Web Services</p><div class="opp-tags"><span class="tag">AWS</span><span class="tag">Cloud</span></div></div>
+            <div class="opp-meta"><span class="salary">⭐ 4.7</span><span class="match-badge medium">Free</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opp-cta">
+      <a href="auth.html" class="btn btn-primary btn-lg">
+        <i class="fas fa-rocket"></i> Unlock All Opportunities
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== AI ANALYSIS PREVIEW ===== -->
+<section class="ai-preview-section">
+  <div class="container">
+    <div class="ai-preview-grid">
+      <div class="ai-preview-content">
+        <span class="section-badge">AI Analysis</span>
+        <h2 class="section-title">See Your<br/><span class="gradient-text">Career Potential</span></h2>
+        <p>Our AI engine analyzes your resume and profile against industry datasets to give you an accurate picture of where you stand and exactly what to do next.</p>
+        <ul class="ai-feature-list">
+          <li><i class="fas fa-check-circle"></i> Resume Score with detailed breakdown</li>
+          <li><i class="fas fa-check-circle"></i> Skill match against 20+ career paths</li>
+          <li><i class="fas fa-check-circle"></i> Missing skills detection with learning resources</li>
+          <li><i class="fas fa-check-circle"></i> Top 3 career recommendations</li>
+          <li><i class="fas fa-check-circle"></i> Personalized 4-phase learning roadmap</li>
+        </ul>
+        <a href="auth.html" class="btn btn-primary">Start AI Analysis</a>
+      </div>
+      <div class="ai-preview-visual">
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <i class="fas fa-brain"></i>
+            <span>AI Analysis Results</span>
+            <span class="analysis-badge">Live</span>
+          </div>
+          <div class="analysis-scores">
+            <div class="score-item">
+              <span class="score-label">Resume Score</span>
+              <div class="score-bar-container">
+                <div class="score-bar" style="width: 85%; background: linear-gradient(90deg, #2563EB, #7C3AED)"></div>
+              </div>
+              <span class="score-value">85/100</span>
+            </div>
+            <div class="score-item">
+              <span class="score-label">Skill Match</span>
+              <div class="score-bar-container">
+                <div class="score-bar" style="width: 78%; background: linear-gradient(90deg, #7C3AED, #EC4899)"></div>
+              </div>
+              <span class="score-value">78%</span>
+            </div>
+            <div class="score-item">
+              <span class="score-label">Career Fit</span>
+              <div class="score-bar-container">
+                <div class="score-bar" style="width: 91%; background: linear-gradient(90deg, #22C55E, #16A34A)"></div>
+              </div>
+              <span class="score-value">91%</span>
+            </div>
+          </div>
+          <div class="analysis-careers">
+            <p class="small-label">Top Career Matches</p>
+            <div class="career-tag active">🤖 AI/ML Engineer</div>
+            <div class="career-tag">💻 Full Stack Dev</div>
+            <div class="career-tag">📊 Data Scientist</div>
+          </div>
+          <div class="missing-skills-section">
+            <p class="small-label">Missing Skills</p>
+            <div class="missing-tags">
+              <span class="missing-tag">Docker</span>
+              <span class="missing-tag">Kubernetes</span>
+              <span class="missing-tag">AWS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT SECTION ===== -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Contact</span>
+      <h2 class="section-title">Get in <span class="gradient-text">Touch</span></h2>
+      <p class="section-subtitle">Have questions? We'd love to hear from you.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <h4>Email Us</h4>
+            <p>support@skillbridge.ai</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon"><i class="fas fa-phone"></i></div>
+          <div>
+            <h4>Call Us</h4>
+            <p>+91 98765 43210</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div>
+            <h4>Our Office</h4>
+            <p>Chennai, Tamil Nadu, India</p>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" placeholder="Your Name" required/>
+          </div>
+          <div class="form-group">
+            <input type="email" placeholder="Your Email" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="text" placeholder="Subject"/>
+        </div>
+        <div class="form-group">
+          <textarea placeholder="Your Message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">
+          <i class="fas fa-paper-plane"></i> Send Message
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo footer-logo">
+           <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+        </a>
+        <p class="footer-tagline">AI Career &amp; Opportunity Navigator</p>
+        <p class="footer-desc">Empowering engineering students with AI-driven career guidance, personalized opportunity matching, and skill development resources.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#opportunities">Opportunities</a></li>
+          <li><a href="dashboard2.html">Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+          <li><a href="#">Disclaimer</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 SkillBridge. All rights reserved. Built with ❤️ for Engineering Students.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>
+

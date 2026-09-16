@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notifications – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Notification header */
+    .notif-page-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 22px 26px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .notif-header-left { display:flex; align-items:center; gap:14px; }
+    .notif-count-badge {
+      background: var(--gradient);
+      color: #fff;
+      font-size: 12px; font-weight: 800;
+      padding: 4px 12px; border-radius: var(--radius-full);
+      box-shadow: var(--shadow-blue);
+    }
+    .mark-all-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 18px; border-radius: var(--radius);
+      background: var(--surface2); border: 1.5px solid var(--border);
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+      transition: var(--transition); cursor: pointer;
+    }
+    .mark-all-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(37,99,235,0.05); }
+
+    /* Filter tabs */
+    .notif-filter-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:20px; }
+    .notif-tab {
+      padding:8px 16px; border-radius:var(--radius-full);
+      font-size:13px; font-weight:600; cursor:pointer;
+      border:1.5px solid var(--border); background:var(--surface);
+      color:var(--text-muted); transition:var(--transition);
+      display:flex; align-items:center; gap:6px;
+    }
+    .notif-tab:hover { border-color:var(--primary); color:var(--primary); }
+    .notif-tab.active { background:var(--gradient); color:#fff; border-color:transparent; box-shadow:var(--shadow-blue); }
+    .notif-tab .tab-count {
+      background:rgba(0,0,0,0.15); font-size:10px; font-weight:800;
+      padding:1px 7px; border-radius:20px;
+    }
+    .notif-tab.active .tab-count { background:rgba(255,255,255,0.25); }
+
+    /* Notification card */
+    .notif-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 18px 22px;
+      margin-bottom: 12px;
+      transition: var(--transition);
+      display: flex; gap: 16px; align-items: flex-start;
+      position: relative;
+    }
+    .notif-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+    .notif-card.unread {
+      border-left: 4px solid var(--primary);
+      background: rgba(37,99,235,0.02);
+    }
+    [data-theme="dark"] .notif-card.unread { background: rgba(37,99,235,0.05); }
+
+    .nc-icon {
+      width: 46px; height: 46px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .nc-body { flex: 1; min-width: 0; }
+    .nc-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:5px; }
+    .nc-title { font-size:14px; font-weight:700; color:var(--text); line-height:1.3; }
+    .nc-desc { font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:8px; }
+    .nc-footer { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .nc-time { font-size:11px; color:var(--text-light); display:flex; align-items:center; gap:5px; }
+    .nc-new-badge { background:var(--primary); color:#fff; font-size:9px; font-weight:800; padding:2px 7px; border-radius:20px; letter-spacing:0.5px; }
+    .nc-read-badge { background:var(--surface2); color:var(--text-muted); font-size:9px; font-weight:700; padding:2px 7px; border-radius:20px; }
+    .nc-actions { display:flex; gap:8px; margin-left:auto; }
+    .nc-btn {
+      padding:6px 13px; border-radius:var(--radius-sm);
+      font-size:11px; font-weight:700; cursor:pointer;
+      transition:var(--transition); border:1.5px solid var(--border);
+      background:var(--surface2); color:var(--text-muted);
+    }
+    .nc-btn:hover { border-color:var(--primary); color:var(--primary); background:rgba(37,99,235,0.06); }
+    .nc-btn.primary { background:var(--gradient); color:#fff; border-color:transparent; }
+    .nc-btn.primary:hover { box-shadow:var(--shadow-blue); transform:translateY(-1px); }
+
+    /* Empty state */
+    .notif-empty {
+      text-align:center; padding:80px 20px;
+      color:var(--text-muted);
+    }
+    .notif-empty i { font-size:56px; opacity:0.15; display:block; margin-bottom:16px; }
+    .notif-empty h3 { font-size:17px; font-weight:700; margin-bottom:6px; color:var(--text); }
+    .notif-empty p { font-size:13px; }
+
+    @media (max-width:600px) {
+      .notif-card { flex-direction:column; }
+      .nc-top { flex-direction:column; }
+      .nc-actions { margin-left:0; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+        <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item active" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta"><div class="user-name" data-user-name>Student</div><div class="user-sub" data-user-branch>CSE</div></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search opportunities, skills, companies..."/></div>
+      <div class="topbar-right">
+        <div style="position:relative"><button class="topbar-icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="notif-badge"></span></button><div class="notif-dropdown" id="notifDropdown"></div></div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-title"><i class="fas fa-bell" style="color:var(--primary);margin-right:10px"></i>Notifications</div>
+        <div class="page-subtitle">Stay updated with AI-powered career alerts and personalized recommendations.</div>
+      </div>
+
+      <!-- Notifications header bar -->
+      <div class="notif-page-header">
+        <div class="notif-header-left">
+          <div style="font-size:16px;font-weight:700;color:var(--text)">All Notifications</div>
+          <span class="notif-count-badge" id="unreadBadge">0 Unread</span>
+        </div>
+        <button class="mark-all-btn" onclick="markAllReadPage()">
+          <i class="fas fa-check-double"></i> Mark all as read
+        </button>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="notif-filter-tabs" id="notifTabs">
+        <button class="notif-tab active" data-type="all">All <span class="tab-count" id="cnt-all">10</span></button>
+        <button class="notif-tab" data-type="opportunity">Opportunities <span class="tab-count" id="cnt-opportunity">0</span></button>
+        <button class="notif-tab" data-type="deadline">Deadlines <span class="tab-count" id="cnt-deadline">0</span></button>
+        <button class="notif-tab" data-type="application">Applications <span class="tab-count" id="cnt-application">0</span></button>
+        <button class="notif-tab" data-type="learning">Learning <span class="tab-count" id="cnt-learning">0</span></button>
+        <button class="notif-tab" data-type="certification">Certifications <span class="tab-count" id="cnt-certification">0</span></button>
+      </div>
+
+      <!-- Notifications list -->
+      <div id="notifPageList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none" onclick="closeSidebar()"></div>
+
+<script src="js/app.js"></script>
+<script>
+const PAGE_NOTIFS = [
+  { id:101, type:'opportunity', icon:'fas fa-briefcase', iconBg:'rgba(37,99,235,0.1)', iconColor:'#2563EB',
+    title:'🎯 New Job Match: Google SWE Intern', desc:'A new Software Engineer Internship at Google matches 92% of your skills. Apply before Aug 8, 2026.', time:'2 minutes ago', read:false, link:'opportunities2.html' },
+  { id:102, type:'deadline', icon:'fas fa-clock', iconBg:'rgba(239,68,68,0.1)', iconColor:'#EF4444',
+    title:'⚠️ Deadline Alert: Microsoft SDE Intern', desc:'Only 7 days remaining for the Microsoft SDE Internship application. Don\'t miss this opportunity!', time:'1 hour ago', read:false, link:'deadlines.html' },
+  { id:103, type:'learning', icon:'fas fa-graduation-cap', iconBg:'rgba(124,58,237,0.1)', iconColor:'#7C3AED',
+    title:'📚 Week 2 Roadmap Ready', desc:'Your AI learning roadmap for Week 2 (Power BI, Excel, Data Visualization) is ready to begin.', time:'3 hours ago', read:false, link:'roadmap2.html' },
+  { id:104, type:'certification', icon:'fas fa-certificate', iconBg:'rgba(34,197,94,0.1)', iconColor:'#22C55E',
+    title:'🎓 Free Certification: AWS Cloud Practitioner', desc:'AWS Cloud Practitioner certification aligns perfectly with your career goals. Enroll free now!', time:'5 hours ago', read:false, link:'opportunities2.html' },
+  { id:105, type:'opportunity', icon:'fas fa-trophy', iconBg:'rgba(245,158,11,0.1)', iconColor:'#F59E0B',
+    title:'🏆 Hackathon Match: Smart India Hackathon', desc:'Smart India Hackathon 2026 is a 95% match for your tech skills. Registration closes Aug 12.', time:'Yesterday, 4:30 PM', read:false, link:'deadlines.html' },
+  { id:106, type:'application', icon:'fas fa-paper-plane', iconBg:'rgba(20,184,166,0.1)', iconColor:'#14B8A6',
+    title:'✅ Application Submitted: Zoho SDE', desc:'Your application for Software Developer at Zoho has been submitted successfully. Track your status.', time:'Yesterday, 2:00 PM', read:true, link:'opportunities2.html' },
+  { id:107, type:'learning', icon:'fas fa-brain', iconBg:'rgba(37,99,235,0.1)', iconColor:'#2563EB',
+    title:'🤖 AI Career Insight', desc:'Based on your recent activity, adding "Docker" to your skillset could increase your job matches by 25%.', time:'2 days ago', read:true, link:'career-analysis.html' },
+  { id:108, type:'deadline', icon:'fas fa-fire', iconBg:'rgba(239,68,68,0.08)', iconColor:'#EF4444',
+    title:'🔥 Urgent: 3 Deadlines This Week', desc:'You have 3 high-priority deadlines this week. Enable reminders to stay on track.', time:'2 days ago', read:true, link:'deadlines.html' },
+  { id:109, type:'certification', icon:'fas fa-star', iconBg:'rgba(245,158,11,0.1)', iconColor:'#F59E0B',
+    title:'⭐ Resume Score Improved', desc:'Your AI resume score improved from 72 to 85 after adding new projects. You\'re on the right track!', time:'3 days ago', read:true, link:'dashboard2.html' },
+  { id:110, type:'application', icon:'fas fa-building', iconBg:'rgba(124,58,237,0.1)', iconColor:'#7C3AED',
+    title:'👀 Recruiter Viewed Your Profile', desc:'A recruiter from TCS viewed your SkillBridge profile. Keep your profile up to date!', time:'4 days ago', read:true, link:'profile2.html' },
+];
+
+let notifData = [];
+let activeType = 'all';
+
+function loadPageNotifs() {
+  // Merge with stored read states
+  const stored = localStorage.getItem('sb_page_notifs');
+  if (stored) {
+    try {
+      const s = JSON.parse(stored);
+      notifData = PAGE_NOTIFS.map(n => ({ ...n, read: s[n.id] ?? n.read }));
+    } catch { notifData = [...PAGE_NOTIFS]; }
+  } else {
+    notifData = [...PAGE_NOTIFS];
+  }
+}
+
+function saveNotifStates() {
+  const states = {};
+  notifData.forEach(n => { states[n.id] = n.read; });
+  localStorage.setItem('sb_page_notifs', JSON.stringify(states));
+}
+
+function updateCounts() {
+  const unread = notifData.filter(n => !n.read).length;
+  document.getElementById('unreadBadge').textContent = unread + (unread === 1 ? ' Unread' : ' Unread');
+
+  const types = ['opportunity','deadline','application','learning','certification'];
+  types.forEach(t => {
+    const el = document.getElementById('cnt-' + t);
+    if (el) el.textContent = notifData.filter(n => n.type === t).length;
+  });
+  const allEl = document.getElementById('cnt-all');
+  if (allEl) allEl.textContent = notifData.length;
+}
+
+function getFilteredNotifs() {
+  if (activeType === 'all') return notifData;
+  return notifData.filter(n => n.type === activeType);
+}
+
+function renderNotifs() {
+  const list = document.getElementById('notifPageList');
+  const data = getFilteredNotifs();
+
+  if (!data.length) {
+    list.innerHTML = `<div class="notif-empty">
+      <i class="fas fa-bell-slash"></i>
+      <h3>No notifications here</h3>
+      <p>You're all caught up in this category!</p>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(n => `
+    <div class="notif-card${n.read ? '' : ' unread'} fade-in" id="nc_${n.id}">
+      <div class="nc-icon" style="background:${n.iconBg}"><i class="${n.icon}" style="color:${n.iconColor}"></i></div>
+      <div class="nc-body">
+        <div class="nc-top">
+          <div class="nc-title">${n.title}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+            ${n.read
+              ? '<span class="nc-read-badge">READ</span>'
+              : '<span class="nc-new-badge">NEW</span>'}
+          </div>
+        </div>
+        <div class="nc-desc">${n.desc}</div>
+        <div class="nc-footer">
+          <span class="nc-time"><i class="fas fa-clock"></i>${n.time}</span>
+          <div class="nc-actions">
+            ${!n.read ? `<button class="nc-btn" onclick="markOneRead(${n.id})"><i class="fas fa-check"></i> Mark Read</button>` : ''}
+            <a href="${n.link}" class="nc-btn primary"><i class="fas fa-arrow-right"></i> View Details</a>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  updateCounts();
+}
+
+function markOneRead(id) {
+  const n = notifData.find(n => n.id === id);
+  if (!n) return;
+  n.read = true;
+  saveNotifStates();
+  renderNotifs();
+  showToast('Notification marked as read.', 'success');
+}
+
+function markAllReadPage() {
+  notifData.forEach(n => n.read = true);
+  saveNotifStates();
+  renderNotifs();
+  // Also update global notifications badge
+  document.querySelectorAll('.notif-badge').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.nav-badge-notif').forEach(el => el.textContent = '');
+  showToast('All notifications marked as read! ✓', 'success');
+}
+
+// Filter tabs
+document.querySelectorAll('.notif-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeType = tab.dataset.type;
+    renderNotifs();
+  });
+});
+
+function closeSidebar() {
+  document.getElementById('appSidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay').style.display = 'none';
+}
+document.getElementById('mobileSidebarBtn')?.addEventListener('click', () => {
+  document.getElementById('appSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').style.display = 'block';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  initSidebar('nav-notifications');
+  renderNotifDropdown();
+  loadPageNotifs();
+  renderNotifs();
+  updateCounts();
+});
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

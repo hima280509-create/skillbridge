@@ -1,0 +1,274 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Analysis – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .analysis-run-card { background:linear-gradient(135deg,#0F172A,#1E1B4B,#312E81); border-radius:var(--radius-xl); padding:40px; color:#fff; margin-bottom:24px; position:relative; overflow:hidden; }
+    .analysis-run-card::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px); background-size:30px 30px; pointer-events:none; }
+    .analysis-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px; }
+    .analysis-full-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; }
+    .analysis-score-row { display:flex; align-items:center; gap:16px; padding:12px 0; border-bottom:1px solid var(--border); }
+    .analysis-score-row:last-child { border-bottom:none; }
+    .a-score-label { width:140px; font-size:13px; color:var(--text); flex-shrink:0; }
+    .a-score-bar { flex:1; height:10px; background:var(--surface2); border-radius:5px; overflow:hidden; }
+    .a-score-fill { height:100%; border-radius:5px; background:linear-gradient(90deg,var(--primary),var(--purple)); transition:width 1.5s ease; }
+    .a-score-val { width:50px; font-size:13px; font-weight:700; color:var(--text); text-align:right; }
+    .career-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; display:flex; align-items:center; gap:14px; transition:var(--transition); }
+    .career-card:hover { border-color:rgba(37,99,235,0.3); box-shadow:var(--shadow); }
+    .career-rank { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; flex-shrink:0; }
+    .career-rank.r1 { background:linear-gradient(135deg,#F59E0B,#D97706); }
+    .career-rank.r2 { background:linear-gradient(135deg,#6B7280,#9CA3AF); }
+    .career-rank.r3 { background:linear-gradient(135deg,#92400E,#B45309); }
+    .career-info { flex:1; }
+    .career-name { font-size:15px; font-weight:700; color:var(--text); }
+    .career-domain { font-size:12px; color:var(--text-muted); }
+    .strength-list, .improve-list { display:flex; flex-direction:column; gap:10px; }
+    .strength-item, .improve-item { display:flex; align-items:center; gap:10px; font-size:13px; padding:10px 14px; border-radius:10px; }
+    .strength-item { background:rgba(34,197,94,0.06); color:var(--text); border:1px solid rgba(34,197,94,0.15); }
+    .strength-item i { color:var(--success); }
+    .improve-item { background:rgba(245,158,11,0.06); color:var(--text); border:1px solid rgba(245,158,11,0.15); }
+    .improve-item i { color:var(--warning); }
+    .skill-gap-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
+    .skill-cat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
+    .skill-cat-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:10px; }
+    .skill-cat-have { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+    .skill-cat-missing { display:flex; flex-wrap:wrap; gap:5px; }
+  </style>
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header"><a href="index.html" class="nav-logo"><div class="logo-icon"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#aLogoG2)"/><path d="M8 16L13 21L24 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="aLogoG2" x1="0" y1="0" x2="32" y2="32"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs></svg></div><span class="logo-text">SkillBridge</span></a></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="dashboard2.html" class="sidebar-nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="profile2.html"><i class="fas fa-user"></i> My Profile</a>
+      <a href="resume-analysis.html" class="sidebar-nav-item active"><i class="fas fa-brain"></i> AI Analysis</a>
+      <a href="roadmap2.html" class="sidebar-nav-item"><i class="fas fa-road"></i> Career Roadmap</a>
+      <div class="nav-section-label">Opportunities</div>
+      <a href="opportunities2.html" class="sidebar-nav-item"><i class="fas fa-briefcase"></i> All Opportunities</a>
+      <a href="opportunities.html?tab=jobs" class="sidebar-nav-item"><i class="fas fa-building"></i> Jobs</a>
+      <a href="opportunities.html?tab=internships" class="sidebar-nav-item"><i class="fas fa-laptop-code"></i> Internships</a>
+      <a href="opportunities.html?tab=competitions" class="sidebar-nav-item"><i class="fas fa-trophy"></i> Competitions</a>
+      <a href="opportunities.html?tab=certifications" class="sidebar-nav-item"><i class="fas fa-certificate"></i> Certifications</a>
+    </nav>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="user-avatar" id="sidebarAvatar">DS</div><div class="user-info"><div class="user-name" id="sidebarName">Student</div><div class="user-role" id="sidebarBranch">CSE</div></div></div><a href="index.html" class="sidebar-nav-item" onclick="logout()" style="margin-top:8px"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+  </aside>
+
+  <main class="dashboard-main">
+    <div class="dashboard-topbar">
+      <div class="topbar-left"><h1 class="topbar-title">AI Analysis</h1><p class="topbar-subtitle">Resume score, skill gaps, and career recommendations</p></div>
+      <div class="topbar-right">
+        <button class="btn btn-primary" id="runBtn" onclick="triggerAnalysis()"><i class="fas fa-brain"></i> Run Analysis</button>
+      </div>
+    </div>
+
+    <div class="dashboard-content">
+      <!-- Run Analysis Card -->
+      <div class="analysis-run-card">
+        <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+          <div>
+            <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">AI Career Analysis Engine</h2>
+            <p style="color:rgba(255,255,255,0.7);font-size:14px;max-width:500px">Our AI compares your profile against 7 career datasets: Skills, Careers, Jobs, Internships, Placements, Competitions & Certifications.</p>
+            <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+              <span style="font-size:12px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px"><i class="fas fa-check-circle" style="color:#22C55E"></i>Resume Scoring</span>
+              <span style="font-size:12px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px"><i class="fas fa-check-circle" style="color:#22C55E"></i>Skill Gap Detection</span>
+              <span style="font-size:12px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px"><i class="fas fa-check-circle" style="color:#22C55E"></i>Career Matching</span>
+              <span style="font-size:12px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px"><i class="fas fa-check-circle" style="color:#22C55E"></i>Roadmap Generation</span>
+            </div>
+          </div>
+          <div id="lastAnalyzedInfo" style="text-align:right">
+            <div style="font-size:13px;color:rgba(255,255,255,0.5)" id="lastAnalyzedText">Not analyzed yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score Summary -->
+      <div class="analysis-grid">
+        <div class="analysis-full-card">
+          <div class="db-card-header"><span class="db-card-title"><i class="fas fa-chart-line" style="color:var(--primary);margin-right:8px"></i>Analysis Scores</span></div>
+          <div id="scoreRows">
+            <div class="analysis-score-row"><span class="a-score-label">Resume Score</span><div class="a-score-bar"><div class="a-score-fill" id="scoreResume" style="width:0%"></div></div><span class="a-score-val" id="valResume">0/100</span></div>
+            <div class="analysis-score-row"><span class="a-score-label">Skill Match</span><div class="a-score-bar"><div class="a-score-fill" id="scoreSkillMatch" style="width:0%"></div></div><span class="a-score-val" id="valSkillMatch">0%</span></div>
+            <div class="analysis-score-row"><span class="a-score-label">Career Fit</span><div class="a-score-bar"><div class="a-score-fill" id="scoreCareerFit" style="width:0%"></div></div><span class="a-score-val" id="valCareerFit">0%</span></div>
+            <div class="analysis-score-row"><span class="a-score-label">Profile Complete</span><div class="a-score-bar"><div class="a-score-fill" id="scoreProfile" style="width:0%;background:linear-gradient(90deg,#22C55E,#16A34A)"></div></div><span class="a-score-val" id="valProfile">0%</span></div>
+          </div>
+        </div>
+        <div class="analysis-full-card">
+          <div class="db-card-header"><span class="db-card-title"><i class="fas fa-star" style="color:var(--warning);margin-right:8px"></i>Career Recommendations</span></div>
+          <div id="careerRankings" style="display:flex;flex-direction:column;gap:10px">
+            <p style="font-size:13px;color:var(--text-muted)">Run analysis to see career recommendations</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strengths & Improvements -->
+      <div class="analysis-grid">
+        <div class="analysis-full-card">
+          <div class="db-card-header"><span class="db-card-title"><i class="fas fa-thumbs-up" style="color:var(--success);margin-right:8px"></i>Your Strengths</span></div>
+          <div class="strength-list" id="strengthsList"><p style="font-size:13px;color:var(--text-muted)">Run analysis to see your strengths</p></div>
+        </div>
+        <div class="analysis-full-card">
+          <div class="db-card-header"><span class="db-card-title"><i class="fas fa-arrow-up" style="color:var(--warning);margin-right:8px"></i>Areas to Improve</span></div>
+          <div class="improve-list" id="improveList"><p style="font-size:13px;color:var(--text-muted)">Run analysis to see improvement areas</p></div>
+        </div>
+      </div>
+
+      <!-- Skill Gap Analysis -->
+      <div class="analysis-full-card" style="margin-bottom:24px">
+        <div class="db-card-header"><span class="db-card-title"><i class="fas fa-chart-bar" style="color:var(--purple);margin-right:8px"></i>Skill Gap Analysis</span><a href="opportunities.html?tab=certifications" class="db-card-link">Get Certifications →</a></div>
+        <div style="display:flex;gap:24px;margin-bottom:16px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="width:10px;height:10px;background:rgba(34,197,94,0.4);border-radius:50%;display:inline-block"></span>Skills you have</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="width:10px;height:10px;background:rgba(239,68,68,0.4);border-radius:50%;display:inline-block"></span>Missing skills</div>
+        </div>
+        <div class="skill-gap-grid" id="skillGapGrid">
+          <p style="grid-column:1/-1;font-size:13px;color:var(--text-muted)">Run analysis to see detailed skill gap</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="loader-overlay" id="loader"><div class="loader-spinner"></div></div>
+
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  const user = getCurrentUser();
+  document.getElementById('sidebarAvatar').textContent = getInitials(user?.name);
+  document.getElementById('sidebarName').textContent = user?.name || 'Student';
+  document.getElementById('sidebarBranch').textContent = user?.branch || 'N/A';
+
+  const result = await apiFetch('/analysis/results');
+  const analysis = result?.success ? result.analysis : user?.aiAnalysis;
+  if (result?.success && analysis) setUser({ ...user, aiAnalysis: analysis });
+  if (analysis?.resumeScore) {
+    renderAnalysis(analysis, user);
+    const lastEl = document.getElementById('lastAnalyzedText');
+    if (lastEl && analysis.lastAnalyzed) lastEl.textContent = 'Last analyzed: ' + formatDate(analysis.lastAnalyzed);
+  }
+});
+
+function renderAnalysis(analysis, user) {
+  user = user || getCurrentUser();
+  const skills = user?.skills || [];
+  const rs = analysis.resumeScore || 0;
+  const sm = analysis.skillMatchPercentage || 0;
+
+  // Animate scores
+  setTimeout(() => {
+    animateBar('scoreResume', 'valResume', rs, rs + '/100');
+    animateBar('scoreSkillMatch', 'valSkillMatch', sm, sm + '%');
+    const careerFit = Number(analysis.overallCareerMatch ?? 0);
+    animateBar('scoreCareerFit', 'valCareerFit', careerFit, careerFit + '%');
+    const profilePct = Number(analysis.profileCompletion ?? 0);
+    animateBar('scoreProfile', 'valProfile', profilePct, profilePct + '%');
+  }, 200);
+
+  // Career rankings
+  const careers = analysis.topCareers || analysis.recommendedCareers?.map((c,i) => ({title:c,score:80-(i*10)})) || [];
+  const rankContainer = document.getElementById('careerRankings');
+  if (rankContainer && careers.length) {
+    rankContainer.innerHTML = careers.slice(0, 3).map((c, i) => `
+      <div class="career-card">
+        <div class="career-rank r${i+1}">${i===0?'🥇':i===1?'🥈':'🥉'}</div>
+        <div class="career-info">
+          <div class="career-name">${c.title || c}</div>
+          <div class="career-domain">${c.score || 70}% match score</div>
+        </div>
+        <div style="font-size:18px;font-weight:800;color:var(--primary)">${c.score || 70}%</div>
+      </div>`).join('');
+  }
+
+  // Strengths
+  const strengthEl = document.getElementById('strengthsList');
+  if (strengthEl && analysis.strengths?.length) {
+    strengthEl.innerHTML = analysis.strengths.map(s => `<div class="strength-item"><i class="fas fa-check-circle"></i>${s}</div>`).join('');
+  }
+
+  // Improvements
+  const improveEl = document.getElementById('improveList');
+  if (improveEl && analysis.improvements?.length) {
+    improveEl.innerHTML = analysis.improvements.map(s => `<div class="improve-item"><i class="fas fa-lightbulb"></i>${s}</div>`).join('');
+  }
+
+  // Skill gap
+  renderSkillGap(skills, analysis.missingSkills || []);
+}
+
+function renderSkillGap(userSkills, missingSkills) {
+  const grid = document.getElementById('skillGapGrid');
+  if (!grid) return;
+
+  const categories = {
+    'Programming': ['Python','JavaScript','Java','C++','TypeScript','Go','Swift','Kotlin','R'],
+    'Web Dev': ['React','Node.js','HTML/CSS','Bootstrap','Vue.js','Angular','Express','Django','Flask'],
+    'AI/ML': ['Machine Learning','Deep Learning','TensorFlow','PyTorch','NLP','Computer Vision','Scikit-learn'],
+    'Data': ['SQL','Data Analysis','Power BI','Tableau','Excel','Pandas','NumPy','Statistics'],
+    'Cloud/DevOps': ['AWS','Docker','Kubernetes','Linux','CI/CD','Azure','GCP','Terraform'],
+    'Mobile': ['Flutter','Android Development','iOS Development','React Native','Firebase'],
+    'Database': ['MongoDB','MySQL','PostgreSQL','Redis','Database Design'],
+    'Design': ['Figma','UI/UX Design','Adobe XD','Prototyping']
+  };
+
+  const lower = userSkills.map(s => s.toLowerCase());
+  grid.innerHTML = Object.entries(categories).map(([cat, skills]) => {
+    const have = skills.filter(s => lower.includes(s.toLowerCase()));
+    const missing = skills.filter(s => !lower.includes(s.toLowerCase()) && missingSkills.map(m => m.toLowerCase()).includes(s.toLowerCase()));
+    if (have.length === 0 && missing.length === 0) return '';
+    return `<div class="skill-cat-card">
+      <div class="skill-cat-title">${cat}</div>
+      ${have.length > 0 ? `<div class="skill-cat-have">${have.map(s => `<span class="skill-pill have">${s}</span>`).join('')}</div>` : ''}
+      ${missing.length > 0 ? `<div class="skill-cat-missing">${missing.map(s => `<span class="missing-tag">${s}</span>`).join('')}</div>` : ''}
+    </div>`;
+  }).filter(Boolean).join('') || '<p style="grid-column:1/-1;font-size:13px;color:var(--text-muted)">Add more skills to your profile for gap analysis</p>';
+}
+
+function animateBar(barId, valId, pct, label) {
+  const bar = document.getElementById(barId);
+  const val = document.getElementById(valId);
+  if (bar) bar.style.width = pct + '%';
+  if (val) val.textContent = label;
+}
+
+async function triggerAnalysis() {
+  const btn = document.getElementById('runBtn');
+  const user = getCurrentUser();
+  if (!user?.skills?.length) { showToast('Please add skills first', 'error'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+  showLoader();
+
+  try {
+    const data = await apiFetch('/analysis/run', { method: 'POST' });
+    hideLoader();
+    if (data?.success) {
+      const updated = updateLocalUser({ aiAnalysis: data.analysis });
+      renderAnalysis(data.analysis, updated);
+      showToast('Analysis complete!', 'success');
+      const lastEl = document.getElementById('lastAnalyzedText');
+      if (lastEl) lastEl.textContent = 'Last analyzed: Just now';
+    } else {
+      showToast(data?.message || 'Analysis could not be completed.', 'error');
+    }
+  } catch (e) {
+    hideLoader();
+    showToast('Analysis is temporarily unavailable. Please try again.', 'error');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-brain"></i> Run Analysis';
+}
+
+</script>
+</body>
+</html>
+

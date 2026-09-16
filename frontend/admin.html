@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – SkillBridge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #2563EB; --purple: #7C3AED; --success: #22C55E;
+      --danger: #EF4444; --warning: #F59E0B; --bg: #F8FAFC;
+      --surface: #fff; --text: #1E293B; --muted: #64748B;
+      --border: #E2E8F0; --gradient: linear-gradient(135deg,#2563EB,#7C3AED);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .topbar {
+      background: var(--gradient);
+      padding: 18px 32px;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 4px 24px rgba(37,99,235,0.25);
+    }
+    .topbar-logo { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .topbar-title { font-size: 20px; font-weight: 800; color: #fff; }
+    .topbar-sub { font-size: 12px; color: rgba(255,255,255,0.7); }
+    .topbar a { margin-left: auto; color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 600; text-decoration: none; background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); }
+    .topbar a:hover { background: rgba(255,255,255,0.25); }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 36px 24px; }
+
+    .alert-box { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-left: 4px solid #F59E0B; border-radius: var(--radius); padding: 16px 20px; margin-bottom: 28px; display: flex; gap: 12px; align-items: flex-start; }
+    .alert-box i { color: #F59E0B; font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+    .alert-box-text h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .alert-box-text p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+    .card-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    @media(max-width:640px){ .grid2 { grid-template-columns: 1fr; } }
+
+    .dataset-card {
+      border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 16px 18px; background: var(--bg);
+      transition: all 0.2s; display: flex; align-items: center; gap: 14px;
+    }
+    .dataset-card:hover { border-color: var(--primary); background: rgba(37,99,235,0.03); }
+    .ds-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .ds-info { flex: 1; min-width: 0; }
+    .ds-name { font-size: 14px; font-weight: 700; color: var(--text); }
+    .ds-count { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .ds-status { flex-shrink: 0; }
+
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #CBD5E1; display: inline-block;
+    }
+    .status-dot.seeded { background: #22C55E; }
+    .status-dot.error { background: #EF4444; }
+    .status-dot.seeding { background: #F59E0B; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 12px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      border: none; font-family: inherit; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 16px rgba(37,99,235,0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,0.4); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: #F1F5F9; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-sm { padding: 8px 16px; font-size: 12px; }
+    .btn-danger-out { background: transparent; color: var(--danger); border: 1.5px solid var(--danger); }
+    .btn-danger-out:hover { background: var(--danger); color: #fff; }
+
+    .log-area {
+      background: #0F172A; color: #94A3B8;
+      border-radius: 12px; padding: 20px 22px;
+      font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7;
+      min-height: 180px; max-height: 320px; overflow-y: auto;
+      margin-top: 16px; border: 1px solid #1E293B;
+    }
+    .log-area p { margin: 0; }
+    .log-area .log-success { color: #22C55E; }
+    .log-area .log-error { color: #EF4444; }
+    .log-area .log-info { color: #60A5FA; }
+    .log-area .log-warn { color: #F59E0B; }
+
+    .stats-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+    .stat-pill {
+      padding: 10px 18px; border-radius: 30px;
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+      border: 1.5px solid var(--border); background: var(--surface);
+    }
+    .stat-pill .num { font-size: 18px; font-weight: 800; color: var(--primary); }
+
+    .section-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    .db-status {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px; border-radius: 12px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      font-size: 13px; font-weight: 600; margin-bottom: 20px;
+    }
+    .db-status i { font-size: 16px; }
+    #dbStatusDot { width: 10px; height: 10px; border-radius: 50%; background: #94A3B8; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><i class="fas fa-database" style="color:#fff"></i></div>
+  <div>
+    <div class="topbar-title">SkillBridge Admin</div>
+    <div class="topbar-sub">Dataset Management & Database Seeding</div>
+  </div>
+  <a href="dashboard2.html"><i class="fas fa-arrow-left"></i> Back to App</a>
+</div>
+
+<div class="container">
+
+  <!-- Alert -->
+  <div class="alert-box">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div class="alert-box-text">
+      <h4>Admin Actions — Use with Care</h4>
+      <p>Datasets are managed directly in Firebase Firestore. Make sure the server is running at <strong>localhost:5000</strong> to view live collection status.</p>
+    </div>
+  </div>
+
+  <!-- DB Status -->
+  <h2 class="section-title"><i class="fas fa-server" style="color:var(--primary);margin-right:10px"></i>Server Status</h2>
+  <p class="section-sub">Check if the backend API and MongoDB database are connected.</p>
+
+  <div class="db-status">
+    <div id="dbStatusDot"></div>
+    <span id="dbStatusText">Checking server...</span>
+    <button class="btn btn-secondary btn-sm" onclick="checkHealth()" style="margin-left:auto">
+      <i class="fas fa-sync"></i> Refresh
+    </button>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Dataset Cards -->
+  <h2 class="section-title"><i class="fas fa-table" style="color:var(--purple);margin-right:10px"></i>Firestore Datasets</h2>
+  <p class="section-sub">Live Firestore collections power the AI recommendation engine.</p>
+
+  <div class="grid2" id="datasetGrid">
+    <div class="dataset-card">
+      <div class="ds-icon" style="background:rgba(37,99,235,0.1);color:var(--primary)"><i class="fas fa-code"></i></div>
+      <div class="ds-info"><div class="ds-name">Skills Dataset</div><div class="ds-count">50 technical skills with demand scores</div></div>
+      <div class="ds-status"><span class="status-dot" data-ds="skills"></span></div>
+    </div>
+    <div class="dataset-card">
+      <div class="ds-icon" style="background:rgba(124,58,237,0.1);color:var(--purple)"><i class="fas fa-chart-line"></i></div>
+      <div class="ds-info"><div class="ds-name">Career Dataset</div><div class="ds-count">20 career paths with skill mapping</div></div>
+      <div class="ds-status"><span class="status-dot" data-ds="careers"></span></div>
+    </div>
+    <div class="dataset-card">
+      <div class="ds-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class="fas fa-briefcase"></i></div>
+      <div class="ds-info"><div class="ds-name">Jobs Dataset</div><div class="ds-count">20 job listings with eligibility criteria</div></div>
+      <div class="ds-status"><span class="status-dot" data-ds="jobs"></span></div>
+    </div>
+    <div class="dataset-card">
+      <div class="ds-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class="fas fa-building"></i></div>
+      <div class="ds-info"><div class="ds-name">Internship Dataset</div><div class="ds-count">15 internships with deadlines</div></div>
+      <div class="ds-status"><span class="status-dot" data-ds="internships"></span></div>
+    </div>
+    <div class="dataset-card">
+      <div class="ds-icon" style="background:rgba(20,184,166,0.1);color:#14B8A6"><i class="fas fa-university"></i></div>
+      <div class="ds-info"><div class="ds-name">Placement Dataset</div><div class="ds-count">15 placement drives with company info</div></div>
+      <div class="ds-status"><span class="status-dot" data-ds="placements"></span></div>
+    </div>
+    <div class="dataset-card">
+      <div class="ds-icon" style="background:rgba(239,68,68,0.08);color:#EF4444"><i class="fas fa-trophy"></i></div>
+      <div class="ds-info"><div class="ds-name">Competition Dataset</div><div class="ds-count">15 coding competitions & hackathons</div></div>
+      <div class="ds-status"><span class="status-dot" data-ds="competitions"></span></div>
+    </div>
+    <div class="dataset-card">
+      <div class="ds-icon" style="background:rgba(236,72,153,0.08);color:#EC4899"><i class="fas fa-certificate"></i></div>
+      <div class="ds-info"><div class="ds-name">Certification Dataset</div><div class="ds-count">25 free certifications with platform info</div></div>
+      <div class="ds-status"><span class="status-dot" data-ds="certifications"></span></div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+    <button class="btn btn-secondary" onclick="clearLog()">
+      <i class="fas fa-eraser"></i> Clear Log
+    </button>
+    <button class="btn btn-secondary" onclick="window.open('http://localhost:5000/api/health', '_blank')">
+      <i class="fas fa-heartbeat"></i> Health Check
+    </button>
+  </div>
+
+  <!-- Log -->
+  <div class="log-area" id="logArea">
+    <p class="log-info">[ SkillBridge Admin ] Ready. Firestore dataset status is shown above.</p>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- API Test Panel -->
+  <h2 class="section-title"><i class="fas fa-flask" style="color:var(--success);margin-right:10px"></i>API Test Console</h2>
+  <p class="section-sub">Quickly test key API endpoints to verify they are working.</p>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-secondary btn-sm" onclick="testEndpoint('/api/health','GET')"><i class="fas fa-heartbeat"></i> Health</button>
+    <button class="btn btn-secondary btn-sm" onclick="testEndpoint('/api/opportunities/jobs?limit=3','GET')"><i class="fas fa-briefcase"></i> Jobs</button>
+    <button class="btn btn-secondary btn-sm" onclick="testEndpoint('/api/opportunities/internships?limit=3','GET')"><i class="fas fa-building"></i> Internships</button>
+    <button class="btn btn-secondary btn-sm" onclick="testEndpoint('/api/opportunities/freeCertificates?limit=3','GET')"><i class="fas fa-certificate"></i> Certs</button>
+    <button class="btn btn-secondary btn-sm" onclick="testEndpoint('/api/opportunities/competitions?limit=3','GET')"><i class="fas fa-trophy"></i> Competitions</button>
+    <button class="btn btn-secondary btn-sm" onclick="testEndpoint('/api/opportunities/placements?limit=3','GET')"><i class="fas fa-university"></i> Placements</button>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Stats -->
+  <h2 class="section-title" style="margin-bottom:6px"><i class="fas fa-chart-bar" style="color:var(--warning);margin-right:10px"></i>Database Stats</h2>
+  <p class="section-sub">Live count of records in each collection.</p>
+  <div class="stats-row" id="statsRow">
+    <div class="stat-pill"><span class="num" id="sJobs">—</span> Jobs</div>
+    <div class="stat-pill"><span class="num" id="sInterns">—</span> Internships</div>
+    <div class="stat-pill"><span class="num" id="sPlacements">—</span> Placements</div>
+    <div class="stat-pill"><span class="num" id="sComps">—</span> Competitions</div>
+    <div class="stat-pill"><span class="num" id="sCerts">—</span> Certifications</div>
+    <div class="stat-pill"><span class="num" id="sCareers">—</span> Careers</div>
+    <div class="stat-pill"><span class="num" id="sSkills">—</span> Skills</div>
+    <div class="stat-pill"><span class="num" id="sUsers">—</span> Users</div>
+  </div>
+  <button class="btn btn-secondary btn-sm" onclick="fetchStats()"><i class="fas fa-sync"></i> Refresh Stats</button>
+
+</div>
+
+<script src="js/firebase-init.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+
+function log(msg, type='info') {
+  const area = document.getElementById('logArea');
+  const p = document.createElement('p');
+  p.className = 'log-' + type;
+  p.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+  area.appendChild(p);
+  area.scrollTop = area.scrollHeight;
+}
+function clearLog() {
+  document.getElementById('logArea').innerHTML = '<p class="log-info">Log cleared.</p>';
+}
+
+// ── Health Check ─────────────────────────────────────────────────────────────
+async function checkHealth() {
+  const dot = document.getElementById('dbStatusDot');
+  const txt = document.getElementById('dbStatusText');
+  txt.textContent = 'Checking...';
+  dot.style.background = '#F59E0B';
+  try {
+    const r = await fetch(API + '/health');
+    const d = await r.json();
+    if (d.status === 'ok') {
+      dot.style.background = d.database === 'Firestore' ? '#22C55E' : '#F59E0B';
+      txt.textContent = `Server: ✅ Running | Database: ${d.database || 'Unknown'} | ${d.timestamp}`;
+    } else {
+      dot.style.background = '#EF4444';
+      txt.textContent = 'Server responded but with errors.';
+    }
+  } catch {
+    dot.style.background = '#EF4444';
+    txt.textContent = '❌ Cannot reach server at localhost:5000. Make sure node server.js is running.';
+  }
+}
+
+// ── Test Endpoint ─────────────────────────────────────────────────────────────
+async function testEndpoint(path, method='GET') {
+  log(`Testing: ${method} ${path}`, 'info');
+  try {
+    await window.SkillBridgeFirebaseReady;
+    const token = await window.getSkillBridgeFirebaseIdToken();
+    const r = await fetch(API.replace('/api', '') + path, { method, headers: { Authorization: `Bearer ${token}` } });
+    const d = await r.json();
+    const count = Array.isArray(d) ? d.length : (d.count || d.total || (typeof d === 'object' ? Object.keys(d).length : 1));
+    log(`✅ ${path} → Status ${r.status} | Records: ${count}`, 'success');
+  } catch (err) {
+    log(`❌ ${path} → ${err.message}`, 'error');
+  }
+}
+
+// ── Fetch Stats ───────────────────────────────────────────────────────────────
+async function fetchStats() {
+  const endpoints = [
+    ['sJobs', '/opportunities/jobs'],
+    ['sInterns', '/opportunities/internships'],
+    ['sPlacements', '/opportunities/placements'],
+    ['sComps', '/opportunities/competitions'],
+    ['sCerts', '/opportunities/freeCertificates'],
+  ];
+  for (const [id, path] of endpoints) {
+    try {
+      await window.SkillBridgeFirebaseReady;
+      const token = await window.getSkillBridgeFirebaseIdToken();
+      const r = await fetch(API + path + '?limit=1000', { headers: { Authorization: `Bearer ${token}` } });
+      const d = await r.json();
+      const el = document.getElementById(id);
+      if (el) el.textContent = Array.isArray(d) ? d.length : (d.count || d.total || '—');
+    } catch { /* silent */ }
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  checkHealth();
+  fetchStats();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Resume Analysis – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Hero */
+    .analysis-hero { background:var(--gradient-hero); border-radius:var(--radius-xl); padding:36px 40px; margin-bottom:28px; position:relative; overflow:hidden; }
+    .analysis-hero::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    .hero-content { position:relative; z-index:1; display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+    .hero-icon { width:64px; height:64px; background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; flex-shrink:0; border:1px solid rgba(255,255,255,0.2); }
+    .hero-text h1 { font-size:26px; font-weight:800; color:#fff; margin-bottom:6px; }
+    .hero-text p { font-size:14px; color:rgba(255,255,255,0.75); }
+    .hero-badges { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    .hero-badge { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); backdrop-filter:blur(8px); color:#fff; padding:5px 14px; border-radius:var(--radius-full); font-size:12px; font-weight:600; }
+
+    /* Big score ring container */
+    .score-section { display:flex; align-items:center; gap:36px; flex-wrap:wrap; }
+    .score-ring-wrap { position:relative; flex-shrink:0; }
+    .score-ring-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .score-ring-val { font-size:34px; font-weight:900; color:var(--text); line-height:1; }
+    .score-ring-sub { font-size:12px; color:var(--text-muted); font-weight:600; }
+    .score-breakdown { flex:1; min-width:200px; }
+    .score-bar-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .score-bar-label { font-size:13px; font-weight:600; color:var(--text); width:100px; flex-shrink:0; }
+    .score-bar-track { flex:1; height:7px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+    .score-bar-fill { height:100%; border-radius:4px; width:0; transition:width 1.3s ease; }
+    .score-bar-val { font-size:12px; font-weight:700; width:36px; text-align:right; }
+
+    /* Info card grid */
+    .info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    @media(max-width:900px){ .info-grid{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:600px){ .info-grid{grid-template-columns:1fr;} }
+    .info-item { background:var(--surface2); border-radius:var(--radius); padding:14px 16px; }
+    .info-item-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:6px; }
+    .info-item-val { font-size:15px; font-weight:700; color:var(--text); }
+
+    /* Suggestions */
+    .suggestion-item { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-light); }
+    .suggestion-item:last-child { border-bottom:none; }
+    .sug-num { width:28px; height:28px; border-radius:50%; background:var(--gradient); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0; }
+    .sug-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+
+    /* Skill columns */
+    .skill-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    @media(max-width:900px){ .skill-cols{grid-template-columns:1fr;} }
+    .skill-col-title { font-size:13px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+    .skill-tag-wrap { display:flex; flex-wrap:wrap; gap:7px; }
+
+    /* Section title row */
+    .sec-title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+    .sec-heading { font-size:17px; font-weight:800; color:var(--text); display:flex; align-items:center; gap:9px; }
+
+    /* Score ring color coding */
+    .score-grade { display:inline-block; padding:4px 12px; border-radius:var(--radius-full); font-size:13px; font-weight:700; }
+
+    /* animate in */
+    .animate-card { opacity:0; transform:translateY(20px); animation:slideUpIn 0.5s ease forwards; }
+    @keyframes slideUpIn { to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+        <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item" id="nav-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item" id="nav-upload"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item active" id="nav-resume"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item" id="nav-opportunities"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item" id="nav-career"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item" id="nav-roadmap"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item" id="nav-profile"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta"><div class="user-name" data-user-name>Student</div><div class="user-sub" data-user-branch>CSE</div></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search opportunities, skills, companies..."/></div>
+      <div class="topbar-right">
+        <div style="position:relative"><button class="topbar-icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="notif-badge"></span></button><div class="notif-dropdown" id="notifDropdown"></div></div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Hero -->
+      <div class="analysis-hero">
+        <div class="hero-content">
+          <div class="hero-icon"><i class="fas fa-brain"></i></div>
+          <div class="hero-text">
+            <h1>AI Resume Analyzer</h1>
+            <p>Deep analysis of your profile — resume score, skill gaps, and personalized improvement tips powered by local AI.</p>
+            <div class="hero-badges">
+              <span class="hero-badge"><i class="fas fa-shield-alt" style="margin-right:5px"></i>Private Analysis</span>
+              <span class="hero-badge"><i class="fas fa-bolt" style="margin-right:5px"></i>Real-time Results</span>
+              <span class="hero-badge"><i class="fas fa-lightbulb" style="margin-right:5px"></i>AI-Powered Tips</span>
+            </div>
+          </div>
+          <div style="margin-left:auto">
+            <button class="btn" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3)" onclick="reAnalyze()">
+              <i class="fas fa-sync-alt"></i> Re-Analyze
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 1: Resume Score -->
+      <div class="card animate-card" style="margin-bottom:18px;animation-delay:0.05s">
+        <div class="sec-title-row">
+          <div class="sec-heading"><i class="fas fa-star" style="color:var(--warning)"></i>Your Resume Score</div>
+          <span id="scoreGrade" class="score-grade badge-green">Loading…</span>
+        </div>
+        <div class="score-section">
+          <div class="score-ring-wrap">
+            <div id="bigScoreRing"></div>
+            <div class="score-ring-label">
+              <span class="score-ring-val" id="bigScoreVal">0</span>
+              <span class="score-ring-sub">/ 100</span>
+            </div>
+          </div>
+          <div class="score-breakdown" id="scoreBreakdown">
+            <!-- filled by JS -->
+          </div>
+        </div>
+        <div style="margin-top:18px;padding:14px;background:var(--surface2);border-radius:var(--radius);font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px">
+          <i class="fas fa-info-circle" style="color:var(--primary)"></i>
+          <span id="scoreMessage">Resume score is calculated based on skills, projects, certifications, and profile completeness.</span>
+        </div>
+      </div>
+
+      <!-- Section 2: Extracted Info -->
+      <div class="card animate-card" style="margin-bottom:18px;animation-delay:0.15s">
+        <div class="sec-title-row">
+          <div class="sec-heading"><i class="fas fa-id-card" style="color:var(--primary)"></i>Extracted Profile Info</div>
+          <a href="upload.html" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit Profile</a>
+        </div>
+        <div class="info-grid" id="infoGrid">
+          <!-- filled by JS -->
+        </div>
+        <div style="margin-top:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Skills on Profile</div>
+          <div id="allSkillsTags" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+        </div>
+      </div>
+
+      <!-- Section 3: AI Suggestions -->
+      <div class="card animate-card" style="margin-bottom:18px;animation-delay:0.25s">
+        <div class="sec-title-row">
+          <div class="sec-heading"><i class="fas fa-lightbulb" style="color:var(--warning)"></i>AI Improvement Suggestions</div>
+          <span class="badge badge-orange">Personalized</span>
+        </div>
+        <div id="suggestionsWrap">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Section 4: Skill Analysis -->
+      <div class="card animate-card" style="animation-delay:0.35s">
+        <div class="sec-title-row">
+          <div class="sec-heading"><i class="fas fa-chart-pie" style="color:var(--purple)"></i>Skill Analysis</div>
+          <a href="career-analysis.html" class="card-link">Full Analysis →</a>
+        </div>
+        <div class="skill-cols">
+          <div>
+            <div class="skill-col-title" style="color:var(--success)"><i class="fas fa-check-circle"></i>Strong Skills <span id="strongCount" class="badge badge-green" style="font-size:11px"></span></div>
+            <div class="skill-tag-wrap" id="strongSkillsWrap"></div>
+          </div>
+          <div>
+            <div class="skill-col-title" style="color:var(--danger)"><i class="fas fa-times-circle"></i>Missing Skills <span id="missingCount" class="badge badge-red" style="font-size:11px"></span></div>
+            <div class="skill-tag-wrap" id="missingSkillsWrap"></div>
+          </div>
+          <div>
+            <div class="skill-col-title" style="color:var(--primary)"><i class="fas fa-arrow-up"></i>Recommended to Learn <span id="recCount" class="badge badge-blue" style="font-size:11px"></span></div>
+            <div class="skill-tag-wrap" id="recommendedWrap"></div>
+          </div>
+        </div>
+        <div style="margin-top:22px;text-align:center">
+          <a href="roadmap2.html" class="btn btn-primary">
+            <i class="fas fa-road"></i> View My Learning Roadmap
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none" onclick="document.getElementById('appSidebar').classList.remove('open');this.style.display='none'"></div>
+
+<script src="js/calculationService.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  initSidebar('nav-resume');
+  renderNotifDropdown();
+  const profileUser = getUser();
+  let user = profileUser;
+  if (!user.aiAnalysis?.resumeScore && user.skills?.length > 0) {
+    const a = SBCalc.runLocalAnalysis(user);
+    updateUser({ aiAnalysis: a });
+  }
+  try {
+    const response = await apiFetch('/analysis/results');
+    if (response?.success && response.analysis) {
+      updateUser({ aiAnalysis: { ...getUser().aiAnalysis, ...response.analysis } });
+    }
+  } catch (error) {
+    console.warn('[ResumeAnalysis] Career skill analysis unavailable:', error.message);
+  }
+  try {
+    const resumeResponse = await apiFetch('/resume/parsed');
+    if (resumeResponse?.success && resumeResponse.parsed) {
+      user = {
+        ...getUser(),
+        ...resumeResponse.parsed,
+        careerGoal: profileUser.careerGoal || '',
+        aiAnalysis: getUser()?.aiAnalysis || {},
+      };
+    }
+  } catch (error) {
+    console.warn('[ResumeAnalysis] Fresh parsed resume unavailable:', error.message);
+  }
+  loadPage(user);
+});
+
+function loadPage(user) {
+  if (!user) return;
+  let analysis = user.aiAnalysis || {};
+  // Always calculate using centralized service — never use hardcoded values
+  if (!analysis.resumeScore) {
+    analysis = SBCalc.runLocalAnalysis(user);
+    updateUser({ aiAnalysis: analysis });
+  }
+
+  const skills = user.skills || [];
+  const rs = SBCalc.clampPercentage(analysis.resumeScore || 0);
+
+  // Score ring
+  buildRing(document.getElementById('bigScoreRing'), rs, 150, 12);
+  setTimeout(() => animateCount(document.getElementById('bigScoreVal'), rs), 200);
+
+  // Grade derived from calculated score
+  const gradeEl = document.getElementById('scoreGrade');
+  if (gradeEl) {
+    const g = rs >= 80 ? { label:'Excellent 🌟', cls:'badge-green' }
+            : rs >= 60 ? { label:'Good 👍', cls:'badge-blue' }
+            : rs >= 40 ? { label:'Average 📈', cls:'badge-orange' }
+            : { label:'Needs Work 🔧', cls:'badge-red' };
+    gradeEl.textContent = g.label;
+    gradeEl.className = 'score-grade badge ' + g.cls;
+  }
+
+  const msgs = {
+    80: "Impressive! Your resume score is excellent. You're well positioned for top opportunities.",
+    60: 'Good score! Add more projects and certifications to push it higher.',
+    40: 'Average score. Focus on filling in missing skills and adding real projects.',
+    0:  'Your score needs improvement. Start by adding skills and projects to your profile.',
+  };
+  const msgKey = Object.keys(msgs).reverse().find(k => rs >= Number(k));
+  document.getElementById('scoreMessage').textContent = msgs[msgKey];
+
+  // ATS score breakdown bars — use ATS components from AI if available,
+  // otherwise estimate from profile using the same formulas as calculationService
+  const atsComp = analysis.atsComponents || SBCalc.estimateATSComponentsFromProfile(user);
+  const breakdown = [
+    { label:'Skills Relevance',  val: SBCalc.clampPercentage(atsComp.skillsRelevanceScore),          color:'linear-gradient(90deg,#2563EB,#7C3AED)' },
+    { label:'Projects',          val: SBCalc.clampPercentage(atsComp.projectScore), color:'linear-gradient(90deg,#7C3AED,#EC4899)' },
+    { label:'Certifications',    val: SBCalc.clampPercentage(atsComp.certificationScore), color:'linear-gradient(90deg,#22C55E,#16A34A)' },
+    { label:'Experience',        val: SBCalc.clampPercentage(atsComp.experienceScore),    color:'linear-gradient(90deg,#F59E0B,#EA580C)' },
+    { label:'Keywords',          val: SBCalc.clampPercentage(atsComp.keywordScore), color:'linear-gradient(90deg,#EF4444,#DC2626)' },
+    { label:'Profile Fill',      val: SBCalc.calculateProfileCompletion(user),                                                color:'linear-gradient(90deg,#8B5CF6,#7C3AED)' },
+  ];
+  const sbEl = document.getElementById('scoreBreakdown');
+  sbEl.innerHTML = breakdown.map(b => `
+    <div class="score-bar-row">
+      <span class="score-bar-label">${b.label}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" data-w="${b.val}" style="background:${b.color}"></div></div>
+      <span class="score-bar-val" style="color:var(--text)">${b.val}%</span>
+    </div>`).join('');
+  setTimeout(() => sbEl.querySelectorAll('.score-bar-fill').forEach(f => f.style.width = f.dataset.w + '%'), 300);
+
+  // Extracted info
+  const infoItems = [
+    { label:'Student Name',    val: user.name              || '—', icon:'fa-user',         color:'var(--primary)' },
+    { label:'Branch',          val: user.branch            || '—', icon:'fa-graduation-cap',color:'var(--purple)' },
+    { label:'Academic Year',   val: user.academicYear      || '—', icon:'fa-calendar',     color:'var(--teal)' },
+    { label:'CGPA',            val: user.cgpa ? user.cgpa + ' / 10' : '—', icon:'fa-star', color:'var(--warning)' },
+    { label:'Projects',        val: (user.projects?.length || 0) + ' Listed', icon:'fa-code', color:'var(--success)' },
+    { label:'Certifications',  val: (user.certifications?.length || 0) + ' Earned', icon:'fa-certificate', color:'var(--orange)' },
+    { label:'Career Goal',     val: user.careerGoal        || 'Not set', icon:'fa-bullseye', color:'var(--primary)' },
+    { label:'Skills Count',    val: skills.length + ' Skills', icon:'fa-layer-group', color:'var(--purple)' },
+    { label:'Email',           val: user.email             || '—', icon:'fa-envelope', color:'var(--teal)' },
+  ];
+  document.getElementById('infoGrid').innerHTML = infoItems.map(it => `
+    <div class="info-item">
+      <div class="info-item-label"><i class="fas ${it.icon}" style="color:${it.color};margin-right:5px"></i>${it.label}</div>
+      <div class="info-item-val">${it.val}</div>
+    </div>`).join('');
+
+  // All skills tags
+  document.getElementById('allSkillsTags').innerHTML = skills.length > 0
+    ? skills.map(s => `<span class="tag tag-blue">${s}</span>`).join('')
+    : '<span style="font-size:13px;color:var(--text-muted)">No skills added yet — <a href="upload.html" style="color:var(--primary)">add skills</a></span>';
+
+  // AI Suggestions — from server if available, otherwise from local profile data
+  const aiSuggestions = analysis.suggestions || [];
+  const localSuggestions = buildLocalSuggestions(user, analysis);
+  const suggestions = aiSuggestions.length > 0
+    ? aiSuggestions.map(s => ({ title: s.title || s, desc: s.desc || s, impact: s.impactPoints ? `+${s.impactPoints} pts` : '' }))
+    : localSuggestions;
+
+  const sugIcons   = ['fa-code','fa-folder-open','fa-certificate','fa-linkedin','fa-graduation-cap','fa-star'];
+  const sugColors  = ['rgba(37,99,235,0.1)','rgba(124,58,237,0.1)','rgba(34,197,94,0.1)','rgba(245,158,11,0.1)','rgba(239,68,68,0.1)','rgba(20,184,166,0.1)'];
+  const sugTColors = ['var(--primary)','var(--purple)','var(--success)','var(--warning)','var(--danger)','var(--teal)'];
+  document.getElementById('suggestionsWrap').innerHTML = suggestions.map((s, i) => `
+    <div class="suggestion-item">
+      <div class="sug-icon" style="background:${sugColors[i%sugColors.length]};color:${sugTColors[i%sugTColors.length]}">
+        <i class="fas ${sugIcons[i%sugIcons.length]}"></i>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px">${s.title}</div>
+        <div style="font-size:13px;color:var(--text-muted)">${s.desc}</div>
+      </div>
+      ${s.impact ? `<span class="badge" style="background:${sugColors[i%sugColors.length]};color:${sugTColors[i%sugTColors.length]};flex-shrink:0">${s.impact}</span>` : ''}
+    </div>`).join('');
+
+  // Skill analysis — use centralized calculateSkillMatch
+  const required = analysis.requiredSkills || [];
+  const { matchedSkills: strongSkills, missingSkills: missing } = SBCalc.calculateSkillMatch(skills, required);
+  // Recommended: skills in the goal map that the student doesn't have yet
+  const recommended = [];
+
+  document.getElementById('strongCount').textContent  = strongSkills.length;
+  document.getElementById('missingCount').textContent = missing.length;
+  document.getElementById('recCount').textContent     = recommended.length;
+
+  document.getElementById('strongSkillsWrap').innerHTML = strongSkills.length > 0
+    ? strongSkills.map(s => `<span class="tag tag-green">✓ ${s}</span>`).join('')
+    : '<span style="font-size:12px;color:var(--text-muted)">No matching skills yet</span>';
+
+  document.getElementById('missingSkillsWrap').innerHTML = missing.length > 0
+    ? missing.slice(0, 8).map(s => `<span class="tag tag-red">✕ ${s}</span>`).join('')
+    : '<span style="font-size:12px;color:var(--success)">🎉 All required skills covered!</span>';
+
+  document.getElementById('recommendedWrap').innerHTML = recommended.map(s => `<span class="tag tag-blue">↑ ${s}</span>`).join('');
+}
+
+// Build suggestions from local profile data (used when AI suggestions not yet loaded)
+function buildLocalSuggestions(user, analysis) {
+  const sugs = [];
+  const skills = user.skills || [];
+  const missing = analysis.missingSkills || [];
+  if (missing.length > 0) sugs.push({ title: `Learn: ${missing.slice(0, 2).join(', ')}`, desc: `These skills are required for ${user.careerGoal || 'your career goal'} and are missing from your profile.`, impact: '+15 pts' });
+  if (!user.projects?.length) sugs.push({ title: 'Add portfolio projects', desc: 'Projects differentiate candidates. Add at least 2 real-world projects.', impact: '+20 pts' });
+  else if (user.projects.length < 3) sugs.push({ title: `Add more projects (you have ${user.projects.length})`, desc: 'Recruiters look for 3+ projects.', impact: '+10 pts' });
+  if (!user.certifications?.length) sugs.push({ title: 'Earn free certifications', desc: 'Add certifications from Coursera, edX or Google.', impact: '+10 pts' });
+  if (!user.linkedinUrl) sugs.push({ title: 'Add your LinkedIn URL', desc: '87% of recruiters use LinkedIn.', impact: '+8 pts' });
+  if (skills.length < 5) sugs.push({ title: 'Add more technical skills', desc: `You have ${skills.length} skill(s). Aim for 8–10.`, impact: '+12 pts' });
+  if (user.cgpa && user.cgpa < 7) sugs.push({ title: 'Improve academic performance', desc: 'Many companies require CGPA ≥ 7.0.', impact: 'Eligibility' });
+  if (!user.experience?.length) sugs.push({ title: 'Add internship or work experience', desc: 'Even a short internship significantly boosts credibility.', impact: '+15 pts' });
+  return sugs.slice(0, 6);
+}
+
+async function reAnalyze() {
+  const user = getUser();
+  showLoader();
+  try {
+    // Recalculate locally first
+    const a = SBCalc.runLocalAnalysis(user);
+    updateUser({ aiAnalysis: a });
+    loadPage(getUser());
+    // Then try server AI analysis
+    const d = await apiFetch('/ai/analyze-resume', { method: 'POST' });
+    if (d?.success) {
+      updateUser({ aiAnalysis: { ...getUser().aiAnalysis, ...d.analysis } });
+      loadPage(getUser());
+      showToast('AI Analysis complete!', 'success');
+    } else {
+      showToast('Analysis refreshed (local)!', 'success');
+    }
+  } catch {
+    showToast('Analysis refreshed!', 'success');
+  } finally {
+    hideLoader();
+  }
+}
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,79 @@
+<!-- SkillBridge Sidebar + Topbar shared component -->
+<!-- Include this via JS or copy into each page -->
+<script>
+function buildSidebar(activeId) {
+  const sidebarHTML = `
+  <div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none"></div>
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+            <path d="M8 16L13 21L24 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="brand-name">SkillBridge</span>
+      </a>
+      <button class="mobile-menu-btn" id="mobileSidebarClose" style="display:none;color:rgba(255,255,255,0.5);font-size:18px"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item" id="nav-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item" id="nav-upload"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item" id="nav-resume"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item" id="nav-opportunities"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item" id="nav-career"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item" id="nav-roadmap"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item" id="nav-profile"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta">
+        <div class="user-name" data-user-name>Student</div>
+        <div class="user-sub" data-user-branch>CSE • 3rd Year</div>
+      </div>
+    </div>
+  </aside>`;
+
+  const topbarHTML = `
+  <div class="topbar" id="appTopbar">
+    <button class="mobile-menu-btn" id="mobileSidebarBtn" style="display:none"><i class="fas fa-bars"></i></button>
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search opportunities, skills, companies..." id="globalSearch"/>
+    </div>
+    <div class="topbar-right">
+      <div style="position:relative">
+        <button class="topbar-icon-btn" id="notifBtn" title="Notifications" onclick="window.location.href='notifications.html'">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge"></span>
+        </button>
+        <div class="notif-dropdown" id="notifDropdown"></div>
+      </div>
+      <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+      <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </div>`;
+
+  // Inject sidebar before app-main
+  const appMain = document.querySelector('.app-main');
+  if (appMain) {
+    appMain.insertAdjacentHTML('beforebegin', sidebarHTML);
+    appMain.insertAdjacentHTML('afterbegin', topbarHTML);
+  }
+
+  // Activate nav item
+  if (activeId) {
+    const el = document.getElementById(activeId);
+    if (el) el.classList.add('active');
+  }
+}
+</script>

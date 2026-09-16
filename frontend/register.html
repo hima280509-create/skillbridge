@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .auth-page { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; background:var(--bg); }
+    .auth-left { background:linear-gradient(135deg,#0F172A 0%,#1E1B4B 40%,#312E81 70%,#1E3A8A 100%); display:flex; align-items:center; justify-content:center; padding:60px 48px; position:relative; overflow:hidden; }
+    .auth-left::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px); background-size:40px 40px; }
+    .auth-left-orb { position:absolute; border-radius:50%; filter:blur(60px); opacity:0.5; }
+    .auth-orb1 { width:350px;height:350px;background:radial-gradient(circle,rgba(37,99,235,0.5),transparent 70%);top:-100px;left:-100px; }
+    .auth-orb2 { width:300px;height:300px;background:radial-gradient(circle,rgba(124,58,237,0.4),transparent 70%);bottom:-80px;right:-80px; }
+    .auth-left-content { position:relative;z-index:1;color:#fff;max-width:380px; }
+    .auth-left-logo { display:flex;align-items:center;gap:10px;margin-bottom:32px; }
+    .auth-left-logo span { font-size:24px;font-weight:800; }
+    .auth-left-title { font-size:28px;font-weight:800;line-height:1.2;margin-bottom:16px; }
+    .auth-left-title span { background:linear-gradient(135deg,#60A5FA,#A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+    .auth-left-sub { font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:28px; }
+    .ai-workflow { display:flex;flex-direction:column;gap:0; }
+    .ai-step { display:flex;gap:14px;position:relative; }
+    .ai-step:not(:last-child)::after { content:'';position:absolute;left:15px;top:32px;width:2px;height:calc(100% - 8px);background:rgba(255,255,255,0.15); }
+    .ai-step-num { width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;position:relative;z-index:1; }
+    .ai-step-info { padding:4px 0 20px; }
+    .ai-step-title { font-size:13px;font-weight:700;color:#fff;margin-bottom:2px; }
+    .ai-step-desc { font-size:12px;color:rgba(255,255,255,0.6); }
+
+    .auth-right { display:flex;align-items:flex-start;justify-content:center;padding:40px 48px;overflow-y:auto; }
+    .auth-form-container { width:100%;max-width:440px; }
+    .auth-form-header { margin-bottom:24px; }
+    .auth-form-header h1 { font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px; }
+    .auth-form-header p { font-size:14px;color:var(--text-muted); }
+    .auth-form-header a { color:var(--primary);font-weight:600; }
+    .auth-step-indicator { display:flex;align-items:center;gap:8px;margin-bottom:24px; }
+    .auth-step-dot { width:28px;height:28px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);transition:var(--transition); }
+    .auth-step-dot.active { background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;border-color:transparent; }
+    .auth-step-dot.done { background:var(--success);color:#fff;border-color:transparent; }
+    .auth-step-line { flex:1;height:2px;background:var(--border);border-radius:2px; }
+    .form-step { display:none; }
+    .form-step.active { display:block; }
+    .form-step h3 { font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px; }
+    .form-step p { font-size:13px;color:var(--text-muted);margin-bottom:20px; }
+    .input-with-icon { position:relative;margin-bottom:14px; }
+    .input-with-icon i.lead { position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:14px;z-index:1; }
+    .input-with-icon input, .input-with-icon select { width:100%;padding:12px 16px 12px 42px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;color:var(--text);transition:var(--transition); }
+    .input-with-icon input:focus, .input-with-icon select:focus { border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,0.1);outline:none; }
+    .toggle-password { position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);cursor:pointer;background:none;border:none;font-size:14px; }
+    .skills-selector { display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);min-height:80px;margin-bottom:14px; }
+    .skill-option { padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--surface);border:1.5px solid var(--border);color:var(--text-muted);cursor:pointer;transition:var(--transition); }
+    .skill-option.selected { background:linear-gradient(135deg,rgba(37,99,235,0.12),rgba(124,58,237,0.12));color:var(--primary);border-color:rgba(37,99,235,0.4); }
+    .step-nav { display:flex;gap:10px;margin-top:4px; }
+    .auth-submit { width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:8px; }
+    .auth-submit:hover { transform:translateY(-2px);box-shadow:var(--shadow-blue); }
+    .auth-submit:disabled { opacity:0.7;cursor:not-allowed;transform:none; }
+    .error-msg { padding:10px 14px;background:rgba(239,68,68,0.08);color:var(--danger);border-radius:var(--radius);font-size:13px;margin-bottom:16px;border:1px solid rgba(239,68,68,0.15);display:none; }
+    .error-msg.show { display:block; }
+    @media (max-width:768px) { .auth-page{grid-template-columns:1fr;} .auth-left{display:none;} .auth-right{padding:32px 20px;} }
+  </style>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-orb auth-orb1"></div>
+    <div class="auth-left-orb auth-orb2"></div>
+    <div class="auth-left-content">
+      <div class="auth-left-logo">
+        <svg width="36" height="36" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#rLogoG)"/><path d="M8 16L13 21L24 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="rLogoG" x1="0" y1="0" x2="32" y2="32"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs></svg>
+        <span>SkillBridge</span>
+      </div>
+      <h2 class="auth-left-title">Start Your <span>AI-Powered</span> Career Journey</h2>
+      <p class="auth-left-sub">Join thousands of engineering students getting personalized career guidance, skill analysis, and opportunity matching.</p>
+      <div class="ai-workflow">
+        <div class="ai-step"><div class="ai-step-num">1</div><div class="ai-step-info"><div class="ai-step-title">Create Your Profile</div><div class="ai-step-desc">Enter basic info, branch, and academic year</div></div></div>
+        <div class="ai-step"><div class="ai-step-num">2</div><div class="ai-step-info"><div class="ai-step-title">Add Your Skills</div><div class="ai-step-desc">Select skills or upload your resume</div></div></div>
+        <div class="ai-step"><div class="ai-step-num">3</div><div class="ai-step-info"><div class="ai-step-title">Run AI Analysis</div><div class="ai-step-desc">Get resume score, skill gap & career matches</div></div></div>
+        <div class="ai-step"><div class="ai-step-num">4</div><div class="ai-step-info"><div class="ai-step-title">Discover Opportunities</div><div class="ai-step-desc">Jobs, internships, competitions & certifications</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form-container">
+      <div class="auth-form-header">
+        <h1>Create your account 🚀</h1>
+        <p>Already have an account? <a href="auth.html">Sign in</a></p>
+      </div>
+
+      <div class="auth-step-indicator">
+        <div class="auth-step-dot active" id="dot1">1</div>
+        <div class="auth-step-line"></div>
+        <div class="auth-step-dot" id="dot2">2</div>
+        <div class="auth-step-line"></div>
+        <div class="auth-step-dot" id="dot3">3</div>
+      </div>
+
+      <div id="errorMsg" class="error-msg"></div>
+
+      <!-- Step 1: Account -->
+      <div class="form-step active" id="step1">
+        <h3>Account Details</h3>
+        <p>Create your SkillBridge account</p>
+        <div class="input-with-icon"><i class="fas fa-user lead"></i><input type="text" id="name" placeholder="Full Name" required/></div>
+        <div class="input-with-icon"><i class="fas fa-envelope lead"></i><input type="email" id="email" placeholder="Email Address" required/></div>
+        <div class="input-with-icon"><i class="fas fa-lock lead"></i><input type="password" id="password" placeholder="Password (min. 6 chars)" required/><button type="button" class="toggle-password" onclick="togglePwd('password')"><i class="fas fa-eye" id="eye-password"></i></button></div>
+        <div class="step-nav">
+          <button class="btn btn-primary btn-full" onclick="goStep(2)">Continue <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Step 2: Academic Info -->
+      <div class="form-step" id="step2">
+        <h3>Academic Information</h3>
+        <p>Tell us about your studies</p>
+        <div class="input-with-icon"><i class="fas fa-university lead"></i><input type="text" id="college" placeholder="College / University Name" /></div>
+        <div class="input-with-icon">
+          <i class="fas fa-code-branch lead"></i>
+          <select id="branch">
+            <option value="">Select Branch</option>
+            <option value="CSE">Computer Science Engineering (CSE)</option>
+            <option value="IT">Information Technology (IT)</option>
+            <option value="ECE">Electronics & Communication (ECE)</option>
+            <option value="EEE">Electrical & Electronics (EEE)</option>
+            <option value="ME">Mechanical Engineering (ME)</option>
+            <option value="Civil">Civil Engineering</option>
+            <option value="Chemical">Chemical Engineering</option>
+          </select>
+        </div>
+        <div class="input-with-icon">
+          <i class="fas fa-calendar-alt lead"></i>
+          <select id="academicYear">
+            <option value="">Select Academic Year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+            <option value="Diploma">Diploma</option>
+          </select>
+        </div>
+        <div class="input-with-icon"><i class="fas fa-star lead"></i><input type="number" id="cgpa" placeholder="CGPA (e.g. 8.5)" min="0" max="10" step="0.1"/></div>
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goStep(1)" style="flex:1"><i class="fas fa-arrow-left"></i> Back</button>
+          <button class="btn btn-primary" onclick="goStep(3)" style="flex:2">Continue <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Step 3: Skills -->
+      <div class="form-step" id="step3">
+        <h3>Select Your Skills</h3>
+        <p>Pick the skills you already know (can add more later)</p>
+        <div class="skills-selector" id="skillsSelector"></div>
+        <div class="input-with-icon"><i class="fas fa-target lead" style="left:14px;top:50%;position:absolute;transform:translateY(-50%);color:var(--text-muted);"></i><input type="text" id="careerGoal" placeholder="Career Goal (e.g. AI Engineer, Full Stack Developer)" style="padding-left:42px"/></div>
+        <button class="auth-submit" id="registerBtn" onclick="doRegister()">
+          <i class="fas fa-rocket"></i> Create Account & Start
+        </button>
+        <div style="margin-top:8px;">
+          <button class="btn btn-secondary btn-full" onclick="goStep(2)" style="justify-content:center"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/firebase-init.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+
+const allSkills = ['Python','JavaScript','Java','C++','SQL','React','Node.js','HTML/CSS','MongoDB','Machine Learning','Deep Learning','TensorFlow','Data Analysis','Git','Docker','AWS','Flutter','Android Development','Figma','Cybersecurity','Networking','Linux','TypeScript','Bootstrap','Vue.js','Spring Boot','Django','Flask','Power BI','Tableau','Excel','MATLAB','Blockchain','IoT','C#','PHP','R'];
+
+let selectedSkills = [];
+
+// Build skills grid
+const sel = document.getElementById('skillsSelector');
+allSkills.forEach(skill => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'skill-option';
+  btn.textContent = skill;
+  btn.onclick = () => {
+    if (selectedSkills.includes(skill)) {
+      selectedSkills = selectedSkills.filter(s => s !== skill);
+      btn.classList.remove('selected');
+    } else {
+      selectedSkills.push(skill);
+      btn.classList.add('selected');
+    }
+  };
+  sel.appendChild(btn);
+});
+
+function togglePwd(id) {
+  const inp = document.getElementById(id);
+  const eye = document.getElementById('eye-' + id);
+  if (inp.type === 'password') { inp.type = 'text'; eye.classList.replace('fa-eye','fa-eye-slash'); }
+  else { inp.type = 'password'; eye.classList.replace('fa-eye-slash','fa-eye'); }
+}
+
+function goStep(n) {
+  // Validate step 1
+  if (n === 2) {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pwd = document.getElementById('password').value;
+    if (!name || !email || !pwd) { showError('Please fill all fields.'); return; }
+    if (pwd.length < 6) { showError('Password must be at least 6 characters.'); return; }
+  }
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  updateDots(n);
+  showError('');
+}
+
+function updateDots(n) {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('dot' + i);
+    dot.classList.remove('active','done');
+    if (i < n) dot.classList.add('done'), dot.innerHTML = '✓';
+    else if (i === n) dot.classList.add('active'), dot.textContent = i;
+    else dot.textContent = i;
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  if (msg) { el.textContent = msg; el.classList.add('show'); }
+  else el.classList.remove('show');
+}
+
+async function doRegister() {
+  const btn = document.getElementById('registerBtn');
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const college = document.getElementById('college').value.trim();
+  const branch = document.getElementById('branch').value;
+  const academicYear = document.getElementById('academicYear').value;
+  const cgpa = parseFloat(document.getElementById('cgpa').value) || 0;
+  const careerGoal = document.getElementById('careerGoal').value.trim();
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+  try {
+    const firebase = await window.SkillBridgeFirebaseReady;
+    const credential = await firebase.createUserWithEmailAndPassword(firebase.auth, email, password);
+    await firebase.updateProfile(credential.user, { displayName: name });
+    const idToken = await credential.user.getIdToken();
+    const res = await fetch(`${API}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + idToken },
+      body: JSON.stringify({ name, branch, academicYear, college })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Registration failed.');
+    localStorage.setItem('sb_token', idToken);
+    localStorage.setItem('sb_user', JSON.stringify(data.user));
+    await fetch(`${API}/users/profile`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + idToken }, body: JSON.stringify({ skills: selectedSkills, cgpa, careerGoal }) });
+    window.location.href = 'dashboard2.html';
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i> Create Account & Start';
+    alert(err.message || 'Registration failed. Check Firebase configuration and try again.');
+  }
+}
+</script>
+</body>
+</html>
+
+

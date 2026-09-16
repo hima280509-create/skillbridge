@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Learning Roadmap – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Goal Banner */
+    .goal-banner {
+      background: var(--gradient);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .goal-banner::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+    .goal-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; right: 80px;
+      width: 150px; height: 150px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+    .goal-banner-icon {
+      width: 64px; height: 64px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .goal-banner-info { flex: 1; min-width: 0; }
+    .goal-banner-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; opacity: 0.7; text-transform: uppercase; margin-bottom: 4px; }
+    .goal-banner-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .goal-banner-sub { font-size: 13px; opacity: 0.8; }
+    .goal-ring-wrap { position: relative; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .goal-ring-label { font-size: 11px; opacity: 0.75; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .goal-ring-val {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -56%);
+      font-size: 18px; font-weight: 800; color: #fff;
+      line-height: 1;
+    }
+    .goal-ring-unit { position: absolute; top: 50%; left: 50%; transform: translate(-50%, 20%); font-size: 10px; opacity: 0.7; }
+
+    /* Stats row */
+    .roadmap-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+    .rm-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex; align-items: center; gap: 14px;
+      transition: var(--transition);
+    }
+    .rm-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .rm-stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .rm-stat-val { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; }
+    .rm-stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+
+    /* Week card */
+    .week-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin-bottom: 16px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .week-card:hover { box-shadow: var(--shadow); }
+    .week-card.completed { border-left: 4px solid var(--success); }
+    .week-card.in-progress { border-left: 4px solid var(--primary); box-shadow: 0 0 0 1px rgba(37,99,235,0.08); }
+    .week-card.upcoming { border-left: 4px solid var(--border); }
+
+    .week-header {
+      padding: 18px 24px 14px;
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .week-num-badge {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0;
+    }
+    .week-num-badge.completed { background: var(--success-bg); color: var(--success); }
+    .week-num-badge.in-progress { background: rgba(37,99,235,0.1); color: var(--primary); }
+    .week-num-badge.upcoming { background: var(--surface2); color: var(--text-muted); }
+
+    .week-title { font-size: 15px; font-weight: 700; color: var(--text); }
+    .week-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .week-status-badge {
+      margin-left: auto;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .week-status-badge.completed { background: var(--success-bg); color: var(--success); }
+    .week-status-badge.in-progress { background: rgba(37,99,235,0.1); color: var(--primary); }
+    .week-status-badge.upcoming { background: var(--surface2); color: var(--text-muted); }
+    .week-chevron { color: var(--text-muted); transition: transform 0.3s ease; font-size: 12px; margin-left: 8px; }
+    .week-chevron.open { transform: rotate(180deg); }
+
+    .week-body { padding: 0 24px 20px; display: none; }
+    .week-body.open { display: block; }
+
+    .week-progress-bar { margin-bottom: 14px; }
+    .week-progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
+
+    /* Topic checklist */
+    .topic-list { display: flex; flex-direction: column; gap: 8px; }
+    .topic-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .topic-item:hover { border-color: var(--primary); background: rgba(37,99,235,0.03); }
+    .topic-item.done { background: rgba(34,197,94,0.05); border-color: rgba(34,197,94,0.2); }
+    .topic-checkbox {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition); flex-shrink: 0;
+      font-size: 11px;
+    }
+    .topic-item.done .topic-checkbox { background: var(--success); border-color: var(--success); color: #fff; }
+    .topic-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; transition: var(--transition); }
+    .topic-item.done .topic-name { text-decoration: line-through; color: var(--text-muted); }
+    .topic-tag { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .roadmap-stats { grid-template-columns: repeat(2,1fr); }
+      .goal-banner { flex-direction: column; text-align: center; }
+      .goal-ring-wrap { margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <a href="index.html" class="brand-logo" style="text-decoration:none">
+      <img src="assets/logo.png" alt="SkillBridge" style="height:42px;width:auto;object-fit:contain"/>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="dashboard2.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="upload.html" class="nav-item"><i class="fas fa-upload"></i> Upload Profile</a>
+      <a href="resume-analysis.html" class="nav-item"><i class="fas fa-file-alt"></i> AI Resume Analysis</a>
+      <a href="opportunities2.html" class="nav-item"><i class="fas fa-briefcase"></i> Opportunities</a>
+      <a href="career-analysis.html" class="nav-item"><i class="fas fa-chart-line"></i> Career Analysis</a>
+      <a href="roadmap2.html" class="nav-item active"><i class="fas fa-road"></i> Learning Roadmap</a>
+      <div class="nav-section">Tools</div>
+      <a href="deadlines.html" class="nav-item" id="nav-deadlines"><i class="fas fa-clock"></i> Deadline Reminder</a>
+      <a href="notifications.html" class="nav-item" id="nav-notifications"><i class="fas fa-bell"></i> Notifications <span class="nav-badge nav-badge-notif"></span></a>
+      <div class="nav-section">Account</div>
+      <a href="profile2.html" class="nav-item"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+      <a href="auth.html" class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-badge sidebar-avatar-badge">S</div>
+      <div class="user-meta"><div class="user-name" data-user-name>Student</div><div class="user-sub" data-user-branch>CSE</div></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mobile-menu-btn" id="mobileSidebarBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search opportunities, skills, companies..."/></div>
+      <div class="topbar-right">
+        <div style="position:relative"><button class="topbar-icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="notif-badge"></span></button><div class="notif-dropdown" id="notifDropdown"></div></div>
+        <a href="profile2.html" class="topbar-avatar" id="topbarAvatar">S</a>
+        <button class="topbar-icon-btn" onclick="logout()" title="Logout" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-title"><i class="fas fa-road" style="color:var(--primary);margin-right:10px"></i>Your Personalized AI Learning Roadmap</div>
+        <div class="page-subtitle">Follow your AI-generated learning plan and complete checkpoints to achieve your career goal.</div>
+      </div>
+
+      <!-- Goal Banner -->
+      <div class="goal-banner" id="goalBanner">
+        <div class="goal-banner-icon">🎯</div>
+        <div class="goal-banner-info">
+          <div class="goal-banner-label">Career Goal</div>
+          <div class="goal-banner-title" id="goalTitle">Software Engineer</div>
+          <div class="goal-banner-sub" id="goalSub">AI-personalized 6-week roadmap based on your skills and objectives.</div>
+        </div>
+        <div class="goal-ring-wrap">
+          <div id="goalRingContainer" style="position:relative;display:inline-block"></div>
+          <div class="goal-ring-val" id="goalRingVal">0%</div>
+          <div class="goal-ring-label" style="margin-top:6px">Completed</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="roadmap-stats">
+        <div class="rm-stat">
+          <div class="rm-stat-icon" style="background:rgba(37,99,235,0.1);color:var(--primary)"><i class="fas fa-book-open"></i></div>
+          <div><div class="rm-stat-val" id="statTotal">18</div><div class="rm-stat-lbl">Total Topics</div></div>
+        </div>
+        <div class="rm-stat">
+          <div class="rm-stat-icon" style="background:var(--success-bg);color:var(--success)"><i class="fas fa-check-circle"></i></div>
+          <div><div class="rm-stat-val" id="statDone">0</div><div class="rm-stat-lbl">Completed</div></div>
+        </div>
+        <div class="rm-stat">
+          <div class="rm-stat-icon" style="background:var(--warning-bg);color:var(--warning)"><i class="fas fa-hourglass-half"></i></div>
+          <div><div class="rm-stat-val" id="statRemain">18</div><div class="rm-stat-lbl">Remaining</div></div>
+        </div>
+        <div class="rm-stat">
+          <div class="rm-stat-icon" style="background:rgba(124,58,237,0.1);color:var(--purple)"><i class="fas fa-percent"></i></div>
+          <div><div class="rm-stat-val" id="statPct">0%</div><div class="rm-stat-lbl">Progress</div></div>
+        </div>
+      </div>
+
+      <!-- Weeks Container -->
+      <div id="weeksContainer"></div>
+
+      <!-- Reset button -->
+      <div style="text-align:center;margin-top:8px">
+        <button class="btn btn-secondary" onclick="resetProgress()"><i class="fas fa-redo"></i> Reset Progress</button>
+        <button class="btn btn-primary" style="margin-left:10px" onclick="showToast('Great work! Keep going! 🚀','success')"><i class="fas fa-share-alt"></i> Share Progress</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loader-overlay" id="appLoader"><div class="loader"></div></div>
+<div id="appToast" class="toast"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299;display:none" onclick="closeSidebar()"></div>
+
+<script src="js/firebase-init.js"></script>
+<script src="js/calculationService.js"></script>
+<script src="js/app.js"></script>
+<script>
+// ---- Dynamic Roadmap Data ----
+let roadmapData = null;           // Will be fetched from backend
+let allTopics = [];               // Flattened topics for progress tracking
+let missingSkills = [];           // From backend
+let careerGoal = '';              // From backend
+let checkedTopics = {};           // Completion state (topic ID -> boolean)
+let roadmapProfileHash = '';
+
+const SKILL_COLORS = {
+  'Control Systems': 'rgba(37,99,235,0.1)',
+  'Simulink': 'rgba(245,158,11,0.1)',
+  'PLC': 'rgba(124,58,237,0.1)',
+  'SCADA': 'rgba(34,197,94,0.1)',
+  'Industrial Automation': 'rgba(239,68,68,0.1)',
+};
+
+// Load/save progress from localStorage using consistent key
+function loadChecked() {
+  try { return JSON.parse(localStorage.getItem(`roadmapChecked_${roadmapProfileHash}`) || '{}'); } catch { return {}; }
+}
+
+function saveChecked() {
+  localStorage.setItem(`roadmapChecked_${roadmapProfileHash}`, JSON.stringify(checkedTopics));
+  // Sync progress to backend
+  const { done, total } = countTotals();
+  if (total > 0) {
+    ensureFirebaseAuth()
+      .then(() => window.getSkillBridgeFirebaseIdToken())
+      .then(idToken => fetch('/api/analysis/roadmap-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ completedTopics: done, totalTopics: total })
+      }))
+      .catch(err => console.log('[Roadmap] Progress sync failed:', err.message));
+  }
+}
+
+function countTotals() {
+  const done = Object.values(checkedTopics).filter(Boolean).length;
+  const total = allTopics.length;
+  return { done, total };
+}
+
+function updateStats() {
+  const { done, total } = countTotals();
+  const pct = SBCalc.calculateLearningRoadmapProgress(done, total);
+  
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statRemain').textContent = total - done;
+  document.getElementById('statPct').textContent = pct + '%';
+
+  // Update goal ring
+  const ringCont = document.getElementById('goalRingContainer');
+  buildRing(ringCont, pct, 90, 7);
+  document.getElementById('goalRingVal').textContent = pct + '%';
+}
+
+// Toggle completion state of a topic by ID
+function toggleTopic(topicId, topicName) {
+  checkedTopics[topicId] = !checkedTopics[topicId];
+  saveChecked();
+
+  const itemEl = document.querySelector(`[data-topic-id="${topicId}"]`);
+  if (itemEl) {
+    if (checkedTopics[topicId]) {
+      itemEl.classList.add('done');
+      itemEl.querySelector('.topic-checkbox').innerHTML = '<i class="fas fa-check"></i>';
+      showToast(`"${topicName}" marked complete! 🎉`, 'success');
+    } else {
+      itemEl.classList.remove('done');
+      itemEl.querySelector('.topic-checkbox').innerHTML = '';
+    }
+  }
+
+  updateStats();
+  updateWeekProgress(topicId);
+  updateWeekStatus(topicId);
+}
+
+function updateWeekProgress(topicId) {
+  const topic = allTopics.find(t => t.id === topicId);
+  if (!topic) return;
+  
+  const week = roadmapData.weeks.find(w => w.week === topic.week);
+  if (!week) return;
+  
+  const done = week.topics.filter(t => checkedTopics[t.id]).length;
+  const pct = SBCalc.calculateLearningRoadmapProgress(done, week.topics.length);
+  
+  const barEl = document.getElementById(`weekBar_${topic.week}`);
+  const barLabelEl = document.getElementById(`weekBarPct_${topic.week}`);
+  if (barEl) barEl.style.width = pct + '%';
+  if (barLabelEl) barLabelEl.textContent = pct + '%';
+}
+
+function updateWeekStatus(topicId) {
+  const topic = allTopics.find(t => t.id === topicId);
+  if (!topic) return;
+  
+  const week = roadmapData.weeks.find(w => w.week === topic.week);
+  if (!week) return;
+  
+  const done = week.topics.filter(t => checkedTopics[t.id]).length;
+  const total = week.topics.length;
+  let status = done === 0 ? 'upcoming' : done === total ? 'completed' : 'in-progress';
+  
+  // First week should be 'in-progress' if 0 completed
+  if (week.week === 1 && done === 0) status = 'in-progress';
+
+  const card = document.getElementById(`weekCard_${week.week}`);
+  const badge = document.getElementById(`weekBadge_${week.week}`);
+  const numBadge = document.getElementById(`weekNumBadge_${week.week}`);
+  if (!card) return;
+
+  card.className = `week-card ${status}`;
+  if (badge) {
+    const statusMap = { completed: '✅ Completed', 'in-progress': '🔵 In Progress', upcoming: '⏳ Upcoming' };
+    badge.className = `week-status-badge ${status}`;
+    badge.textContent = statusMap[status];
+  }
+  if (numBadge) {
+    numBadge.className = `week-num-badge ${status}`;
+  }
+}
+
+// Render the complete roadmap from fetched data
+function renderWeeks() {
+  const container = document.getElementById('weeksContainer');
+  container.innerHTML = '';
+
+  if (!roadmapData || !roadmapData.weeks) {
+    container.innerHTML = '<p style="text-align:center;padding:40px;color:var(--text-muted)">No roadmap data available.</p>';
+    return;
+  }
+
+  roadmapData.weeks.forEach((week, weekIdx) => {
+    const done = week.topics.filter(t => checkedTopics[t.id]).length;
+    const total = week.topics.length;
+    const pct = SBCalc.calculateLearningRoadmapProgress(done, total);
+    
+    let status = done === 0 ? 'upcoming' : done === total ? 'completed' : 'in-progress';
+    if (week.week === 1 && done === 0) status = 'in-progress';
+    
+    const statusMap = { completed: '✅ Completed', 'in-progress': '🔵 In Progress', upcoming: '⏳ Upcoming' };
+    const isOpen = weekIdx < 2; // First 2 weeks open by default
+
+    const card = document.createElement('div');
+    card.className = `week-card ${status}`;
+    card.id = `weekCard_${week.week}`;
+    card.innerHTML = `
+      <div class="week-header" onclick="toggleWeek(${week.week})">
+        <div class="week-num-badge ${status}" id="weekNumBadge_${week.week}">W${week.week}</div>
+        <div>
+          <div class="week-title">Week ${week.week}: ${week.title}</div>
+          <div class="week-sub">${total} topics • ${done} completed</div>
+        </div>
+        <div class="week-status-badge ${status}" id="weekBadge_${week.week}">${statusMap[status]}</div>
+        <i class="fas fa-chevron-down week-chevron${isOpen ? ' open' : ''}" id="weekChevron_${week.week}"></i>
+      </div>
+      <div class="week-body${isOpen ? ' open' : ''}" id="weekBody_${week.week}">
+        <div class="week-progress-bar">
+          <div class="week-progress-label">
+            <span>Progress</span>
+            <span id="weekBarPct_${week.week}">${pct}%</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-fill" id="weekBar_${week.week}" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <div class="topic-list">
+          ${week.topics.map(topic => {
+            const isCompleted = !!checkedTopics[topic.id];
+            const skillColor = SKILL_COLORS[topic.skill] || 'rgba(37,99,235,0.1)';
+            return `
+              <div class="topic-item${isCompleted ? ' done' : ''}" data-topic-id="${topic.id}" onclick="toggleTopic('${topic.id}','${topic.name.replace(/'/g,"\\'")}')">
+                <div class="topic-checkbox">${isCompleted ? '<i class="fas fa-check"></i>' : ''}</div>
+                <div style="flex:1;">
+                  <span class="topic-name">${topic.name}</span>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">
+                    ${topic.hours}h • ${topic.resource}
+                  </div>
+                </div>
+                <span class="topic-tag" style="background:${skillColor};color:var(--primary)">${topic.tag}</span>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+// Display missing skills section
+function renderMissingSkills() {
+  const container = document.getElementById('weeksContainer');
+  if (!container) return;
+  
+  if (missingSkills && missingSkills.length > 0) {
+    const skillsHtml = `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;margin-bottom:24px;">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text);">Skills You Need to Learn</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          ${missingSkills.map(skill => `
+            <div style="background:rgba(37,99,235,0.1);color:var(--primary);padding:6px 12px;border-radius:var(--radius);font-size:12px;font-weight:500;">
+              • ${skill}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = skillsHtml;
+    container.insertBefore(tempDiv.firstElementChild, container.firstChild);
+  }
+}
+
+function toggleWeek(weekNum) {
+  const body = document.getElementById(`weekBody_${weekNum}`);
+  const chev = document.getElementById(`weekChevron_${weekNum}`);
+  if (!body) return;
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+function resetProgress() {
+  if (!confirm('Reset all roadmap progress? This cannot be undone.')) return;
+  checkedTopics = {};
+  saveChecked();
+  renderWeeks();
+  updateStats();
+  showToast('Progress reset.', 'info');
+}
+
+function closeSidebar() {
+  document.getElementById('appSidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay').style.display = 'none';
+}
+
+document.getElementById('mobileSidebarBtn')?.addEventListener('click', () => {
+  document.getElementById('appSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').style.display = 'block';
+});
+
+// Load the current Firestore profile and let the backend validate or regenerate its roadmap.
+async function loadRoadmap() {
+  const loader = document.getElementById('appLoader');
+  try {
+    loader.style.display = 'flex';
+    const response = await apiFetch('/ai/roadmap', { method: 'POST', body: '{}' });
+    const user = getUser() || {};
+    roadmapData = response.roadmap;
+    careerGoal = response.careerGoal || user.careerGoal || 'No Goal Set';
+    missingSkills = response.missingSkills || [];
+    roadmapProfileHash = response.roadmapProfileHash || '';
+    document.getElementById('goalTitle').textContent = careerGoal;
+    document.getElementById('goalSub').textContent = roadmapData
+      ? 'AI-personalized roadmap based on your current skills and missing career skills.'
+      : 'You already have all required skills for this career.';
+
+    allTopics = (roadmapData?.weeks || []).flatMap(week => (week.topics || []).map(topic => ({
+      id: topic.id,
+      name: topic.name,
+      week: week.week,
+      hours: topic.hours,
+      resource: topic.resource,
+      tag: topic.tag,
+      skill: topic.skill,
+    })));
+    checkedTopics = loadChecked();
+    renderMissingSkills();
+    renderWeeks();
+    updateStats();
+    showToast(response.provider === 'cached' ? 'Saved roadmap loaded.' : 'Personalized roadmap loaded.', 'success');
+  } catch (err) {
+    console.error('[Roadmap] Error loading roadmap:', err);
+    showToast('Unable to load your saved roadmap.', 'danger');
+  } finally {
+    loader.style.display = 'none';
+  }
+}
+
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    console.log('[Roadmap] DOMContentLoaded - checking Firebase...');
+    
+    if (window.SkillBridgeFirebaseReady) {
+      await window.SkillBridgeFirebaseReady;
+    }
+    
+    if (!requireAuth()) return;
+    initSidebar();
+    renderNotifDropdown();
+
+    // Fetch roadmap from backend
+    await loadRoadmap();
+  } catch (err) {
+    console.error('[Roadmap] Initialization error:', err);
+    const container = document.getElementById('weeksContainer');
+    if (container) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--danger);"><p>Unable to initialize authentication.</p><p style="font-size:13px;margin-top:8px;">Please refresh the page or login again.</p></div>';
+    }
+  }
+});
+</script>
+<script src="js/chat.js"></script>
+</body>
+</html>
+

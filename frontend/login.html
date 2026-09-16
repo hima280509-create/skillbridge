@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – SkillBridge</title>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg);
+    }
+    .auth-left {
+      background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 40%, #312E81 70%, #1E3A8A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .auth-left-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.5;
+    }
+    .auth-orb1 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(37,99,235,0.5), transparent 70%); top: -100px; left: -100px; }
+    .auth-orb2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(124,58,237,0.4), transparent 70%); bottom: -80px; right: -80px; }
+    .auth-left-content { position: relative; z-index: 1; color: #fff; max-width: 380px; text-align: center; }
+    .auth-left-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 40px; }
+    .auth-left-logo span { font-size: 24px; font-weight: 800; }
+    .auth-left-title { font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+    .auth-left-title span { background: linear-gradient(135deg, #60A5FA, #A78BFA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .auth-left-sub { font-size: 15px; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 36px; }
+    .auth-features { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+    .auth-feature { display: flex; align-items: center; gap: 12px; font-size: 14px; color: rgba(255,255,255,0.8); }
+    .auth-feature-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+
+    .auth-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+    }
+    .auth-form-container { width: 100%; max-width: 420px; }
+    .auth-form-header { margin-bottom: 32px; }
+    .auth-form-header h1 { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .auth-form-header p { font-size: 14px; color: var(--text-muted); }
+    .auth-form-header a { color: var(--primary); font-weight: 600; }
+    .social-auth { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .social-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text); transition: var(--transition); }
+    .social-btn:hover { border-color: var(--primary); background: rgba(37,99,235,0.04); }
+    .auth-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .auth-divider span { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .auth-form { display: flex; flex-direction: column; gap: 0; }
+    .input-with-icon { position: relative; margin-bottom: 16px; }
+    .input-with-icon i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; z-index: 1; }
+    .input-with-icon input { width: 100%; padding: 12px 16px 12px 42px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 14px; color: var(--text); transition: var(--transition); }
+    .input-with-icon input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); outline: none; }
+    .input-with-icon .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; background: none; border: none; font-size: 14px; }
+    .forgot-row { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+    .forgot-link { font-size: 13px; color: var(--primary); font-weight: 600; }
+    .auth-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--purple)); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
+    .auth-submit:hover { transform: translateY(-2px); box-shadow: var(--shadow-blue); }
+    .auth-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .auth-footer-text { text-align: center; font-size: 13px; color: var(--text-muted); }
+    .auth-footer-text a { color: var(--primary); font-weight: 600; }
+    .error-msg { padding: 10px 14px; background: rgba(239,68,68,0.08); color: var(--danger); border-radius: var(--radius); font-size: 13px; margin-bottom: 16px; border: 1px solid rgba(239,68,68,0.15); display: none; }
+    .error-msg.show { display: block; }
+    @media (max-width: 768px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="auth-page">
+  <!-- Left side -->
+  <div class="auth-left">
+    <div class="auth-left-orb auth-orb1"></div>
+    <div class="auth-left-orb auth-orb2"></div>
+    <div class="auth-left-content">
+      <div class="auth-left-logo">
+        <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#aLogoGrad)"/>
+          <path d="M8 16L13 21L24 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs><linearGradient id="aLogoGrad" x1="0" y1="0" x2="32" y2="32"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+        </svg>
+        <span>SkillBridge</span>
+      </div>
+      <h2 class="auth-left-title">Welcome Back to Your <span>AI Career Navigator</span></h2>
+      <p class="auth-left-sub">Access your personalized career roadmap, skill analysis, and opportunity matches.</p>
+      <div class="auth-features">
+        <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-brain"></i></div>AI-powered resume analysis & scoring</div>
+        <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-briefcase"></i></div>Personalized job & internship matching</div>
+        <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-road"></i></div>Custom learning roadmap for your goals</div>
+        <div class="auth-feature"><div class="auth-feature-icon"><i class="fas fa-certificate"></i></div>Free certification recommendations</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right side: Login Form -->
+  <div class="auth-right">
+    <div class="auth-form-container">
+      <div class="auth-form-header">
+        <h1>Welcome back 👋</h1>
+        <p>Don't have an account? <a href="auth.html">Create one free</a></p>
+      </div>
+
+      <div id="errorMsg" class="error-msg"></div>
+
+      <form class="auth-form" id="loginForm">
+        <div class="input-with-icon">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" placeholder="Email address" required autocomplete="email"/>
+        </div>
+        <div class="input-with-icon">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Password" required autocomplete="current-password"/>
+          <button type="button" class="toggle-password" onclick="togglePwd('password')"><i class="fas fa-eye" id="eye-password"></i></button>
+        </div>
+        <div class="forgot-row">
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+        <button type="submit" class="auth-submit" id="loginBtn">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Sign In</span>
+        </button>
+      </form>
+
+      <p class="auth-footer-text">
+        By signing in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+      </p>
+      <div style="margin-top:24px; padding:16px; background:rgba(37,99,235,0.06); border-radius:10px; border:1px dashed rgba(37,99,235,0.2);">
+        <p style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:6px;">Demo Account</p>
+        <p style="font-size:12px;color:var(--text-muted);">Email: demo@skillbridge.ai &nbsp;|&nbsp; Password: demo123</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/firebase-init.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+
+function togglePwd(id) {
+  const inp = document.getElementById(id);
+  const eye = document.getElementById('eye-' + id);
+  if (inp.type === 'password') { inp.type = 'text'; eye.classList.replace('fa-eye', 'fa-eye-slash'); }
+  else { inp.type = 'password'; eye.classList.replace('fa-eye-slash', 'fa-eye'); }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  const errMsg = document.getElementById('errorMsg');
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+  errMsg.classList.remove('show');
+
+  try {
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Sign-in timed out. Check your internet connection and try again.')), 15000));
+    const firebase = await Promise.race([window.SkillBridgeFirebaseReady, timeout]);
+    const credential = await firebase.signInWithEmailAndPassword(firebase.auth, email, password);
+    let idToken = await credential.user.getIdToken();
+    let res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + idToken },
+      body: JSON.stringify({})
+    });
+    let data = await res.json();
+    if (res.status === 401) {
+      idToken = await credential.user.getIdToken(true);
+      res = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + idToken },
+        body: JSON.stringify({})
+      });
+      data = await res.json();
+    }
+    if (!res.ok || !data.success) throw new Error(data.message || 'Sign-in failed.');
+    localStorage.setItem('sb_token', idToken);
+    localStorage.setItem('sb_user', JSON.stringify(data.user));
+    window.location.href = 'dashboard2.html';
+  } catch (err) {
+    errMsg.textContent = err.message || 'Sign-in failed. Check Firebase configuration and try again.';
+    errMsg.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+  }
+});
+</script>
+</body>
+</html>
+
+
