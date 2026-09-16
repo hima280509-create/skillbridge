@@ -8,13 +8,13 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 // Firebase config is safe here since this is a public service worker
 // API keys for Firebase web are meant to be public (they are restricted by domain)
 firebase.initializeApp({
-  apiKey: "AIzaSyCJQSUj2OLlJCrzm9Hig7_gRM4RSY2aYE8",
-  authDomain: "skillbridge-3d262.firebaseapp.com",
-  projectId: "skillbridge-3d262",
-  storageBucket: "skillbridge-3d262.firebasestorage.app",
-  messagingSenderId: "876203724499",
-  appId: "1:876203724499:web:b1469fc2fabf4566cdce26",
-  measurementId: "G-4W3DYDZ5WC"
+ apiKey: " AIzaSyAm9t8ISc1TUv9-XBYtayOjIc81C-F6F7w ",
+ authDomain: " skill-bridge-7ce88.firebaseapp.com ",
+ projectId: " skill-bridge-7ce88",
+ storageBucket: " skill-bridge-7ce88.firebasestorage.app ",
+ messagingSenderId: "366059971759",
+ appId: "1:366059971759:web:ac3d2096e62012c1d2a05a ", 
+ measurementId: " G-SLFWDEREDT "
 });
 
 const messaging = firebase.messaging();
