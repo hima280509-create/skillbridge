@@ -3,7 +3,7 @@
 // NOTE: All score calculations use SBCalc (calculationService.js)
 // This file must be loaded AFTER calculationService.js
 // =============================================
-const API = 'http://localhost:5000/api';
+const API = 'https://skillbridge-kmly.onrender.com/api';
 
 // ---- Auth ----
 const getToken = () => localStorage.getItem('sb_token');
